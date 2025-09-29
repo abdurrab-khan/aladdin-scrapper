@@ -102,6 +102,7 @@ export class Crawler {
 
   // @Method to insert products to the main list
   protected insertProduct(product: Product[] | null) {
+    // If no products, return
     if (product && product.length > 0) {
       const availableSlots = MAX_PRODUCTS_PER_WEBSITE - this.productsCount;
 
@@ -125,10 +126,12 @@ export class Crawler {
     const nextButtonSelector = NEXT_BUTTON_SELECTOR[this.website]; // Selector for the "Next" button
 
     try {
+      // Locate the "Next" button with the specified text
       const nextButton = this.page.locator(nextButtonSelector, {
         hasText,
       });
 
+      // If no "Next" button found, throw an error
       if ((await nextButton.count()) === 0) {
         throw new Error(
           `\nℹ️ No 'Next' button found on page ${this.pageNumber} for ${this.website}.`
@@ -144,7 +147,8 @@ export class Crawler {
       // Increase the page number after successful navigation
       this.pageNumber += 1;
 
-      if (this.pageNumber >= 30) this.isDone = true; // Limit to 20 pages for now
+      // Limit to 20 pages for now
+      if (this.pageNumber >= 30) this.isDone = true;
 
       // Log the progress
       console.log(
@@ -348,5 +352,10 @@ export class Crawler {
         await contextAndPage.page.close();
       }
     }
+  }
+
+  // @Private method to fetch products by brand (Not implemented yet)
+  private async fetchBrandProducts(brand: string): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 }

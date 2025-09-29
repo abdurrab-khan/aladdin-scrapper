@@ -12,10 +12,10 @@ async function main() {
         "https://www.flipkart.com/search?q=mobile&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off",
         "flipkart",
       ],
-      [
-        "https://www.flipkart.com/search?q=gadgets&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off",
-        "flipkart",
-      ],
+      // [
+      //   "https://www.flipkart.com/search?q=gadgets&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off",
+      //   "flipkart",
+      // ],
       // ["https://www.amazon.in/s?k=gedgets", "amazon"],
       // ["https://www.amazon.in/s?k=raspberry+pi+4", "amazon"],
       // ["https://www.amazon.in/s?k=jeans", "amazon"],
