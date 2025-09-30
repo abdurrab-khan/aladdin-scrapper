@@ -4,16 +4,14 @@ import type { E_COMMERCE, Product } from "../../types/index.js";
 import { CARD_SELECTOR, NEXT_BUTTON_SELECTOR } from "../css/css_selectors.js";
 import {
   MAX_EMPTY_PAGES_ALLOWED,
+  MAX_PERCENTAGE_DISCOUNT_BRAND,
+  MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT,
+  MAX_PRODUCT_BY_BRAND,
   MAX_PRODUCTS_PER_WEBSITE,
   MIN_PRODUCTS_PER_PAGE,
 } from "../constants/const.js";
-import {
-  extractProductData,
-  getClippingForScreenshot,
-  getContextOptionsForScreenShot,
-  randomDelay,
-} from "../utils/utils.js";
-import getContext from "../utils/getContext.js";
+import { extractProductData } from "../utils/utils.js";
+import CrawlerUtils from "../utils/crawlerUtils.js";
 
 export class Crawler {
   public products: Product[] = [];
@@ -22,32 +20,36 @@ export class Crawler {
   protected pageNumber: number = 0;
 
   private page: Page;
-  private browser: Browser;
   private website: E_COMMERCE;
   private productsCount: number = 0;
   private emptyPageThreshold: number = 3;
   private productsByBrand = new Map();
   private alreadyProcessedProducts = new Set<string>();
   private maxPrice: number;
+  private crawlerUtils: CrawlerUtils;
 
   constructor(website: E_COMMERCE, page: Page, browser: Browser) {
     this.page = page;
-    this.browser = browser;
     this.website = website;
     this.maxPrice = 2500; // TODO: Make it dynamic based on user input
+    this.crawlerUtils = new CrawlerUtils(browser, page, website);
   }
 
   // @Navigate to the given URL
-  protected async navigateToUrl(url: string, page?: Page): Promise<boolean> {
+  protected async navigateToUrl(url: string): Promise<boolean> {
     try {
       // Navigate to the URL with a timeout of 10 seconds
-      await (page ?? this.page).goto(url, {
-        timeout: 10000,
+      await this.page.goto(url, {
+        timeout: 60000,
         waitUntil: "domcontentloaded",
       });
 
       // Wait for product cards to load
-      await this.waitForProductCard();
+      await this.crawlerUtils.waitForPageLoad(
+        this.page,
+        CARD_SELECTOR[this.website],
+        true
+      );
 
       // Increase the page number after successful navigation
       this.pageNumber += 1;
@@ -142,7 +144,11 @@ export class Crawler {
       await nextButton.first().click();
 
       // PERFORM WAITING ACTIONS
-      await this.waitForProductCard();
+      await this.crawlerUtils.waitForPageLoad(
+        this.page,
+        nextButtonSelector,
+        true
+      );
 
       // Increase the page number after successful navigation
       this.pageNumber += 1;
@@ -178,46 +184,73 @@ export class Crawler {
 
       // Basic validations
       const { price, discountPrice } = productDetails?.productDetails!;
-      const isValid = this.isProductValid(
-        price,
-        discountPrice,
-        productDetails.productUrl
-      );
 
-      // @Check if the product is valid or not
-      if (!isValid) return null;
+      // Additional validation for price and discount price
+      if (
+        !(
+          this.crawlerUtils.isValidProductDeal(
+            price,
+            discountPrice,
+            this.maxPrice
+          ) &&
+          this.isProductValid(
+            productDetails.productDetails?.brand!,
+            productDetails.productUrl
+          )
+        )
+      )
+        return null;
 
-      // Taking screen short
-      const fileName = `./products/${this.website}-${productDetails.productId}`;
+      // Calculate discount percentage
       const discountPercentage = Math.floor(
         ((price - discountPrice) / price) * 100
       );
+      const takeFullPageScreenShot =
+        discountPercentage >= MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT;
 
-      // If discount is more than 85% take full page screenshot otherwise take product card screenshot
-      if (discountPercentage >= 85) {
-        const takeScreenShot = await this.takeFullPageScreenShot(
-          fileName,
-          productDetails.productUrl
-        );
+      // Taking screen shot
+      const fileName = `./products/${this.website}-${productDetails.productId}`;
+      const takeScreenShot = await this.crawlerUtils.takeScreenshot(
+        fileName,
+        product,
+        productDetails.productUrl,
+        takeFullPageScreenShot
+      );
 
-        if (!takeScreenShot) return null; // If screenshot fails, return null
-      } else {
-        await product.screenshot({
-          path: `${fileName}.png`,
-          type: "png",
-          caret: "hide",
-          animations: "disabled",
-          timeout: 10000,
-        });
+      // If screenshot failed
+      if (!takeScreenShot) {
+        if (takeFullPageScreenShot) {
+          // Try taking full page screenshot if not already tried
+          const fullPageScreenShot = await this.crawlerUtils.takeScreenshot(
+            fileName,
+            product,
+            productDetails.productUrl
+          );
+
+          if (!fullPageScreenShot) return null;
+        }
+
+        return null;
       }
 
-      this.postProcessProduct(productDetails); // Post process the product
-      productDetails["productCard"] = `${fileName}.png`; // Set the product card path
+      // Post process the product
+      await this.postProcessProduct(
+        productDetails.productDetails?.brand!,
+        productDetails.productUrl,
+        discountPercentage
+      );
+
+      // Set the product card path
+      productDetails["productCard"] = `${fileName}.png`;
 
       console.log(
         `✅ Extracted - ${this.website.toUpperCase()} : ${
           productDetails.productName
-        } | Price: ${price} | Discount Price: ${discountPrice}`
+        } | Price: ${price} | Discount Price: ${discountPrice} | Discount: ${discountPercentage}%off | ${this.crawlerUtils.isValidProductDeal(
+          price,
+          discountPrice,
+          this.maxPrice
+        )}`
       );
 
       return productDetails;
@@ -227,12 +260,29 @@ export class Crawler {
   }
 
   // @Private method things after successfully extracting a product
-  private postProcessProduct(product: Product): void {
-    const brand = product.productDetails?.brand!;
-    const url = product.productUrl;
+  private async postProcessProduct(
+    brand: string,
+    url: string,
+    discountPercentage: number
+  ): Promise<void> {
+    // Track products by brand with best discount
+    if (
+      discountPercentage >= MAX_PERCENTAGE_DISCOUNT_BRAND &&
+      this.productsByBrand.get(brand) !== -1
+    ) {
+      this.productsByBrand.set(
+        brand,
+        (this.productsByBrand.get(brand) || 0) + 1
+      );
+    }
 
-    this.productsByBrand.set(brand, (this.productsByBrand.get(brand) || 0) + 1); // Increment brand count
-    this.alreadyProcessedProducts.add(url); // Mark this product as processed
+    // If products by brand exceeded 5 then fetch more products by brand
+    if (this.productsByBrand.get(brand) === MAX_PRODUCT_BY_BRAND) {
+      await this.fetchBrandProducts(brand);
+    }
+
+    // Mark this product as processed
+    this.alreadyProcessedProducts.add(url);
   }
 
   // @Private method to increase empty page threshold and check if done
@@ -253,109 +303,27 @@ export class Crawler {
   }
 
   // @ Private method to check if a product is valid
-  private isProductValid(
-    price: number,
-    discountPrice: number,
-    url: string
-  ): boolean {
+  private isProductValid(brand: string, url: string): boolean {
     const isValid =
       this.alreadyProcessedProducts.has(url) === false &&
-      price < this.maxPrice &&
-      price > 0 &&
-      discountPrice > 0 &&
-      this.productsCount < MAX_PRODUCTS_PER_WEBSITE &&
-      discountPrice < price;
+      this.productsByBrand.get(brand) !== -1 &&
+      this.productsCount < MAX_PRODUCTS_PER_WEBSITE;
 
-    // Basic validations
-    if (!isValid) return false;
-
-    // Check if product as best discount or not
-    const discountPercentage = Math.floor(
-      ((price - discountPrice) / price) * 100
-    );
-
-    // If discount is more than 60% consider it as best deal
-    if (discountPercentage < 40) {
-      return false;
-    }
-
-    // Mark this product as processed
-    this.alreadyProcessedProducts.add(url);
-
-    return true;
-  }
-
-  // @Private method to wait for product cards to load
-  private async waitForProductCard(): Promise<void> {
-    const cardSelector = CARD_SELECTOR[this.website];
-
-    try {
-      // Wait for DOM content to be fully loaded
-      await this.page.waitForLoadState("domcontentloaded");
-
-      // Wait for product cards to be visible
-      await this.page.waitForSelector(cardSelector, {
-        state: "attached",
-        timeout: 10000,
-      });
-
-      // Random delay between 1.5 to 4 seconds
-      await this.page.waitForTimeout(randomDelay(1.5, 4));
-    } catch (error) {
-      console.error(
-        `⚠️  Error waiting for product cards on ${this.website}:`,
-        error
-      );
-
-      this.isDone = true; // Mark as done if waiting fails
-    }
-  }
-
-  // @Private method to take a screenshot of the current page/product card
-  private async takeFullPageScreenShot(
-    fileName: string,
-    url: string
-  ): Promise<boolean> {
-    let contextAndPage: Awaited<ReturnType<typeof getContext>> | null = null;
-
-    try {
-      // If URL is provided, navigate to the URL and take a screenshot of the full page
-      contextAndPage = await getContext(
-        this.browser,
-        getContextOptionsForScreenShot(this.website)
-      );
-
-      const navigated = await this.navigateToUrl(url, contextAndPage.page);
-      if (!navigated) return false; // If navigation fails, return false
-
-      // Taking screenshot of the full page
-      await contextAndPage.page.screenshot({
-        path: `${fileName}.png`,
-        type: "png",
-        caret: "hide",
-        animations: "disabled",
-        clip: getClippingForScreenshot(this.website),
-        fullPage: false,
-        timeout: 10000,
-      });
-
-      return true;
-    } catch (error) {
-      console.log(
-        `⚠️  Error taking full page screenshot for ${fileName}: `,
-        (error as Error).message ?? error
-      );
-      return false;
-    } finally {
-      if (contextAndPage) {
-        await contextAndPage.context.close();
-        await contextAndPage.page.close();
-      }
-    }
+    return isValid;
   }
 
   // @Private method to fetch products by brand (Not implemented yet)
   private async fetchBrandProducts(brand: string): Promise<void> {
-    throw new Error("Method not implemented.");
+    // Fetch products by brand using crawlerUtils
+    const brandProducts = await this.crawlerUtils.getBrandProducts(brand);
+
+    // If brand products found, insert them
+    if (brandProducts) {
+      this.insertProduct([brandProducts]);
+      console.log(`✅ Fetched additional products for brand: ${brand}`);
+    }
+
+    // Block further products from this brand
+    this.productsByBrand.set(brand, -1);
   }
 }

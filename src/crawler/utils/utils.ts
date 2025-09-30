@@ -99,7 +99,7 @@ export function getContextOptionsForScreenShot(
     case "flipkart":
       return {
         screen,
-        viewport: { height: 750, width: 1400 },
+        viewport: { height: 800, width: 1400 },
       };
     default:
       return {
@@ -109,12 +109,17 @@ export function getContextOptionsForScreenShot(
   }
 }
 
+/**
+ * Get the clipping for screenshot based on the website
+ * @param website - E_COMMERCE
+ * @returns - clipping for screenshot
+ */
 export function getClippingForScreenshot(website: E_COMMERCE) {
   switch (website) {
     case "amazon":
       return { x: 0, y: 145, width: 1400, height: 805 };
     case "flipkart":
-      return { x: 0, y: 89, width: 1400, height: 661 };
+      return { x: 0, y: 85, width: 1400, height: 715 };
     default:
       return { x: 0, y: 0, width: 1400, height: 700 };
   }
