@@ -12,7 +12,12 @@ export class FlipkartService extends Crawler {
   async fetchProducts(): Promise<void> {
     if (this.pageNumber === 0) {
       const navigated = await this.navigateToUrl(this.url); // Navigate to the initial URL
-      if (!navigated) this.isDone = true; // Stop if navigation fails
+
+      // Stop if navigation fails
+      if (!navigated) {
+        console.log("🧭 Navigation failed in flipkart.");
+        this.isDone = true;
+      }
     } else {
       await this.clickToNextPageBtn(); // Click to the next page for subsequent pages
     }

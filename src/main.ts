@@ -5,7 +5,7 @@ async function main() {
   try {
     const urls: Array<[string, E_COMMERCE]> = [
       [
-        "https://www.flipkart.com/search?q=jeans&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off&page=2",
+        "https://www.flipkart.com/search?q=jeans&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off&page=1",
         "flipkart",
       ],
       // [
@@ -20,6 +20,7 @@ async function main() {
     const products = await scrapeProducts(urls);
 
     console.log("Products:", products[0]);
+    console.log(`Total products scraped: ${products[0].length}`);
   } catch (error) {
     console.error("❌ Error in main:", (error as Error).message ?? error);
   }

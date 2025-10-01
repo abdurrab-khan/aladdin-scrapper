@@ -1,14 +1,20 @@
-import type { Browser, ElementHandle, Page } from "playwright";
-import type { E_COMMERCE, Product } from "../../types/index.js";
+import { v4 as uuidv4 } from "uuid";
 import getContext from "./getContext.js";
+import { cleanData, hasRequiredDetails } from "./helper.js";
+import type { Browser, ElementHandle, Page } from "playwright";
+import { MAX_PERCENTAGE_DISCOUNT } from "../constants/const.js";
+import { CARD_SELECTOR, PRODUCT_DETAILS } from "../css/css_selectors.js";
 import {
   getClippingForScreenshot,
   getContextOptionsForScreenShot,
   randomDelay,
 } from "./utils.js";
-import { CARD_SELECTOR } from "../css/css_selectors.js";
-import { MAX_PERCENTAGE_DISCOUNT } from "../constants/const.js";
-
+import type {
+  E_COMMERCE,
+  FlatProduct,
+  Product,
+  ProductSelector,
+} from "../../types/index.js";
 class CrawlerUtils {
   private browser: Browser;
   private page: Page;
@@ -18,6 +24,108 @@ class CrawlerUtils {
     this.website = website;
     this.browser = browser;
     this.page = page;
+  }
+
+  public async extractProductData(
+    product: ElementHandle<SVGElement | HTMLElement>
+  ) {
+    if (!product) return null; // Return null if product is null or undefined
+
+    const productCSSSelector = PRODUCT_DETAILS[this.website];
+
+    try {
+      const productDetails = Object.fromEntries(
+        await Promise.all(
+          Object.entries(productCSSSelector).map(async ([key, selector]) => {
+            const typedKey = key as ProductSelector;
+
+            // @Checking whether the selector is valid or not
+            if (!selector.trim() || selector === "N/A") {
+              throw new Error("⚠️ Invalid selector");
+            }
+
+            const element = await product.$(selector);
+            const value = await cleanData(typedKey, element, this.website);
+
+            if (!value && !hasRequiredDetails(typedKey, value)) {
+              throw new Error(
+                `⚠️  Missing required detail for key: ${typedKey}`
+              );
+            }
+
+            return [typedKey, value];
+          })
+        )
+      ) as { [T in ProductSelector]: FlatProduct[T] };
+
+      return {
+        productId: uuidv4(),
+        productName: productDetails.productName,
+        productUrl: productDetails.productUrl,
+        productCard: "",
+        isGrouped: false,
+        productDetails: {
+          brand:
+            productDetails.brand ?? productDetails.productName.split(" ")[0],
+          price: productDetails.price,
+          discountPrice: productDetails.discountPrice,
+          rating: productDetails?.rating,
+          reviews: productDetails?.reviews,
+          image: productDetails.image,
+        },
+      } as Product;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  // Method to fetch products by brand
+  public async getBrandProducts(brand: string): Promise<Product | null> {
+    let contextAndPage: Awaited<ReturnType<typeof getContext>> | null = null;
+
+    try {
+      contextAndPage = await getContext(
+        this.browser,
+        getContextOptionsForScreenShot(this.website)
+      );
+      if (!contextAndPage) return null;
+
+      // Navigate to the current page URL
+      await contextAndPage.page.goto(this.page.url(), {
+        timeout: 30000,
+        waitUntil: "domcontentloaded",
+      });
+
+      // Wait for the page to load completely
+      this.waitForPageLoad(
+        contextAndPage.page,
+        CARD_SELECTOR[this.website],
+        false
+      );
+
+      // Fetch the brand selector element
+      const brandSelectorFetched = await this.getBrandSelector(
+        contextAndPage.page
+      );
+
+      // If brand selector is fetched, proceed to fetch products by brand
+      if (brandSelectorFetched) {
+        await brandSelectorFetched.click(); // Click on the brand selector
+        await this.waitForPageLoad(this.page);
+
+        // Logic to fetch products by brand
+      }
+
+      return null;
+    } catch (error) {
+      console.error(`⚠️ Error fetching products for brand ${brand}:`, error);
+      return null;
+    } finally {
+      if (contextAndPage) {
+        await contextAndPage.page.close();
+        await contextAndPage.context.close();
+      }
+    }
   }
 
   // Method to validate whether the product has valid pricing and best deal
@@ -40,17 +148,6 @@ class CrawlerUtils {
       discountPercentage > MAX_PERCENTAGE_DISCOUNT;
 
     return isValid;
-  }
-
-  // Method to fetch products by brand
-  public async getBrandProducts(brand: string): Promise<Product | null> {
-    try {
-      // Logic to fetch products by brand
-      return null;
-    } catch (error) {
-      console.error(`⚠️ Error fetching products for brand ${brand}:`, error);
-      return null;
-    }
   }
 
   // Method to take screenshot of the product
@@ -141,10 +238,24 @@ class CrawlerUtils {
 
       // Additional random delay to ensure all resources are loaded
       if (showAdditionalDelay) {
-        await targetPage.waitForTimeout(randomDelay(1.5, 4));
+        await targetPage.waitForTimeout(randomDelay(2, 5));
       }
     } catch (error) {
       throw error;
+    }
+  }
+
+  // =============== Private Methods ===============
+  private async getBrandSelector(
+    page: Page
+  ): Promise<ElementHandle<HTMLElement> | null> {
+    try {
+      // Logic to get brand selector
+
+      return null;
+    } catch (error) {
+      console.error("⚠️ Error fetching brand selector:", error);
+      return null;
     }
   }
 }

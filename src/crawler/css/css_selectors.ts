@@ -48,3 +48,15 @@ export const NEXT_BUTTON_SELECTOR: Record<E_COMMERCE, string> = {
   amazon: ".s-pagination-item.s-pagination-next",
   flipkart: ".WSL9JP ._9QVEpD",
 };
+
+export const FLIPKART_FETCH_BRAND_PRODUCTS: Record<string, string> = {
+  mainSection: `section.\-5qqlC._2OLUF3`,
+  sectionText: `section.\-5qqlC._2OLUF3 div.fxf7w6.rgHxCQ`,
+  selector: "div.QCKZip.hpLdC3",
+  input: "div.SDsN9S input.XPD6hh[placeholder='Search Brand']",
+};
+
+export const AMAZON_FETCH_BRAND_PRODUCTS: Record<string, string> = {
+  see_more: "div#brandsRefinements div.a-expander-extend-container",
+  selector: "div#brandsRefinements li.a-spacing-micro",
+};

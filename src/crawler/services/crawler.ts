@@ -10,7 +10,6 @@ import {
   MAX_PRODUCTS_PER_WEBSITE,
   MIN_PRODUCTS_PER_PAGE,
 } from "../constants/const.js";
-import { extractProductData } from "../utils/utils.js";
 import CrawlerUtils from "../utils/crawlerUtils.js";
 
 export class Crawler {
@@ -68,16 +67,20 @@ export class Crawler {
 
   // @Extract product details from the card element
   protected async extractProducts(): Promise<void> {
-    if (this.isDone) return; // If already done, return
+    // If already done, return
+    if (this.isDone) {
+      return;
+    }
+
+    const cardSelector = CARD_SELECTOR[this.website];
 
     try {
-      const cardSelector = CARD_SELECTOR[this.website];
       const products = await this.page.$$(cardSelector);
 
       // If no products found, return null
       if (products.length === 0) {
         console.warn(`⚠️ No products found on ${this.website}`);
-        return this.increaseEmptyPageThreshold([]);
+        return this.increaseEmptyPageThreshold(null);
       }
 
       // Extract details from each product card
@@ -177,15 +180,15 @@ export class Crawler {
     product: ElementHandle<SVGElement | HTMLElement>
   ): Promise<Product | null> {
     try {
-      const productDetails = await extractProductData(this.website, product);
+      const productDetails = await this.crawlerUtils.extractProductData(
+        product
+      );
 
       // If product details extraction failed, return null
       if (!productDetails) return null;
 
-      // Basic validations
-      const { price, discountPrice } = productDetails?.productDetails!;
-
       // Additional validation for price and discount price
+      const { price, discountPrice } = productDetails?.productDetails!;
       if (
         !(
           this.crawlerUtils.isValidProductDeal(
@@ -205,11 +208,11 @@ export class Crawler {
       const discountPercentage = Math.floor(
         ((price - discountPrice) / price) * 100
       );
+      // Taking screen shot
+      const fileName = `./products/${this.website}-${productDetails.productId}`;
       const takeFullPageScreenShot =
         discountPercentage >= MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT;
 
-      // Taking screen shot
-      const fileName = `./products/${this.website}-${productDetails.productId}`;
       const takeScreenShot = await this.crawlerUtils.takeScreenshot(
         fileName,
         product,
@@ -246,11 +249,7 @@ export class Crawler {
       console.log(
         `✅ Extracted - ${this.website.toUpperCase()} : ${
           productDetails.productName
-        } | Price: ${price} | Discount Price: ${discountPrice} | Discount: ${discountPercentage}%off | ${this.crawlerUtils.isValidProductDeal(
-          price,
-          discountPrice,
-          this.maxPrice
-        )}`
+        } | Price: ${price} | Discount Price: ${discountPrice} | ${discountPercentage}%off`
       );
 
       return productDetails;
@@ -287,18 +286,21 @@ export class Crawler {
 
   // @Private method to increase empty page threshold and check if done
   private increaseEmptyPageThreshold(products: Product[] | null): void {
-    if (products && products.length >= MIN_PRODUCTS_PER_PAGE) {
-      this.emptyPageThreshold = 0;
-      return;
-    }
+    // If products found and more than minimum required, decrease the threshold
+    if (products && products.length > MIN_PRODUCTS_PER_PAGE) {
+      if (this.emptyPageThreshold > 0) {
+        this.emptyPageThreshold -= 1;
+      }
+    } else {
+      this.emptyPageThreshold += 1;
 
-    this.emptyPageThreshold += 1;
-
-    if (this.emptyPageThreshold > MAX_EMPTY_PAGES_ALLOWED) {
-      console.info(
-        `\n🚫 Crawler terminated for ${this.website}: Maximum empty page threshold exceeded (${this.emptyPageThreshold}). Page: ${this.pageNumber}, Products collected: ${this.productsCount}\n`
-      );
-      this.isDone = true;
+      // If empty page threshold exceeded max allowed, mark as done
+      if (this.emptyPageThreshold > MAX_EMPTY_PAGES_ALLOWED) {
+        console.info(
+          `\n🚫 Crawler terminated for ${this.website}: Maximum empty page threshold exceeded (${this.emptyPageThreshold}). Page: ${this.pageNumber}, Products collected: ${this.productsCount}\n`
+        );
+        this.isDone = true;
+      }
     }
   }
 

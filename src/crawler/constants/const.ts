@@ -1,5 +1,5 @@
 // The maximum number of products to scrape from a single website
-const MAX_PRODUCTS_PER_WEBSITE = 30;
+const MAX_PRODUCTS_PER_WEBSITE = 20;
 
 // The maximum number of products to send per category
 const MAX_PRODUCT_PER_CATEGORY = 8;
@@ -17,7 +17,7 @@ const MAX_PRODUCT_BY_BRAND = 5;
 const MAX_PERCENTAGE_DISCOUNT = 65;
 
 // The maximum percentage discount to consider a product as a brand deal
-const MAX_PERCENTAGE_DISCOUNT_BRAND = 80;
+const MAX_PERCENTAGE_DISCOUNT_BRAND = 75;
 
 // The maximum percentage to take full page screenshot
 const MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT = 85;
