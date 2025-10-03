@@ -1,5 +1,6 @@
 import type { BrowserContextOptions } from "playwright";
 import type { E_COMMERCE } from "../../types/index.js";
+import { MAX_PERCENTAGE_DISCOUNT } from "../constants/const.js";
 
 /**
  * Generate a random delay between min and max seconds
@@ -58,4 +59,23 @@ export function getClippingForScreenshot(website: E_COMMERCE) {
     default:
       return { x: 0, y: 0, width: 1400, height: 700 };
   }
+}
+
+// ============== PRODUCT RELATED HELPER FUNCTIONS ==============
+export function isValidProductDeal(
+  price: number,
+  discountPrice: number,
+  maxPrice: number
+) {
+  const discountPercentage = ((price - discountPrice) / price) * 100;
+
+  // Validate price, discount price, and discount percentage
+  const isValid =
+    price > 0 &&
+    price < maxPrice &&
+    discountPrice > 0 &&
+    discountPrice < price &&
+    discountPercentage > MAX_PERCENTAGE_DISCOUNT;
+
+  return isValid;
 }

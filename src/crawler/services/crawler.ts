@@ -1,6 +1,10 @@
 import type { Browser, ElementHandle, Page } from "playwright";
 
+import getContext from "../utils/getContext.js";
+import CrawlerUtils from "../utils/crawlerUtils.js";
+import { isValidProductDeal } from "../utils/utils.js";
 import type { E_COMMERCE, Product } from "../../types/index.js";
+
 import { CARD_SELECTOR, NEXT_BUTTON_SELECTOR } from "../css/css_selectors.js";
 import {
   MAX_EMPTY_PAGES_ALLOWED,
@@ -10,7 +14,6 @@ import {
   MAX_PRODUCTS_PER_WEBSITE,
   MIN_PRODUCTS_PER_PAGE,
 } from "../constants/const.js";
-import CrawlerUtils from "../utils/crawlerUtils.js";
 
 export class Crawler {
   public products: Product[] = [];
@@ -26,10 +29,12 @@ export class Crawler {
   private alreadyProcessedProducts = new Set<string>();
   private maxPrice: number;
   private crawlerUtils: CrawlerUtils;
+  private browser: Browser;
 
   constructor(website: E_COMMERCE, page: Page, browser: Browser) {
     this.page = page;
     this.website = website;
+    this.browser = browser;
     this.maxPrice = 2500; // TODO: Make it dynamic based on user input
     this.crawlerUtils = new CrawlerUtils(browser, page, website);
   }
@@ -37,21 +42,10 @@ export class Crawler {
   // @Navigate to the given URL
   protected async navigateToUrl(url: string): Promise<boolean> {
     try {
-      // Navigate to the URL with a timeout of 10 seconds
-      await this.page.goto(url, {
-        timeout: 60000,
-        waitUntil: "domcontentloaded",
-      });
+      // Navigate to the URL
+      await this.crawlerUtils.navigateToUrl(this.page, url);
 
-      // Wait for product cards to load
-      await this.crawlerUtils.waitForPageLoad(
-        this.page,
-        CARD_SELECTOR[this.website],
-        true
-      );
-
-      // Increase the page number after successful navigation
-      this.pageNumber += 1;
+      this.pageNumber = 1; // Set to first page after navigation
 
       return true;
     } catch (error) {
@@ -180,77 +174,64 @@ export class Crawler {
     product: ElementHandle<SVGElement | HTMLElement>
   ): Promise<Product | null> {
     try {
+      // If product details extraction failed, return null
       const productDetails = await this.crawlerUtils.extractProductData(
         product
       );
 
-      // If product details extraction failed, return null
-      if (!productDetails) return null;
+      // If product details found, process further
+      if (productDetails && this.checkDeepValidation(productDetails)) {
+        const { price, discountPrice } = productDetails?.productDetails;
 
-      // Additional validation for price and discount price
-      const { price, discountPrice } = productDetails?.productDetails!;
-      if (
-        !(
-          this.crawlerUtils.isValidProductDeal(
-            price,
-            discountPrice,
-            this.maxPrice
-          ) &&
-          this.isProductValid(
-            productDetails.productDetails?.brand!,
-            productDetails.productUrl
-          )
-        )
-      )
-        return null;
+        // Calculate discount percentage
+        const discountPercentage = Math.floor(
+          ((price - discountPrice) / price) * 100
+        );
 
-      // Calculate discount percentage
-      const discountPercentage = Math.floor(
-        ((price - discountPrice) / price) * 100
-      );
-      // Taking screen shot
-      const fileName = `./products/${this.website}-${productDetails.productId}`;
-      const takeFullPageScreenShot =
-        discountPercentage >= MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT;
+        // Taking screen shot
+        const fileName = `./products/${this.website}-${productDetails.productId}`;
+        const takeFullPageScreenShot =
+          discountPercentage >= MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT;
 
-      const takeScreenShot = await this.crawlerUtils.takeScreenshot(
-        fileName,
-        product,
-        productDetails.productUrl,
-        takeFullPageScreenShot
-      );
+        const takeScreenShot = await this.crawlerUtils.takeScreenshot(
+          fileName,
+          product,
+          productDetails.productUrl,
+          takeFullPageScreenShot
+        );
 
-      // If screenshot failed
-      if (!takeScreenShot) {
-        if (takeFullPageScreenShot) {
-          // Try taking full page screenshot if not already tried
-          const fullPageScreenShot = await this.crawlerUtils.takeScreenshot(
-            fileName,
-            product,
-            productDetails.productUrl
-          );
+        // If screenshot failed
+        if (!takeScreenShot) {
+          if (takeFullPageScreenShot) {
+            // Try taking full page screenshot if not already tried
+            const fullPageScreenShot = await this.crawlerUtils.takeScreenshot(
+              fileName,
+              product,
+              productDetails.productUrl
+            );
 
-          if (!fullPageScreenShot) return null;
+            if (!fullPageScreenShot) return null;
+          }
+
+          return null;
         }
 
-        return null;
+        // Post process the product
+        await this.postProcessProduct(
+          productDetails.productDetails?.brand!,
+          productDetails.productUrl,
+          discountPercentage
+        );
+
+        // Set the product card path
+        productDetails["productCard"] = `${fileName}.png`;
+
+        console.log(
+          `✅ Extracted - ${this.website.toUpperCase()} : ${
+            productDetails.productName
+          } | Price: ${price} | Discount Price: ${discountPrice} | ${discountPercentage}%off`
+        );
       }
-
-      // Post process the product
-      await this.postProcessProduct(
-        productDetails.productDetails?.brand!,
-        productDetails.productUrl,
-        discountPercentage
-      );
-
-      // Set the product card path
-      productDetails["productCard"] = `${fileName}.png`;
-
-      console.log(
-        `✅ Extracted - ${this.website.toUpperCase()} : ${
-          productDetails.productName
-        } | Price: ${price} | Discount Price: ${discountPrice} | ${discountPercentage}%off`
-      );
 
       return productDetails;
     } catch (error) {
@@ -304,10 +285,16 @@ export class Crawler {
     }
   }
 
-  // @ Private method to check if a product is valid
-  private isProductValid(brand: string, url: string): boolean {
+  // @Private method to check deep validation for brand and URL
+  private checkDeepValidation(productDetails: Product): boolean {
+    const {
+      productUrl,
+      productDetails: { brand, price, discountPrice },
+    } = productDetails;
+
     const isValid =
-      this.alreadyProcessedProducts.has(url) === false &&
+      isValidProductDeal(price, discountPrice, this.maxPrice) &&
+      this.alreadyProcessedProducts.has(productUrl) === false &&
       this.productsByBrand.get(brand) !== -1 &&
       this.productsCount < MAX_PRODUCTS_PER_WEBSITE;
 
@@ -316,16 +303,78 @@ export class Crawler {
 
   // @Private method to fetch products by brand (Not implemented yet)
   private async fetchBrandProducts(brand: string): Promise<void> {
-    // Fetch products by brand using crawlerUtils
-    const brandProducts = await this.crawlerUtils.getBrandProducts(brand);
+    let contextAndPage: Awaited<ReturnType<typeof getContext>> | null = null;
 
-    // If brand products found, insert them
-    if (brandProducts) {
-      this.insertProduct([brandProducts]);
-      console.log(`✅ Fetched additional products for brand: ${brand}`);
+    try {
+      contextAndPage = await getContext(this.browser);
+
+      // Navigate to go current page URL
+      await this.crawlerUtils.navigateToUrl(
+        contextAndPage.page,
+        this.page.url(),
+        true,
+        10000
+      );
+
+      // Extract brand selector
+      const brandSelector = await this.crawlerUtils.getBrandSelector(
+        contextAndPage.page
+      );
+
+      // If brand selector found, click and fetch products
+      if (brandSelector !== null) {
+        // Click the brand selector
+        await brandSelector.click();
+
+        // Wait to load the brand products
+        await this.crawlerUtils.waitForPageLoad(
+          contextAndPage.page,
+          CARD_SELECTOR[this.website],
+          false,
+          5000
+        );
+
+        // Finally extract the products
+        const rawProducts = await contextAndPage.page.$$(
+          CARD_SELECTOR[this.website]
+        );
+
+        // If products found, extract details and insert
+        if (rawProducts.length > 0) {
+          const productDetails = await Promise.all(
+            rawProducts.map(async (product) => {
+              const productDetail = await this.crawlerUtils.extractProductData(
+                product
+              );
+
+              return productDetail && this.checkDeepValidation(productDetail)
+                ? productDetail
+                : null;
+            })
+          ).then(
+            (results) =>
+              results.reduce((acc, val) => {
+                if (val != null) acc.push(val);
+                return acc;
+              }, []) as Product[]
+          );
+
+          // If product details found, than taking screenshot and post processing
+          if (productDetails.length > 0) {
+            // Logic to handle products
+          }
+        }
+      }
+    } catch (error) {
+      console.error(
+        `⚠️  Error fetching products for brand ${brand}: `,
+        (error as Error).message
+      );
+    } finally {
+      if (contextAndPage) {
+        await contextAndPage.page.close();
+        await contextAndPage.context.close();
+      }
     }
-
-    // Block further products from this brand
-    this.productsByBrand.set(brand, -1);
   }
 }

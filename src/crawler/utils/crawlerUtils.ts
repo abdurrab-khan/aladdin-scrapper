@@ -1,14 +1,15 @@
 import { v4 as uuidv4 } from "uuid";
+import type { Browser, ElementHandle, Page } from "playwright";
+
 import getContext from "./getContext.js";
 import { cleanData, hasRequiredDetails } from "./helper.js";
-import type { Browser, ElementHandle, Page } from "playwright";
-import { MAX_PERCENTAGE_DISCOUNT } from "../constants/const.js";
 import { CARD_SELECTOR, PRODUCT_DETAILS } from "../css/css_selectors.js";
 import {
   getClippingForScreenshot,
   getContextOptionsForScreenShot,
   randomDelay,
 } from "./utils.js";
+
 import type {
   E_COMMERCE,
   FlatProduct,
@@ -24,6 +25,38 @@ class CrawlerUtils {
     this.website = website;
     this.browser = browser;
     this.page = page;
+  }
+
+  public async navigateToUrl(
+    page: Page,
+    url: string,
+    showRandomDelay = true,
+    timeout = 60000
+  ): Promise<void> {
+    try {
+      const nRes = await page.goto(url, {
+        timeout,
+        waitUntil: "domcontentloaded",
+      });
+
+      // If navigation fails, return false
+      if (nRes === null || !nRes.ok()) {
+        throw new Error(
+          `🧭 Navigation to ${url} failed with status ${nRes?.status()}`
+        );
+      }
+
+      // Wait for the page to load completely
+      await this.waitForPageLoad(
+        page,
+        CARD_SELECTOR[this.website],
+        showRandomDelay
+      );
+    } catch (error) {
+      const errMsg =
+        (error as Error).message ?? "⚠️ An error occurred during navigation";
+      throw new Error("⚠️ Navigation error: " + errMsg);
+    }
   }
 
   public async extractProductData(
@@ -77,77 +110,6 @@ class CrawlerUtils {
     } catch (error) {
       return null;
     }
-  }
-
-  // Method to fetch products by brand
-  public async getBrandProducts(brand: string): Promise<Product | null> {
-    let contextAndPage: Awaited<ReturnType<typeof getContext>> | null = null;
-
-    try {
-      contextAndPage = await getContext(
-        this.browser,
-        getContextOptionsForScreenShot(this.website)
-      );
-      if (!contextAndPage) return null;
-
-      // Navigate to the current page URL
-      await contextAndPage.page.goto(this.page.url(), {
-        timeout: 30000,
-        waitUntil: "domcontentloaded",
-      });
-
-      // Wait for the page to load completely
-      this.waitForPageLoad(
-        contextAndPage.page,
-        CARD_SELECTOR[this.website],
-        false
-      );
-
-      // Fetch the brand selector element
-      const brandSelectorFetched = await this.getBrandSelector(
-        contextAndPage.page
-      );
-
-      // If brand selector is fetched, proceed to fetch products by brand
-      if (brandSelectorFetched) {
-        await brandSelectorFetched.click(); // Click on the brand selector
-        await this.waitForPageLoad(this.page);
-
-        // Logic to fetch products by brand
-      }
-
-      return null;
-    } catch (error) {
-      console.error(`⚠️ Error fetching products for brand ${brand}:`, error);
-      return null;
-    } finally {
-      if (contextAndPage) {
-        await contextAndPage.page.close();
-        await contextAndPage.context.close();
-      }
-    }
-  }
-
-  // Method to validate whether the product has valid pricing and best deal
-  public isValidProductDeal(
-    price: number,
-    discountPrice: number,
-    maxPrice: number
-  ): boolean {
-    // Calculate discount percentage
-    const discountPercentage = Math.round(
-      ((price - discountPrice) / price) * 100
-    );
-
-    // Validate price, discount price, and discount percentage
-    const isValid =
-      price > 0 &&
-      price < maxPrice &&
-      discountPrice > 0 &&
-      discountPrice < price &&
-      discountPercentage > MAX_PERCENTAGE_DISCOUNT;
-
-    return isValid;
   }
 
   // Method to take screenshot of the product
@@ -245,14 +207,11 @@ class CrawlerUtils {
     }
   }
 
-  // =============== Private Methods ===============
-  private async getBrandSelector(
+  public async getBrandSelector(
     page: Page
   ): Promise<ElementHandle<HTMLElement> | null> {
     try {
-      // Logic to get brand selector
-
-      return null;
+      return "" as unknown as ElementHandle<HTMLElement>;
     } catch (error) {
       console.error("⚠️ Error fetching brand selector:", error);
       return null;

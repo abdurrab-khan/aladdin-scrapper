@@ -13,7 +13,7 @@ export type ProductDetails = {
 export interface Product {
   productId: string;
   productName: string;
-  productDetails?: ProductDetails;
+  productDetails: ProductDetails;
   productCard: string;
   productUrl: string;
   isGrouped: boolean;
