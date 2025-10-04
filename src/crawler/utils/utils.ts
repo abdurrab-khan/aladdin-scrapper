@@ -61,6 +61,39 @@ export function getClippingForScreenshot(website: E_COMMERCE) {
   }
 }
 
+/**
+ * Get the clipping for grouped screenshot based on the layout
+ * @param bounding - bounding box of the product element
+ * @param totalProducts - total number of products in the group
+ * @returns
+ */
+export function getClippingForGroupedScreenshot(
+  bounding: {
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+  },
+  totalProducts: number
+) {
+  // Check Vertical or Horizontal Layout
+  if (bounding.height > bounding.width) {
+    return {
+      x: bounding.x,
+      y: bounding.y,
+      height: bounding.height,
+      width: bounding.width * totalProducts,
+    };
+  } else {
+    return {
+      x: bounding.x,
+      y: bounding.y,
+      height: bounding.height * totalProducts,
+      width: bounding.width,
+    };
+  }
+}
+
 // ============== PRODUCT RELATED HELPER FUNCTIONS ==============
 export function isValidProductDeal(
   price: number,

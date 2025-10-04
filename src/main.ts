@@ -19,7 +19,7 @@ async function main() {
 
     const products = await scrapeProducts(urls);
 
-    console.log("Products:", products[0]);
+    console.log("Products:", products);
     console.log(`Total products scraped: ${products[0].length}`);
   } catch (error) {
     console.error("❌ Error in main:", (error as Error).message ?? error);

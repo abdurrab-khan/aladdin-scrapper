@@ -93,31 +93,10 @@ export class Crawler {
       this.insertProduct(productDetails);
     } catch (error) {
       console.error(
-        `⚠️ Error extracting product details from ${this.website}:`,
+        `⚠️  Error extracting product details from ${this.website}:`,
         error
       );
     }
-  }
-
-  // @Method to insert products to the main list
-  protected insertProduct(product: Product[] | null) {
-    // If no products, return
-    if (product && product.length > 0) {
-      const availableSlots = MAX_PRODUCTS_PER_WEBSITE - this.productsCount;
-
-      // If more products than available slots, slice the array
-      if (product.length > availableSlots)
-        product = product.slice(0, availableSlots);
-
-      this.products.push(...product); // Insert products to the main list
-      this.productsCount += product.length; // Update products count
-    }
-
-    // Check for empty page threshold
-    this.increaseEmptyPageThreshold(product);
-
-    // Check if max products reached
-    if (this.productsCount >= MAX_PRODUCTS_PER_WEBSITE) this.isDone = true;
   }
 
   // @Method to click to the next page button
@@ -233,10 +212,31 @@ export class Crawler {
         );
       }
 
-      return productDetails;
+      return null;
     } catch (error) {
       return null;
     }
+  }
+
+  // @Private to insert products to the main list
+  private insertProduct(product: Product[] | null) {
+    // If no products, return
+    if (product && product.length > 0) {
+      const availableSlots = MAX_PRODUCTS_PER_WEBSITE - this.productsCount;
+
+      // If more products than available slots, slice the array
+      if (product.length > availableSlots)
+        product = product.slice(0, availableSlots);
+
+      this.products.push(...product); // Insert products to the main list
+      this.productsCount += product.length; // Update products count
+    }
+
+    // Check for empty page threshold
+    this.increaseEmptyPageThreshold(product);
+
+    // Check if max products reached
+    if (this.productsCount >= MAX_PRODUCTS_PER_WEBSITE) this.isDone = true;
   }
 
   // @Private method things after successfully extracting a product
@@ -316,9 +316,12 @@ export class Crawler {
         10000
       );
 
+      console.log("Fetching brand:", brand);
+
       // Extract brand selector
       const brandSelector = await this.crawlerUtils.getBrandSelector(
-        contextAndPage.page
+        contextAndPage.page,
+        brand
       );
 
       // If brand selector found, click and fetch products
@@ -334,35 +337,30 @@ export class Crawler {
           5000
         );
 
+        console.log("Almost there...");
+
         // Finally extract the products
         const rawProducts = await contextAndPage.page.$$(
           CARD_SELECTOR[this.website]
         );
 
-        // If products found, extract details and insert
-        if (rawProducts.length > 0) {
-          const productDetails = await Promise.all(
-            rawProducts.map(async (product) => {
-              const productDetail = await this.crawlerUtils.extractProductData(
-                product
-              );
+        // Final extraction of product details
+        const products = await this.crawlerUtils.getBrandProducts(
+          this.maxPrice,
+          rawProducts.slice(0, MAX_PRODUCT_BY_BRAND),
+          contextAndPage.page
+        );
 
-              return productDetail && this.checkDeepValidation(productDetail)
-                ? productDetail
-                : null;
-            })
-          ).then(
-            (results) =>
-              results.reduce((acc, val) => {
-                if (val != null) acc.push(val);
-                return acc;
-              }, []) as Product[]
+        // Insert the products if found
+        if (products) {
+          console.log(`Found products for brand ${brand}: `, products);
+          products["productUrl"] = contextAndPage.page.url();
+
+          this.insertProduct([products]);
+
+          console.log(
+            `\n🛍️  Fetched products for brand ${brand} from ${this.website}\n`
           );
-
-          // If product details found, than taking screenshot and post processing
-          if (productDetails.length > 0) {
-            // Logic to handle products
-          }
         }
       }
     } catch (error) {

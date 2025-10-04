@@ -5,8 +5,10 @@ import getContext from "./getContext.js";
 import { cleanData, hasRequiredDetails } from "./helper.js";
 import { CARD_SELECTOR, PRODUCT_DETAILS } from "../css/css_selectors.js";
 import {
+  getClippingForGroupedScreenshot,
   getClippingForScreenshot,
   getContextOptionsForScreenShot,
+  isValidProductDeal,
   randomDelay,
 } from "./utils.js";
 
@@ -16,6 +18,7 @@ import type {
   Product,
   ProductSelector,
 } from "../../types/index.js";
+import { getBrandSelectors } from "./utility.js";
 class CrawlerUtils {
   private browser: Browser;
   private page: Page;
@@ -208,13 +211,140 @@ class CrawlerUtils {
   }
 
   public async getBrandSelector(
-    page: Page
-  ): Promise<ElementHandle<HTMLElement> | null> {
+    page: Page,
+    brand: string
+  ): Promise<ElementHandle<HTMLElement | SVGElement> | null> {
     try {
-      return "" as unknown as ElementHandle<HTMLElement>;
+      const brandSelectorFunc = getBrandSelectors(this.website);
+
+      if (brandSelectorFunc) {
+        return await brandSelectorFunc(page, brand);
+      }
+
+      return null;
     } catch (error) {
       console.error("⚠️ Error fetching brand selector:", error);
       return null;
+    }
+  }
+
+  public async getBrandProducts(
+    max_price: number,
+    products: ElementHandle<SVGElement | HTMLElement>[],
+    page: Page
+  ): Promise<Product | null> {
+    if (!products || products.length === 0) return null;
+
+    // Extract product details concurrently
+    const productDetails = await Promise.all(
+      products.map(async (product, i) => {
+        const details = await this.extractProductData(product);
+
+        console.log("Extracted Details:", details);
+
+        if (!details) {
+          // At-least 3 valid products are required to proceed
+          if (i < 3) throw new Error("No valid products found for the brand");
+          return null; // Skip invalid product
+        }
+
+        // Check if the product is a valid deal
+        const {
+          productDetails: { price, discountPrice },
+        } = details;
+
+        if (!isValidProductDeal(price, discountPrice, max_price)) {
+          // At-least 3 valid products are required to proceed
+          if (i < 3) throw new Error("No valid products found for the brand");
+          return null; // Skip invalid deal
+        }
+        return details;
+      })
+    )
+      .then((results) =>
+        results.reduce((acc, val) => {
+          if (val != null) acc.push(val);
+          return acc;
+        }, [] as Product[])
+      )
+      .catch((error) => {
+        console.error("⚠️ Error extracting product details:", error);
+        return [];
+      });
+
+    if (productDetails.length >= 3) {
+      productDetails.sort((a, b) => {
+        const priceA =
+          a.productDetails.discountPrice || a.productDetails.price || Infinity;
+        const priceB =
+          b.productDetails.discountPrice || b.productDetails.price || Infinity;
+        return priceA - priceB;
+      });
+
+      const fileName = `./products/group_${this.website}_${
+        productDetails[0]?.productDetails.brand
+      }_${Date.now()}`;
+
+      // Let's take a screen shot
+      if (
+        await this.getScreenshotForProduct(
+          page,
+          fileName,
+          productDetails.length,
+          products[0]
+        )
+      ) {
+        return {
+          productId: uuidv4(),
+          isGrouped: true,
+          productCard: `${fileName}.png`,
+          productName: productDetails[0]?.productDetails.brand + " Products",
+          productUrl: "",
+          productDetails: {
+            brand: productDetails[0]?.productDetails.brand || "Various",
+            price: productDetails[0]?.productDetails.price || 0,
+            discountPrice: productDetails[0]?.productDetails.discountPrice || 0,
+            image: productDetails.map((p) => p.productDetails.image as string),
+          },
+        };
+      }
+    }
+
+    return null;
+  }
+
+  public async getScreenshotForProduct(
+    page: Page,
+    filePath: string,
+    totalProducts: number,
+    product: ElementHandle<SVGElement | HTMLElement> | undefined
+  ): Promise<boolean> {
+    if (!product) return false;
+
+    const boundingBox = await product.boundingBox();
+
+    // If bounding box is not available, return false
+    if (!boundingBox) return false;
+
+    try {
+      const clipped = getClippingForGroupedScreenshot(
+        boundingBox,
+        totalProducts
+      );
+
+      await page.screenshot({
+        path: `${filePath}.png`,
+        type: "png",
+        caret: "hide",
+        fullPage: false,
+        animations: "disabled",
+        timeout: 30000,
+        clip: clipped,
+      });
+
+      return true;
+    } catch (error) {
+      return false;
     }
   }
 }

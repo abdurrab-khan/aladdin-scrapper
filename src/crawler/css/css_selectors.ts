@@ -7,10 +7,8 @@ type ProductDetailsType = Record<E_COMMERCE, Record<ProductSelector, string>>;
  * CSS Selectors for selecting product cards.
  */
 export const CARD_SELECTOR: CardSelectorType = {
-  amazon:
-    "div.puis-card-container.s-card-container, .a-column.a-span4.dp_aib_left_column_t1",
-  flipkart:
-    "div._1sdMkc.LFEi7Z, div.tUxRFH, div.slAVV4, div.DOjaWF.gdgoEp.col-8-12",
+  amazon: "div.s-result-item.s-asin[id][data-uuid]",
+  flipkart: "div.cPHDOP ._75nlfW div[data-id]",
 };
 
 /**
@@ -49,14 +47,15 @@ export const NEXT_BUTTON_SELECTOR: Record<E_COMMERCE, string> = {
   flipkart: ".WSL9JP ._9QVEpD",
 };
 
-export const FLIPKART_FETCH_BRAND_PRODUCTS: Record<string, string> = {
-  mainSection: `section.\-5qqlC._2OLUF3`,
-  sectionText: `section.\-5qqlC._2OLUF3 div.fxf7w6.rgHxCQ`,
+export const FLIPKART_FETCH_BRAND_PRODUCTS = {
+  mainSection: "._2OLUF3",
+  sectionTitle: "._2OLUF3 div.fxf7w6.rgHxCQ",
   selector: "div.QCKZip.hpLdC3",
   input: "div.SDsN9S input.XPD6hh[placeholder='Search Brand']",
 };
 
-export const AMAZON_FETCH_BRAND_PRODUCTS: Record<string, string> = {
+export const AMAZON_FETCH_BRAND_PRODUCTS = {
   see_more: "div#brandsRefinements div.a-expander-extend-container",
   selector: "div#brandsRefinements li.a-spacing-micro",
+  selectionText: ".a-size-base.a-color-base",
 };
