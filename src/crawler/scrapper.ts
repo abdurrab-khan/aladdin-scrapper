@@ -8,7 +8,7 @@ import getBrowser from "./utils/getBrowser.js";
 export async function scrapeProducts(
   urls: Array<[string, E_COMMERCE]>
 ): Promise<any> {
-  const browser = await getBrowser({ headless: false });
+  const browser = await getBrowser({ headless: true });
   const redis = null; // TODO: Integrate Redis if needed
 
   try {

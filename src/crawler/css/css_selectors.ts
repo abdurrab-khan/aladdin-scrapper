@@ -49,7 +49,7 @@ export const NEXT_BUTTON_SELECTOR: Record<E_COMMERCE, string> = {
 
 export const FLIPKART_FETCH_BRAND_PRODUCTS = {
   mainSection: "._2OLUF3",
-  sectionTitle: "._2OLUF3 div.fxf7w6.rgHxCQ",
+  sectionTitle: ".fxf7w6.rgHxCQ",
   selector: "div.QCKZip.hpLdC3",
   input: "div.SDsN9S input.XPD6hh[placeholder='Search Brand']",
 };

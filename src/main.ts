@@ -1,4 +1,3 @@
-import { scrapeProducts } from "./crawler/scrapper.js";
 import type { E_COMMERCE } from "./types/index.js";
 
 async function main() {
@@ -17,10 +16,10 @@ async function main() {
       // ["https://www.amazon.in/s?k=jeans", "amazon"],
     ];
 
-    const products = await scrapeProducts(urls);
+    // const products = await scrapeProducts(urls);
 
-    console.log("Products:", products);
-    console.log(`Total products scraped: ${products[0].length}`);
+    // console.log("Products:", products[0]);
+    // console.log(`Total products scraped: ${products[0].length}`);
   } catch (error) {
     console.error("❌ Error in main:", (error as Error).message ?? error);
   }

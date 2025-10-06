@@ -14,10 +14,6 @@ const getFlipkartBrandSelector = async (
     const sections =
       (await page.$$(FLIPKART_FETCH_BRAND_PRODUCTS["mainSection"])) || [];
 
-    const brand = await Promise.all(
-      sections.map(async (section) => await section.innerHTML())
-    );
-
     const brandSection = sections.find(async (section) => {
       const titleElement = await section.$(
         FLIPKART_FETCH_BRAND_PRODUCTS["sectionTitle"]

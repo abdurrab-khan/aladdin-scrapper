@@ -11,15 +11,11 @@ export class AmazonService extends Crawler {
 
   async fetchProducts(): Promise<void> {
     if (this.pageNumber === 0) {
-      const navigated = await this.navigateToUrl(this.url); // Navigate to the initial URL
-
-      // Stop if navigation fails
-      if (!navigated) {
-        console.log("🧭 Navigation failed in amazon.");
-        this.isDone = true;
-      }
+      // First page, navigate to the URL
+      await this.navigateToUrl(this.url); // Navigate to the initial URL
     } else {
-      await this.clickToNextPageBtn(); // Click to the next page for subsequent pages
+      // Not the first page, click to go to the next page
+      await this.clickToNextPageBtn();
     }
 
     await this.extractProducts();

@@ -21,7 +21,7 @@ export class Crawler {
 
   protected pageNumber: number = 0;
 
-  private page: Page;
+  public page: Page;
   private website: E_COMMERCE;
   private productsCount: number = 0;
   private emptyPageThreshold: number = 3;
@@ -40,14 +40,13 @@ export class Crawler {
   }
 
   // @Navigate to the given URL
-  protected async navigateToUrl(url: string): Promise<boolean> {
+  protected async navigateToUrl(url: string): Promise<void> {
     try {
       // Navigate to the URL
       await this.crawlerUtils.navigateToUrl(this.page, url);
 
-      this.pageNumber = 1; // Set to first page after navigation
-
-      return true;
+      // Set to first page after navigation
+      this.pageNumber = 1;
     } catch (error) {
       const errMsg =
         error instanceof Error
@@ -55,16 +54,15 @@ export class Crawler {
           : "Unknown error during navigation";
 
       console.error(`⚠️ Error navigating to ${this.website}:`, errMsg);
-      return false;
+
+      // Mark as done if navigation fails
+      this.isDone = true;
     }
   }
 
   // @Extract product details from the card element
   protected async extractProducts(): Promise<void> {
-    // If already done, return
-    if (this.isDone) {
-      return;
-    }
+    if (this.isDone) return; // If already done, return
 
     const cardSelector = CARD_SELECTOR[this.website];
 
@@ -147,7 +145,6 @@ export class Crawler {
     }
   }
 
-  // ========================= PRIVATE METHODS =========================
   // @Private method to extract the product all details
   private async extractProductDetails(
     product: ElementHandle<SVGElement | HTMLElement>
@@ -210,6 +207,8 @@ export class Crawler {
             productDetails.productName
           } | Price: ${price} | Discount Price: ${discountPrice} | ${discountPercentage}%off`
         );
+
+        return productDetails;
       }
 
       return null;
@@ -257,9 +256,9 @@ export class Crawler {
     }
 
     // If products by brand exceeded 5 then fetch more products by brand
-    if (this.productsByBrand.get(brand) === MAX_PRODUCT_BY_BRAND) {
-      await this.fetchBrandProducts(brand);
-    }
+    // if (this.productsByBrand.get(brand) === MAX_PRODUCT_BY_BRAND) {
+    //   await this.fetchBrandProducts(brand);
+    // }
 
     // Mark this product as processed
     this.alreadyProcessedProducts.add(url);
@@ -315,8 +314,6 @@ export class Crawler {
         true,
         10000
       );
-
-      console.log("Fetching brand:", brand);
 
       // Extract brand selector
       const brandSelector = await this.crawlerUtils.getBrandSelector(
