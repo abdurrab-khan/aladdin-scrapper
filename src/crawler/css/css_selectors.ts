@@ -1,12 +1,15 @@
 import type { E_COMMERCE, ProductSelector } from "../../types/index.js";
 
 type CardSelectorType = Record<E_COMMERCE, string>;
-type ProductDetailsType = Record<E_COMMERCE, Record<ProductSelector, string>>;
+type ProductDetailsType = Record<
+  E_COMMERCE,
+  Record<ProductSelector | "image", string>
+>;
 
 /**
  * CSS Selectors for selecting product cards.
  */
-export const CARD_SELECTOR: CardSelectorType = {
+export const PRODUCT_CARD_SELECTOR: CardSelectorType = {
   amazon: "div.s-result-item.s-asin[id][data-uuid]",
   flipkart: "div.cPHDOP ._75nlfW div[data-id]",
 };
@@ -16,7 +19,7 @@ export const CARD_SELECTOR: CardSelectorType = {
  */
 export const PRODUCT_DETAILS: ProductDetailsType = {
   amazon: {
-    productName: "h2.a-color-base.a-text-normal span",
+    name: "h2.a-color-base.a-text-normal span",
     price: "span.a-price.a-text-price[data-a-strike='true'] span.a-offscreen",
     discountPrice: "span.a-price span.a-price-whole",
     rating:
@@ -25,17 +28,17 @@ export const PRODUCT_DETAILS: ProductDetailsType = {
       "div.a-spacing-top-micro[data-cy='reviews-block'] span.puis-normal-weight-text.s-underline-text",
     brand: "h2.a-size-mini.s-line-clamp-1 span.a-size-base-plus.a-color-base",
     image: "div.s-product-image-container img",
-    productUrl: "div.s-product-image-container a.a-link-normal",
+    url: "div.s-product-image-container a.a-link-normal",
   },
   flipkart: {
-    productName: ".KzDlHZ, .WKTcLC, .wjcEIp",
+    name: ".KzDlHZ, .WKTcLC, .wjcEIp",
     price: ".yRaY8j",
     discountPrice: ".Nx9bqj",
     rating: ".XQDdHH",
     reviews: ".Wphh3N",
     brand: ".syl9yP",
     image: ".gqcSqV.YGE0gZ img, ._4WELSP img",
-    productUrl: "a.VJA3rP, a.rPDeLR, a.CGtC98",
+    url: "a.VJA3rP, a.rPDeLR, a.CGtC98",
   },
 };
 
@@ -55,7 +58,8 @@ export const FLIPKART_FETCH_BRAND_PRODUCTS = {
 };
 
 export const AMAZON_FETCH_BRAND_PRODUCTS = {
-  see_more: "div#brandsRefinements div.a-expander-extend-container",
-  selector: "div#brandsRefinements li.a-spacing-micro",
+  seeMore:
+    "div#brandsRefinements div.a-expander-extend-container a[aria-label='See more, Brands']",
+  selector: "div#brandsRefinements li.a-spacing-micro a.s-navigation-item",
   selectionText: ".a-size-base.a-color-base",
 };

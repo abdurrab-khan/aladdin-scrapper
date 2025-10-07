@@ -1,9 +1,13 @@
 import { v4 as uuidv4 } from "uuid";
 import type { Browser, ElementHandle, Page } from "playwright";
 
-import getContext from "./getContext.js";
 import { cleanData, hasRequiredDetails } from "./helper.js";
-import { CARD_SELECTOR, PRODUCT_DETAILS } from "../css/css_selectors.js";
+import {
+  AMAZON_FETCH_BRAND_PRODUCTS,
+  FLIPKART_FETCH_BRAND_PRODUCTS,
+  PRODUCT_CARD_SELECTOR,
+  PRODUCT_DETAILS,
+} from "../css/css_selectors.js";
 import {
   getClippingForGroupedScreenshot,
   getClippingForScreenshot,
@@ -18,7 +22,8 @@ import type {
   Product,
   ProductSelector,
 } from "../../types/index.js";
-import { getBrandSelectors } from "./utility.js";
+import getContext from "./browser/getContext.js";
+
 class CrawlerUtils {
   private browser: Browser;
   private page: Page;
@@ -52,7 +57,7 @@ class CrawlerUtils {
       // Wait for the page to load completely
       await this.waitForPageLoad(
         page,
-        CARD_SELECTOR[this.website],
+        PRODUCT_CARD_SELECTOR[this.website],
         showRandomDelay
       );
     } catch (error) {
@@ -95,20 +100,22 @@ class CrawlerUtils {
       ) as { [T in ProductSelector]: FlatProduct[T] };
 
       return {
-        productId: uuidv4(),
-        productName: productDetails.productName,
-        productUrl: productDetails.productUrl,
-        productCard: "",
-        isGrouped: false,
-        productDetails: {
-          brand:
-            productDetails.brand ?? productDetails.productName.split(" ")[0],
+        id: uuidv4(),
+        name: productDetails.name,
+        url: productDetails.url,
+        details: {
+          brand: productDetails.brand ?? productDetails.name.split(" ")[0],
           price: productDetails.price,
           discountPrice: productDetails.discountPrice,
           rating: productDetails?.rating,
           reviews: productDetails?.reviews,
-          image: productDetails.image,
         },
+        images: {
+          card: "",
+          image: productDetails.image ?? null,
+          fullPage: null,
+        },
+        isGrouped: false,
       } as Product;
     } catch (error) {
       return null;
@@ -118,57 +125,71 @@ class CrawlerUtils {
   // Method to take screenshot of the product
   public async takeScreenshot(
     fileName: string,
-    product: ElementHandle<SVGElement | HTMLElement>,
-    productUrl: string,
-    isFullPage = false
-  ): Promise<boolean> {
+    screenShotElement?: Page | ElementHandle<SVGElement | HTMLElement>,
+    productUrl?: string,
+    screenShotConfig:
+      | Parameters<ElementHandle["screenshot"]>[0]
+      | NonNullable<Parameters<Page["screenshot"]>[0]> = {}
+  ): Promise<string | null> {
+    const fullFilePath = `./products/${fileName}.png`;
     let contextAndPage: Awaited<ReturnType<typeof getContext>> | null = null;
 
     try {
-      // Logic to take screenshot
-      if (isFullPage) {
-        const selector = CARD_SELECTOR[this.website];
+      // If full page screenshot is required
+      if (productUrl) {
+        // Create a new context and page for taking screenshot
         contextAndPage = await getContext(
           this.browser,
           getContextOptionsForScreenShot(this.website)
         );
 
-        const navigate = await contextAndPage.page.goto(productUrl, {
-          timeout: 30000,
-          waitUntil: "domcontentloaded",
-        });
-        if (!navigate || !contextAndPage.page) return false;
+        // Navigate to the product URL
+        await this.navigateToUrl(contextAndPage.page, productUrl, false, 20000);
 
         // Wait for the page to load completely
-        await this.waitForPageLoad(contextAndPage.page, selector, true, 60000);
+        await this.waitForPageLoad(
+          contextAndPage.page,
+          PRODUCT_CARD_SELECTOR[this.website],
+          true,
+          10000
+        );
 
-        // Taking screenshot of the full page
-        await contextAndPage.page.screenshot({
-          path: `${fileName}.png`,
-          type: "png",
-          caret: "hide",
-          fullPage: false,
-          animations: "disabled",
-          clip: getClippingForScreenshot(this.website),
-          timeout: 30000,
-        });
-
-        return true;
+        // Adding the config for clipping
+        (screenShotConfig as NonNullable<Parameters<Page["screenshot"]>[0]>)[
+          "clip"
+        ] = getClippingForScreenshot(this.website);
       }
 
-      // Taking screenshot of the product element
-      await product.screenshot({
-        path: `${fileName}.png`,
+      // If product element is not provided, use the one from the new context
+      if (!screenShotElement && !contextAndPage?.page) {
+        console.error(
+          `⚠️ No product or context available for screenshot: ${fileName}`
+        );
+        return null;
+      }
+
+      // Take screenshot of the product or the full page
+      const buffer = await (
+        screenShotElement ?? contextAndPage?.page
+      )?.screenshot({
+        path: fullFilePath,
         type: "png",
         caret: "hide",
         animations: "disabled",
-        timeout: 30000,
+        timeout: 10000,
+        ...screenShotConfig,
       });
 
-      return true;
+      // If screenshot fails, return null
+      if (!buffer) return null;
+
+      return fullFilePath;
     } catch (error) {
-      console.error(`⚠️ Error taking screenshot for ${fileName}:`, error);
-      return false;
+      console.error(
+        `⚠️ Error taking screenshot for ${fileName}:`,
+        (error as Error).message ?? " error);"
+      );
+      return null;
     } finally {
       // Ensure context and page are closed if they were opened
       if (contextAndPage) {
@@ -196,7 +217,7 @@ class CrawlerUtils {
       // Wait for the specific selector to be attached to the DOM
       if (selector) {
         await targetPage.waitForSelector(selector, {
-          state: "attached",
+          state: "visible",
           timeout,
         });
       }
@@ -215,10 +236,10 @@ class CrawlerUtils {
     brand: string
   ): Promise<ElementHandle<HTMLElement | SVGElement> | null> {
     try {
-      const brandSelectorFunc = getBrandSelectors(this.website);
-
-      if (brandSelectorFunc) {
-        return await brandSelectorFunc(page, brand);
+      if (this.website === "amazon") {
+        return await this.getAmazonBrandSelector(page, brand);
+      } else if (this.website === "flipkart") {
+        return await this.getFlipkartBrandSelector(page, brand);
       }
 
       return null;
@@ -229,9 +250,9 @@ class CrawlerUtils {
   }
 
   public async getBrandProducts(
-    max_price: number,
+    page: Page,
     products: ElementHandle<SVGElement | HTMLElement>[],
-    page: Page
+    max_price: number
   ): Promise<Product | null> {
     if (!products || products.length === 0) return null;
 
@@ -239,8 +260,6 @@ class CrawlerUtils {
     const productDetails = await Promise.all(
       products.map(async (product, i) => {
         const details = await this.extractProductData(product);
-
-        console.log("Extracted Details:", details);
 
         if (!details) {
           // At-least 3 valid products are required to proceed
@@ -268,44 +287,59 @@ class CrawlerUtils {
         }, [] as Product[])
       )
       .catch((error) => {
-        console.error("⚠️ Error extracting product details:", error);
+        console.error(
+          "⚠️ Error extracting product details:",
+          (error as Error).message ?? " error"
+        );
         return [];
       });
 
     if (productDetails.length >= 3) {
       productDetails.sort((a, b) => {
-        const priceA =
-          a.productDetails.discountPrice || a.productDetails.price || Infinity;
-        const priceB =
-          b.productDetails.discountPrice || b.productDetails.price || Infinity;
+        const priceA = a.details.discountPrice || a.details.price || Infinity;
+        const priceB = b.details.discountPrice || b.details.price || Infinity;
+
         return priceA - priceB;
       });
 
-      const fileName = `./products/group_${this.website}_${
-        productDetails[0]?.productDetails.brand
+      const fileName = `group_${this.website}_${
+        productDetails[0]?.details.brand
       }_${Date.now()}`;
 
+      // Get bounding box of the first product to determine screenshot area
+      const boundingBox = await products[0]?.boundingBox();
+      if (!boundingBox) return null;
+
+      const screenShotPath = await this.takeScreenshot(fileName, page, "", {
+        clip: getClippingForGroupedScreenshot(
+          boundingBox,
+          productDetails.length
+        ),
+      });
+
       // Let's take a screen shot
-      if (
-        await this.getScreenshotForProduct(
-          page,
-          fileName,
-          productDetails.length,
-          products[0]
-        )
-      ) {
+      if (screenShotPath) {
         return {
-          productId: uuidv4(),
-          isGrouped: true,
-          productCard: `${fileName}.png`,
-          productName: productDetails[0]?.productDetails.brand + " Products",
-          productUrl: "",
-          productDetails: {
-            brand: productDetails[0]?.productDetails.brand || "Various",
-            price: productDetails[0]?.productDetails.price || 0,
-            discountPrice: productDetails[0]?.productDetails.discountPrice || 0,
-            image: productDetails.map((p) => p.productDetails.image as string),
+          id: uuidv4(),
+          name: productDetails[0]?.details.brand + " Products",
+          url: "",
+          details: {
+            brand: productDetails[0]?.details.brand || "Various",
+            price: productDetails[0]?.details.price || 0,
+            discountPrice: productDetails[0]?.details.discountPrice || 0,
+            discountPercent: Math.round(
+              (((productDetails[0]?.details.price || 0) -
+                (productDetails[0]?.details.discountPrice || 0)) /
+                (productDetails[0]?.details.price || 1)) *
+                100
+            ),
           },
+          images: {
+            card: screenShotPath,
+            image: productDetails.map((p) => p.images.image as string),
+            fullPage: null,
+          },
+          isGrouped: true,
         };
       }
     }
@@ -313,38 +347,85 @@ class CrawlerUtils {
     return null;
   }
 
-  public async getScreenshotForProduct(
+  private async getFlipkartBrandSelector(
     page: Page,
-    filePath: string,
-    totalProducts: number,
-    product: ElementHandle<SVGElement | HTMLElement> | undefined
-  ): Promise<boolean> {
-    if (!product) return false;
-
-    const boundingBox = await product.boundingBox();
-
-    // If bounding box is not available, return false
-    if (!boundingBox) return false;
-
+    brand: string
+  ): Promise<ElementHandle<HTMLElement | SVGElement> | null> {
     try {
-      const clipped = getClippingForGroupedScreenshot(
-        boundingBox,
-        totalProducts
-      );
+      const sections =
+        (await page.$$(FLIPKART_FETCH_BRAND_PRODUCTS["mainSection"])) || [];
 
-      await page.screenshot({
-        path: `${filePath}.png`,
-        type: "png",
-        caret: "hide",
-        fullPage: false,
-        animations: "disabled",
-        timeout: 30000,
-        clip: clipped,
+      const brandSection = sections.find(async (section) => {
+        const titleElement = await section.$(
+          FLIPKART_FETCH_BRAND_PRODUCTS["sectionTitle"]
+        );
+
+        const text = await titleElement?.textContent();
+        return text?.trim().toLowerCase().includes("brand");
       });
 
-      return true;
+      if (brandSection) {
+        // Expand the brand section if it's collapsible
+        await brandSection.click();
+
+        const inputElement = await brandSection.$(
+          FLIPKART_FETCH_BRAND_PRODUCTS["input"]
+        );
+
+        if (inputElement) {
+          await inputElement.fill(brand);
+
+          // Find all brand selectors
+          const allBrandSelectors = await brandSection.$$(
+            FLIPKART_FETCH_BRAND_PRODUCTS["selector"]
+          );
+
+          if (allBrandSelectors && allBrandSelectors.length > 0) {
+            return allBrandSelectors[0] || null;
+          }
+        }
+      }
+
+      return null;
     } catch (error) {
-      return false;
+      console.error("⚠️ Error fetching flipkart brand selector:", error);
+      return null;
+    }
+  }
+
+  private async getAmazonBrandSelector(
+    page: Page,
+    brand: string
+  ): Promise<ElementHandle<HTMLElement | SVGElement> | null> {
+    try {
+      const seeMoreBtn = await page.$(AMAZON_FETCH_BRAND_PRODUCTS["seeMore"]);
+
+      if (seeMoreBtn) {
+        // Click to expand the brand list
+        await seeMoreBtn.click();
+
+        const allBrandSelectors = await page.$$(
+          AMAZON_FETCH_BRAND_PRODUCTS["selector"]
+        );
+
+        // Iterate through each brand selector to find the matching brand
+        for (const brandSelector of allBrandSelectors) {
+          const text = (await brandSelector.textContent())
+            ?.trim()
+            .toLowerCase();
+
+          // Create a case-insensitive regex to match the brand
+          const matchRegex = new RegExp(brand, "i");
+          if (matchRegex.test(text || "")) {
+            return brandSelector;
+          }
+        }
+      }
+
+      return null;
+    } catch (error) {
+      console.error("⚠️ Error fetching amazon brand selector:", error);
+      return null;
     }
   }
 }

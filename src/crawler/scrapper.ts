@@ -1,6 +1,6 @@
 import type { E_COMMERCE } from "../types/index.js";
 import productsHunter from "./services/productHunter.js";
-import getBrowser from "./utils/getBrowser.js";
+import getBrowser from "./utils/browser/getBrowser.js";
 
 /**
  * Scrape products from the given URL and e-commerce website.

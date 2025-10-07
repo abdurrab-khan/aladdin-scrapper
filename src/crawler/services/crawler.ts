@@ -1,19 +1,23 @@
 import type { Browser, ElementHandle, Page } from "playwright";
 
-import getContext from "../utils/getContext.js";
 import CrawlerUtils from "../utils/crawlerUtils.js";
 import { isValidProductDeal } from "../utils/utils.js";
 import type { E_COMMERCE, Product } from "../../types/index.js";
 
-import { CARD_SELECTOR, NEXT_BUTTON_SELECTOR } from "../css/css_selectors.js";
+import {
+  NEXT_BUTTON_SELECTOR,
+  PRODUCT_CARD_SELECTOR,
+} from "../css/css_selectors.js";
 import {
   MAX_EMPTY_PAGES_ALLOWED,
   MAX_PERCENTAGE_DISCOUNT_BRAND,
   MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT,
-  MAX_PRODUCT_BY_BRAND,
+  MAX_PRODUCTS_BY_BRAND,
+  MAX_PRODUCTS_BY_BRAND_COUNT,
   MAX_PRODUCTS_PER_WEBSITE,
   MIN_PRODUCTS_PER_PAGE,
 } from "../constants/const.js";
+import getContext from "../utils/browser/getContext.js";
 
 export class Crawler {
   public products: Product[] = [];
@@ -64,7 +68,7 @@ export class Crawler {
   protected async extractProducts(): Promise<void> {
     if (this.isDone) return; // If already done, return
 
-    const cardSelector = CARD_SELECTOR[this.website];
+    const cardSelector = PRODUCT_CARD_SELECTOR[this.website];
 
     try {
       const products = await this.page.$$(cardSelector);
@@ -151,64 +155,55 @@ export class Crawler {
   ): Promise<Product | null> {
     try {
       // If product details extraction failed, return null
-      const productDetails = await this.crawlerUtils.extractProductData(
-        product
-      );
+      const productData = await this.crawlerUtils.extractProductData(product);
 
       // If product details found, process further
-      if (productDetails && this.checkDeepValidation(productDetails)) {
-        const { price, discountPrice } = productDetails?.productDetails;
-
-        // Calculate discount percentage
-        const discountPercentage = Math.floor(
-          ((price - discountPrice) / price) * 100
-        );
-
+      if (productData && this.checkDeepValidation(productData)) {
         // Taking screen shot
-        const fileName = `./products/${this.website}-${productDetails.productId}`;
+        const fileName = `./products/${this.website}-${productData.id}`;
         const takeFullPageScreenShot =
-          discountPercentage >= MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT;
+          productData.details.discountPercent >=
+          MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT;
 
-        const takeScreenShot = await this.crawlerUtils.takeScreenshot(
+        const cardScreenShot = await this.crawlerUtils.takeScreenshot(
           fileName,
-          product,
-          productDetails.productUrl,
-          takeFullPageScreenShot
+          product
         );
+        let fullPageScreenShot: string | null = null;
 
-        // If screenshot failed
-        if (!takeScreenShot) {
-          if (takeFullPageScreenShot) {
-            // Try taking full page screenshot if not already tried
-            const fullPageScreenShot = await this.crawlerUtils.takeScreenshot(
-              fileName,
-              product,
-              productDetails.productUrl
-            );
+        // If high discount, take full page screenshot
+        if (takeFullPageScreenShot) {
+          // Try taking full page screenshot if not already tried
+          fullPageScreenShot = await this.crawlerUtils.takeScreenshot(
+            fileName,
+            undefined,
+            productData.url
+          );
+        }
 
-            if (!fullPageScreenShot) return null;
-          }
-
+        if (!cardScreenShot && !fullPageScreenShot) {
+          console.warn(
+            `⚠️  Failed to take screenshot for product: ${productData.name} (${productData.url})`
+          );
           return null;
         }
 
-        // Post process the product
-        await this.postProcessProduct(
-          productDetails.productDetails?.brand!,
-          productDetails.productUrl,
-          discountPercentage
-        );
+        productData["images"]["card"] = `${fileName}.png`;
+        productData["images"]["fullPage"] = fullPageScreenShot ?? null;
 
-        // Set the product card path
-        productDetails["productCard"] = `${fileName}.png`;
+        const { brand, price, discountPrice, discountPercent } =
+          productData.details;
 
         console.log(
           `✅ Extracted - ${this.website.toUpperCase()} : ${
-            productDetails.productName
-          } | Price: ${price} | Discount Price: ${discountPrice} | ${discountPercentage}%off`
+            productData.name
+          } | Price: ${price} | Discount Price: ${discountPrice} | ${discountPercent}%off`
         );
 
-        return productDetails;
+        // Post process the product
+        await this.postProcessProduct(brand, productData.url, discountPercent);
+
+        return productData;
       }
 
       return null;
@@ -244,21 +239,28 @@ export class Crawler {
     url: string,
     discountPercentage: number
   ): Promise<void> {
+    const brandKey = brand.toLowerCase();
+
     // Track products by brand with best discount
     if (
       discountPercentage >= MAX_PERCENTAGE_DISCOUNT_BRAND &&
       this.productsByBrand.get(brand) !== -1
     ) {
       this.productsByBrand.set(
-        brand,
-        (this.productsByBrand.get(brand) || 0) + 1
+        brandKey,
+        (this.productsByBrand.get(brandKey) || 0) + 1
       );
     }
 
     // If products by brand exceeded 5 then fetch more products by brand
-    // if (this.productsByBrand.get(brand) === MAX_PRODUCT_BY_BRAND) {
-    //   await this.fetchBrandProducts(brand);
-    // }
+    if (this.productsByBrand.get(brandKey) >= MAX_PRODUCTS_BY_BRAND) {
+      console.log(
+        `\n🔍 Fetching more products for brand ${brand} from ${this.website}...\n`
+      );
+
+      await this.fetchBrandProducts(brandKey);
+      this.productsByBrand.set(brandKey, -1);
+    }
 
     // Mark this product as processed
     this.alreadyProcessedProducts.add(url);
@@ -287,13 +289,13 @@ export class Crawler {
   // @Private method to check deep validation for brand and URL
   private checkDeepValidation(productDetails: Product): boolean {
     const {
-      productUrl,
-      productDetails: { brand, price, discountPrice },
+      url,
+      details: { brand, price, discountPrice },
     } = productDetails;
 
     const isValid =
       isValidProductDeal(price, discountPrice, this.maxPrice) &&
-      this.alreadyProcessedProducts.has(productUrl) === false &&
+      this.alreadyProcessedProducts.has(url) === false &&
       this.productsByBrand.get(brand) !== -1 &&
       this.productsCount < MAX_PRODUCTS_PER_WEBSITE;
 
@@ -329,36 +331,35 @@ export class Crawler {
         // Wait to load the brand products
         await this.crawlerUtils.waitForPageLoad(
           contextAndPage.page,
-          CARD_SELECTOR[this.website],
+          PRODUCT_CARD_SELECTOR[this.website],
           false,
           5000
         );
 
-        console.log("Almost there...");
-
         // Finally extract the products
         const rawProducts = await contextAndPage.page.$$(
-          CARD_SELECTOR[this.website]
+          PRODUCT_CARD_SELECTOR[this.website]
         );
 
         // Final extraction of product details
         const products = await this.crawlerUtils.getBrandProducts(
-          this.maxPrice,
-          rawProducts.slice(0, MAX_PRODUCT_BY_BRAND),
-          contextAndPage.page
+          contextAndPage.page,
+          rawProducts.slice(0, MAX_PRODUCTS_BY_BRAND_COUNT),
+          this.maxPrice
         );
 
         // Insert the products if found
         if (products) {
-          console.log(`Found products for brand ${brand}: `, products);
-          products["productUrl"] = contextAndPage.page.url();
-
+          products["url"] = contextAndPage.page.url();
           this.insertProduct([products]);
-
           console.log(
             `\n🛍️  Fetched products for brand ${brand} from ${this.website}\n`
           );
         }
+      } else {
+        console.warn(
+          `⚠️  No selector found for brand ${brand} on ${this.website}`
+        );
       }
     } catch (error) {
       console.error(

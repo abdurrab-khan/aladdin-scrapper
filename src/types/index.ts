@@ -6,23 +6,27 @@ export type ProductDetails = {
   price: number;
   rating?: number;
   reviews?: number;
-  image: string | string[];
   discountPrice: number;
+  discountPercent: number;
 };
 
 export interface Product {
-  productId: string;
-  productName: string;
-  productDetails: ProductDetails;
-  productCard: string;
-  productUrl: string;
+  id: string;
+  name: string;
+  details: ProductDetails;
+  images: {
+    image: string | string[];
+    card: string;
+    fullPage: string | null;
+  };
+  url: string;
   isGrouped: boolean;
 }
 
 // <======================> Utils Type <======================>
-export type FlatProduct = Omit<Product, "productDetails"> & ProductDetails;
+export type FlatProduct = Omit<Product, "details"> & ProductDetails;
 
 export type ProductSelector = Exclude<
   keyof FlatProduct,
-  "isGrouped" | "productCard" | "productId"
+  "isGrouped" | "images" | "id" | "discountPercent"
 >;

@@ -1,7 +1,7 @@
 import type { Browser } from "playwright";
 import CrawlerFactory from "../utils/crawlerFactory.js";
 import type { E_COMMERCE } from "../../types/index.js";
-import getContext from "../utils/getContext.js";
+import getContext from "../utils/browser/getContext.js";
 
 async function productsHunter(
   browser: Browser,

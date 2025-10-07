@@ -19,9 +19,8 @@ export const hasRequiredDetails = <T extends ProductSelector>(
   const isImportantKey =
     key === "price" ||
     key === "discountPrice" ||
-    key === "productUrl" ||
-    key === "productName" ||
-    key === "image";
+    key === "url" ||
+    key === "name";
 
   if (isImportantKey && !value) {
     return false;
@@ -60,7 +59,7 @@ export const cleanData = async (
       const cleaned = elementText?.replace(/[^\d]/g, "");
       return cleaned ? parseInt(cleaned, 10) : null;
     }
-    case "productUrl": {
+    case "url": {
       const urlElement = (await element?.getAttribute("href")) ?? null;
 
       if (urlElement?.startsWith("https") || !urlElement) {
@@ -89,6 +88,10 @@ export const cleanData = async (
   }
 };
 
+/**
+ * A simple function to generate a random user agent string.
+ * @returns A random user agent string.
+ */
 export const generateRandomUserAgent = (): string => {
   return `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${Math.floor(
     Math.random() * (115 - 100) + 100

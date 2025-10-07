@@ -4,7 +4,7 @@ import type {
   BrowserContextOptions,
   Page,
 } from "playwright";
-import { generateRandomUserAgent } from "./helper.js";
+import { generateRandomUserAgent } from "../../utils/helper.js";
 
 interface GetContextReturnType {
   page: Page;
