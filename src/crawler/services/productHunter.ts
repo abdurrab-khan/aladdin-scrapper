@@ -17,7 +17,7 @@ async function productsHunter(
       await crawler.fetchProducts();
     } while (!crawler.isDone);
   } catch (error) {
-    console.log(`⚠️ Error happen while crawling ${website}:`, error);
+    console.log(`⚠️  Error happen while crawling ${website}:`, error);
   } finally {
     await context.close(); // Ensure the context is closed after operation
     return crawler && crawler.products.length > 0 ? crawler.products : null; // Return products or null

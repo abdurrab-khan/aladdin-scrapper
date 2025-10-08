@@ -3,7 +3,7 @@ export type SingleProductDetails = {
   price: number;
   rating?: number;
   reviews?: number;
-  discountType: string;
+  discountType?: string;
   discountPrice: number;
   discountPercent: number;
 };
@@ -18,7 +18,6 @@ export type GroupProductDetails = {
 };
 
 export interface Product {
-  id: string;
   name: string;
   details: SingleProductDetails | GroupProductDetails;
   images: {

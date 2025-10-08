@@ -1,10 +1,7 @@
 import type { E_COMMERCE, ProductSelector } from "../../types/index.js";
 
 type CardSelectorType = Record<E_COMMERCE, string>;
-type ProductDetailsType = Record<
-  E_COMMERCE,
-  Record<ProductSelector | "image", string>
->;
+type ProductDetailsType = Record<E_COMMERCE, Record<ProductSelector, string>>;
 
 /**
  * CSS Selectors for selecting product cards.
@@ -27,7 +24,9 @@ export const PRODUCT_DETAILS: ProductDetailsType = {
     reviews:
       "div.a-spacing-top-micro[data-cy='reviews-block'] span.puis-normal-weight-text.s-underline-text",
     brand: "h2.a-size-mini.s-line-clamp-1 span.a-size-base-plus.a-color-base",
-    image: "div.s-product-image-container img",
+    discountType:
+      "span.a-badge-label span.a-badge-text[data-a-badge-color=sx-cloud]",
+    images: "div.s-product-image-container img",
     url: "div.s-product-image-container a.a-link-normal",
   },
   flipkart: {
@@ -37,7 +36,8 @@ export const PRODUCT_DETAILS: ProductDetailsType = {
     rating: ".XQDdHH",
     reviews: ".Wphh3N",
     brand: ".syl9yP",
-    image: ".gqcSqV.YGE0gZ img, ._4WELSP img",
+    images: ".gqcSqV.YGE0gZ img, ._4WELSP img",
+    discountType: ".yiggsN.O5Fpg8",
     url: "a.VJA3rP, a.rPDeLR, a.CGtC98",
   },
 };
@@ -62,4 +62,9 @@ export const AMAZON_FETCH_BRAND_PRODUCTS = {
     "div#brandsRefinements div.a-expander-extend-container a[aria-label='See more, Brands']",
   selector: "div#brandsRefinements li.a-spacing-micro a.s-navigation-item",
   selectionText: ".a-size-base.a-color-base",
+};
+
+export const FULL_PAGE_SELECTOR = {
+  amazon: "div#ppd",
+  flipkart: "._39kFie.N3De93.JxFEK3._48O0EI",
 };

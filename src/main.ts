@@ -12,9 +12,9 @@ async function main() {
       //   "https://www.flipkart.com/search?q=gadgets&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off",
       //   "flipkart",
       // ],
-      ["https://www.amazon.in/s?k=gedgets", "amazon"],
+      ["https://www.amazon.in/s?k=jeans", "amazon"],
+      // ["https://www.amazon.in/s?k=gedgets", "amazon"],
       // ["https://www.amazon.in/s?k=raspberry+pi+4", "amazon"],
-      // ["https://www.amazon.in/s?k=jeans", "amazon"],
     ];
 
     const products = await scrapeProducts(urls);
@@ -69,7 +69,7 @@ async function main() {
 
     // browser.close();
   } catch (error) {
-    console.error("❌ Error in main:", (error as Error).message ?? error);
+    console.error("❌  Error in main:", (error as Error).message ?? error);
   }
 }
 

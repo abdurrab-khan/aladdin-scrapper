@@ -1,10 +1,9 @@
-import { v4 as uuidv4 } from "uuid";
-
 import getContext from "./browser/getContext.js";
 import { cleanData, hasRequiredDetails } from "./helper.js";
 import {
   AMAZON_FETCH_BRAND_PRODUCTS,
   FLIPKART_FETCH_BRAND_PRODUCTS,
+  FULL_PAGE_SELECTOR,
   PRODUCT_CARD_SELECTOR,
   PRODUCT_DETAILS,
 } from "../css/css_selectors.js";
@@ -18,11 +17,12 @@ import {
 
 import type {
   E_COMMERCE,
-  FlatProduct,
   ProductSelector,
+  ProductSelectorValue,
 } from "../../types/index.js";
-import type { Product } from "../../types/product.js";
+import type { GroupProductDetails, Product } from "../../types/product.js";
 import type { Browser, ElementHandle, Page } from "playwright";
+import { ulid } from "ulid";
 
 class CrawlerUtils {
   private browser: Browser;
@@ -38,8 +38,9 @@ class CrawlerUtils {
   public async navigateToUrl(
     page: Page,
     url: string,
+    waitSelector: string = PRODUCT_CARD_SELECTOR[this.website],
     showRandomDelay = true,
-    timeout = 60000
+    timeout = 10000
   ): Promise<void> {
     try {
       const nRes = await page.goto(url, {
@@ -55,11 +56,7 @@ class CrawlerUtils {
       }
 
       // Wait for the page to load completely
-      await this.waitForPageLoad(
-        page,
-        PRODUCT_CARD_SELECTOR[this.website],
-        showRandomDelay
-      );
+      await this.waitForPageLoad(page, waitSelector, showRandomDelay);
     } catch (error) {
       const errMsg =
         (error as Error).message ?? "⚠️ An error occurred during navigation";
@@ -69,7 +66,7 @@ class CrawlerUtils {
 
   public async extractProductData(
     product: ElementHandle<SVGElement | HTMLElement>
-  ): Promise<Product | null> {
+  ): Promise<ProductSelectorValue | null> {
     if (!product) return null; // Return null if product is null or undefined
 
     const productCSSSelector = PRODUCT_DETAILS[this.website];
@@ -81,7 +78,7 @@ class CrawlerUtils {
             const typedKey = key as ProductSelector;
 
             // @Checking whether the selector is valid or not
-            if (!selector.trim() || selector === "N/A") {
+            if (!selector.trim()) {
               throw new Error("⚠️ Invalid selector");
             }
 
@@ -97,29 +94,18 @@ class CrawlerUtils {
             return [typedKey, value];
           })
         )
-      ) as {
-        [T in ProductSelector]: T extends "images" ? string : FlatProduct[T];
-      };
+      ) as ProductSelectorValue;
 
-      return {
-        id: uuidv4(),
-        name: productDetails.name,
-        url: productDetails.url,
-        details: {
-          brand: productDetails.brand ?? productDetails.name.split(" ")[0],
-          price: productDetails.price,
-          discountPrice: productDetails.discountPrice,
-          rating: productDetails?.rating,
-          reviews: productDetails?.reviews,
-        },
-        images: {
-          card: "",
-          image: productDetails.images ?? null,
-          fullPage: null,
-        },
-        isGrouped: false,
-      } as Product;
+      // If brand is missing, derive it from the product name
+      if (!productDetails.brand)
+        productDetails.brand = productDetails.name.split(" ")[0] ?? "Unknown";
+
+      return productDetails;
     } catch (error) {
+      console.log(
+        `⚠️  Error extracting product data:`,
+        (error as Error).message ?? " error"
+      );
       return null;
     }
   }
@@ -146,26 +132,31 @@ class CrawlerUtils {
         );
 
         // Navigate to the product URL
-        await this.navigateToUrl(contextAndPage.page, productUrl, false, 20000);
-
-        // Wait for the page to load completely
-        await this.waitForPageLoad(
+        await this.navigateToUrl(
           contextAndPage.page,
-          PRODUCT_CARD_SELECTOR[this.website],
-          true,
-          10000
+          productUrl,
+          FULL_PAGE_SELECTOR[this.website],
+          false
         );
+
+        // Get the bounding box of the main product element
+        const elementBoundingBox = await (
+          await contextAndPage.page.$(FULL_PAGE_SELECTOR[this.website])
+        )?.boundingBox();
 
         // Adding the config for clipping
         (screenShotConfig as NonNullable<Parameters<Page["screenshot"]>[0]>)[
           "clip"
-        ] = getClippingForScreenshot(this.website);
+        ] = getClippingForScreenshot(this.website, elementBoundingBox?.y);
+        (screenShotConfig as NonNullable<Parameters<Page["screenshot"]>[0]>)[
+          "fullPage"
+        ] = false;
       }
 
       // If product element is not provided, use the one from the new context
       if (!screenShotElement && !contextAndPage?.page) {
         console.error(
-          `⚠️ No product or context available for screenshot: ${fileName}`
+          `⚠️  No product or context available for screenshot: ${fileName}`
         );
         return null;
       }
@@ -188,7 +179,7 @@ class CrawlerUtils {
       return fullFilePath;
     } catch (error) {
       console.error(
-        `⚠️ Error taking screenshot for ${fileName}:`,
+        `⚠️  Error taking screenshot for ${fileName}:`,
         (error as Error).message ?? " error);"
       );
       return null;
@@ -206,20 +197,20 @@ class CrawlerUtils {
     page?: Page,
     selector?: string,
     showAdditionalDelay = true,
-    timeout = 60000
+    timeout = 10000
   ): Promise<void> {
     try {
       const targetPage = page || this.page;
 
       // Wait for DOM content to be fully loaded
-      await targetPage.waitForLoadState("domcontentloaded", {
+      await targetPage.waitForLoadState("load", {
         timeout,
       });
 
       // Wait for the specific selector to be attached to the DOM
       if (selector) {
         await targetPage.waitForSelector(selector, {
-          state: "visible",
+          state: "attached",
           timeout,
         });
       }
@@ -244,9 +235,9 @@ class CrawlerUtils {
         return await this.getFlipkartBrandSelector(page, brand);
       }
 
-      return null;
+      throw new Error(`⚠️  Brand selector not implemented for ${this.website}`);
     } catch (error) {
-      console.error("⚠️ Error fetching brand selector:", error);
+      console.error("⚠️  Error fetching brand selector:", error);
       return null;
     }
   }
@@ -263,34 +254,32 @@ class CrawlerUtils {
       products.map(async (product, i) => {
         const details = await this.extractProductData(product);
 
-        if (!details) {
-          // At-least 3 valid products are required to proceed
-          if (i < 3) throw new Error("No valid products found for the brand");
+        if (
+          details &&
+          isValidProductDeal(details.price, details.discountPrice, max_price)
+        ) {
+          return details; // Return valid product details
+        } else {
+          // If no valid products found after checking a few, log a warning
+          if (i < 3) {
+            throw new Error(
+              `No valid products found for this brand (${details?.brand ?? ""})`
+            );
+          }
+
           return null; // Skip invalid product
         }
-
-        // Check if the product is a valid deal
-        const {
-          productDetails: { price, discountPrice },
-        } = details;
-
-        if (!isValidProductDeal(price, discountPrice, max_price)) {
-          // At-least 3 valid products are required to proceed
-          if (i < 3) throw new Error("No valid products found for the brand");
-          return null; // Skip invalid deal
-        }
-        return details;
       })
     )
       .then((results) =>
         results.reduce((acc, val) => {
           if (val != null) acc.push(val);
           return acc;
-        }, [] as Product[])
+        }, [] as ProductSelectorValue[])
       )
       .catch((error) => {
         console.error(
-          "⚠️ Error extracting product details:",
+          "⚠️  Error extracting product details for :",
           (error as Error).message ?? " error"
         );
         return [];
@@ -298,15 +287,15 @@ class CrawlerUtils {
 
     if (productDetails.length >= 3) {
       productDetails.sort((a, b) => {
-        const priceA = a.details.discountPrice || a.details.price || Infinity;
-        const priceB = b.details.discountPrice || b.details.price || Infinity;
+        const priceA = a.discountPrice || a.price || Infinity;
+        const priceB = b.discountPrice || b.price || Infinity;
 
         return priceA - priceB;
       });
 
       const fileName = `group_${this.website}_${
-        productDetails[0]?.details.brand
-      }_${Date.now()}`;
+        productDetails[0]?.brand ?? "brand"
+      }_${ulid()}`;
 
       // Get bounding box of the first product to determine screenshot area
       const boundingBox = await products[0]?.boundingBox();
@@ -322,23 +311,27 @@ class CrawlerUtils {
       // Let's take a screen shot
       if (screenShotPath) {
         return {
-          id: uuidv4(),
-          name: productDetails[0]?.details.brand + " Products",
+          name: "Grouped " + productDetails[0]?.brand + " Products",
           url: "",
           details: {
-            brand: productDetails[0]?.details.brand || "Various",
-            price: productDetails[0]?.details.price || 0,
-            discountPrice: productDetails[0]?.details.discountPrice || 0,
-            discountPercent: Math.round(
-              (((productDetails[0]?.details.price || 0) -
-                (productDetails[0]?.details.discountPrice || 0)) /
-                (productDetails[0]?.details.price || 1)) *
-                100
-            ),
-          },
+            brand: productDetails[0]?.brand || "Various",
+            startPrice: productDetails[0]?.price || 0,
+            discountStartPrice: productDetails[0]?.discountPrice || 0,
+            productCount: productDetails.length,
+            avgRating:
+              parseFloat(
+                (
+                  productDetails.reduce((sum, p) => sum + (p.rating || 0), 0) /
+                  productDetails.filter((p) => p.rating).length
+                ).toFixed(2)
+              ) || undefined,
+            totalReviews:
+              productDetails.reduce((sum, p) => sum + (p.reviews || 0), 0) ||
+              undefined,
+          } as GroupProductDetails,
           images: {
             card: screenShotPath,
-            image: productDetails.map((p) => p.images.image as string),
+            image: productDetails.map((p) => p.images as string),
             fullPage: null,
           },
           isGrouped: true,

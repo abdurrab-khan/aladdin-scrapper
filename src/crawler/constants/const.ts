@@ -20,10 +20,10 @@ const MIN_PRODUCTS_PER_PAGE = 5;
 const MAX_PERCENTAGE_DISCOUNT = 65;
 
 // The maximum percentage discount to consider a product as a brand deal
-const MAX_PERCENTAGE_DISCOUNT_BRAND = 70;
+const MAX_PERCENTAGE_DISCOUNT_BRAND = 75;
 
 // The maximum percentage to take full page screenshot
-const MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT = 99;
+const MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT = 80;
 
 export {
   MAX_PRODUCTS_PER_WEBSITE,

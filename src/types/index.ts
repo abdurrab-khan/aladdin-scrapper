@@ -7,3 +7,7 @@ export type ProductSelector = Exclude<
   keyof FlatProduct,
   "isGrouped" | "id" | "discountPercent"
 >;
+
+export type ProductSelectorValue = {
+  [T in ProductSelector]: T extends "images" ? string : FlatProduct[T];
+};

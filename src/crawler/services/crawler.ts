@@ -18,7 +18,8 @@ import {
   MIN_PRODUCTS_PER_PAGE,
 } from "../constants/const.js";
 import getContext from "../utils/browser/getContext.js";
-import type { Product } from "../../types/product.js";
+import type { Product, SingleProductDetails } from "../../types/product.js";
+import { ulid } from "ulid";
 
 export class Crawler {
   public products: Product[] = [];
@@ -58,7 +59,7 @@ export class Crawler {
           ? error.message
           : "Unknown error during navigation";
 
-      console.error(`⚠️ Error navigating to ${this.website}:`, errMsg);
+      console.error(`⚠️  Error navigating to ${this.website}:`, errMsg);
 
       // Mark as done if navigation fails
       this.isDone = true;
@@ -76,15 +77,13 @@ export class Crawler {
 
       // If no products found, return null
       if (products.length === 0) {
-        console.warn(`⚠️ No products found on ${this.website}`);
+        console.warn(`⚠️  No products found on ${this.website}`);
         return this.increaseEmptyPageThreshold(null);
       }
 
       // Extract details from each product card
       const productDetails = await Promise.all(
-        products.map(
-          async (product) => await this.extractProductDetails(product)
-        )
+        products.map(async (product) => await this.getProductData(product))
       ).then((results) =>
         results.reduce((acc, val) => {
           if (val != null) acc.push(val);
@@ -143,7 +142,7 @@ export class Crawler {
       console.info(
         error instanceof Error
           ? error.message
-          : `⚠️ Error finding 'Next' button on ${this.website}: ${error}`
+          : `⚠️  Error finding 'Next' button on ${this.website}: ${error}`
       );
 
       this.isDone = true; // Mark as done if error occurs
@@ -151,7 +150,7 @@ export class Crawler {
   }
 
   // @Private method to extract the product all details
-  private async extractProductDetails(
+  private async getProductData(
     product: ElementHandle<SVGElement | HTMLElement>
   ): Promise<Product | null> {
     try {
@@ -159,12 +158,24 @@ export class Crawler {
       const productData = await this.crawlerUtils.extractProductData(product);
 
       // If product details found, process further
-      if (productData && this.checkDeepValidation(productData)) {
+      if (
+        productData &&
+        this.checkDeepValidation(
+          productData.price,
+          productData.discountPrice,
+          productData.brand,
+          productData.url
+        )
+      ) {
+        const { brand, price, discountPrice } = productData;
+        const discountPercent = Math.round(
+          ((price - discountPrice) / price) * 100
+        );
+
         // Taking screen shot
-        const fileName = `./products/${this.website}-${productData.id}`;
+        const fileName = `${this.website}_${ulid()}`;
         const takeFullPageScreenShot =
-          productData.details.discountPercent >=
-          MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT;
+          discountPercent >= MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT;
 
         const cardScreenShot = await this.crawlerUtils.takeScreenshot(
           fileName,
@@ -189,12 +200,6 @@ export class Crawler {
           return null;
         }
 
-        productData["images"]["card"] = `${fileName}.png`;
-        productData["images"]["fullPage"] = fullPageScreenShot ?? null;
-
-        const { brand, price, discountPrice, discountPercent } =
-          productData.details;
-
         console.log(
           `✅ Extracted - ${this.website.toUpperCase()} : ${
             productData.name
@@ -204,7 +209,25 @@ export class Crawler {
         // Post process the product
         await this.postProcessProduct(brand, productData.url, discountPercent);
 
-        return productData;
+        return {
+          name: productData.name,
+          url: productData.url,
+          details: {
+            brand: productData.brand,
+            price: productData.price,
+            rating: productData.rating,
+            reviews: productData.reviews,
+            discountPercent: discountPercent,
+            discountPrice: productData.discountPrice,
+            discountType: productData.discountType,
+          } as SingleProductDetails,
+          images: {
+            card: cardScreenShot,
+            image: productData.images,
+            fullPage: fullPageScreenShot,
+          },
+          isGrouped: false,
+        } as Product;
       }
 
       return null;
@@ -241,26 +264,29 @@ export class Crawler {
     discountPercentage: number
   ): Promise<void> {
     const brandKey = brand.toLowerCase();
+    const conditionToAddBrand =
+      brand !== "Unknown" &&
+      this.productsByBrand.get(brandKey) !== -1 &&
+      discountPercentage >= MAX_PERCENTAGE_DISCOUNT_BRAND;
 
     // Track products by brand with best discount
-    if (
-      discountPercentage >= MAX_PERCENTAGE_DISCOUNT_BRAND &&
-      this.productsByBrand.get(brand) !== -1
-    ) {
+    if (conditionToAddBrand) {
       this.productsByBrand.set(
         brandKey,
         (this.productsByBrand.get(brandKey) || 0) + 1
       );
     }
 
-    // If products by brand exceeded 5 then fetch more products by brand
-    if (this.productsByBrand.get(brandKey) >= MAX_PRODUCTS_BY_BRAND) {
+    // If products by brand exceed limit, fetch more products for that brand only (once)
+    if (
+      this.productsByBrand.get(brandKey) >= MAX_PRODUCTS_BY_BRAND &&
+      this.productsByBrand.get(brandKey) !== -1
+    ) {
       console.log(
         `\n🔍 Fetching more products for brand ${brand} from ${this.website}...\n`
       );
-
-      await this.fetchBrandProducts(brandKey);
       this.productsByBrand.set(brandKey, -1);
+      // await this.fetchBrandProducts(brandKey);
     }
 
     // Mark this product as processed
@@ -288,12 +314,12 @@ export class Crawler {
   }
 
   // @Private method to check deep validation for brand and URL
-  private checkDeepValidation(productDetails: Product): boolean {
-    const {
-      url,
-      details: { brand, price, discountPrice },
-    } = productDetails;
-
+  private checkDeepValidation(
+    price: number,
+    discountPrice: number,
+    brand: string,
+    url: string
+  ): boolean {
     const isValid =
       isValidProductDeal(price, discountPrice, this.maxPrice) &&
       this.alreadyProcessedProducts.has(url) === false &&

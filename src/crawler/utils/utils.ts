@@ -50,14 +50,14 @@ export function getContextOptionsForScreenShot(
  * @param website - E_COMMERCE
  * @returns - clipping for screenshot
  */
-export function getClippingForScreenshot(website: E_COMMERCE) {
+export function getClippingForScreenshot(website: E_COMMERCE, yAxis?: number) {
   switch (website) {
     case "amazon":
-      return { x: 0, y: 177, width: 1400, height: 820 };
+      return { x: 0, y: yAxis ?? 177, width: 1400, height: 820 };
     case "flipkart":
-      return { x: 0, y: 85, width: 1400, height: 715 };
+      return { x: 0, y: yAxis ?? 85, width: 1400, height: 715 };
     default:
-      return { x: 0, y: 0, width: 1400, height: 700 };
+      return { x: 0, y: yAxis ?? 0, width: 1400, height: 700 };
   }
 }
 

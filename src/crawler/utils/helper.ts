@@ -48,7 +48,6 @@ export const cleanData = async (
     case "discountPrice": {
       // Removing all non-numeric characters except for the decimal point
       const cleaned = elementText?.replace(/[^\d.]/g, "");
-
       return cleaned ? parseFloat(cleaned) : null;
     }
     case "rating": {
