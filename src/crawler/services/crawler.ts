@@ -2,7 +2,7 @@ import type { Browser, ElementHandle, Page } from "playwright";
 
 import CrawlerUtils from "../utils/crawlerUtils.js";
 import { isValidProductDeal } from "../utils/utils.js";
-import type { E_COMMERCE, Product } from "../../types/index.js";
+import type { E_COMMERCE } from "../../types/index.js";
 
 import {
   NEXT_BUTTON_SELECTOR,
@@ -18,6 +18,7 @@ import {
   MIN_PRODUCTS_PER_PAGE,
 } from "../constants/const.js";
 import getContext from "../utils/browser/getContext.js";
+import type { Product } from "../../types/product.js";
 
 export class Crawler {
   public products: Product[] = [];

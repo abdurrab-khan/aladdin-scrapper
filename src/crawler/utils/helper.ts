@@ -71,7 +71,7 @@ export const cleanData = async (
         ? new URL(urlElement, baseUrl).toString()
         : null;
     }
-    case "image": {
+    case "images": {
       const imageElement = (await element?.getAttribute("src")) ?? null;
 
       if (imageElement?.startsWith("https") || !imageElement) {

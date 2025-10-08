@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import type { Browser, ElementHandle, Page } from "playwright";
 
+import getContext from "./browser/getContext.js";
 import { cleanData, hasRequiredDetails } from "./helper.js";
 import {
   AMAZON_FETCH_BRAND_PRODUCTS,
@@ -19,10 +19,10 @@ import {
 import type {
   E_COMMERCE,
   FlatProduct,
-  Product,
   ProductSelector,
 } from "../../types/index.js";
-import getContext from "./browser/getContext.js";
+import type { Product } from "../../types/product.js";
+import type { Browser, ElementHandle, Page } from "playwright";
 
 class CrawlerUtils {
   private browser: Browser;
@@ -69,7 +69,7 @@ class CrawlerUtils {
 
   public async extractProductData(
     product: ElementHandle<SVGElement | HTMLElement>
-  ) {
+  ): Promise<Product | null> {
     if (!product) return null; // Return null if product is null or undefined
 
     const productCSSSelector = PRODUCT_DETAILS[this.website];
@@ -97,7 +97,9 @@ class CrawlerUtils {
             return [typedKey, value];
           })
         )
-      ) as { [T in ProductSelector]: FlatProduct[T] };
+      ) as {
+        [T in ProductSelector]: T extends "images" ? string : FlatProduct[T];
+      };
 
       return {
         id: uuidv4(),
@@ -112,7 +114,7 @@ class CrawlerUtils {
         },
         images: {
           card: "",
-          image: productDetails.image ?? null,
+          image: productDetails.images ?? null,
           fullPage: null,
         },
         isGrouped: false,
