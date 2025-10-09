@@ -36,6 +36,7 @@ export class Crawler {
   private maxPrice: number;
   private crawlerUtils: CrawlerUtils;
   private browser: Browser;
+  private tabsOpened: number = 0;
 
   constructor(website: E_COMMERCE, page: Page, browser: Browser) {
     this.page = page;
@@ -128,6 +129,8 @@ export class Crawler {
         true
       );
 
+      if (this.tabsOpened !== 0) this.tabsOpened = 0; // Reset tabs opened count if not zero
+
       // Increase the page number after successful navigation
       this.pageNumber += 1;
 
@@ -183,14 +186,20 @@ export class Crawler {
         );
         let fullPageScreenShot: string | null = null;
 
-        // If high discount, take full page screenshot
-        if (takeFullPageScreenShot) {
-          // Try taking full page screenshot if not already tried
+        // Limit to 5 tabs at a time to avoid memory issues
+        if (takeFullPageScreenShot && this.tabsOpened < 5) {
+          // Increase tabs opened count
+          this.tabsOpened += 1;
+
+          // Take full page screenshot
           fullPageScreenShot = await this.crawlerUtils.takeScreenshot(
-            fileName,
+            "full-page_" + fileName,
             undefined,
             productData.url
           );
+
+          // Decrease tabs opened count
+          this.tabsOpened -= 1;
         }
 
         if (!cardScreenShot && !fullPageScreenShot) {
@@ -286,7 +295,7 @@ export class Crawler {
         `\n🔍 Fetching more products for brand ${brand} from ${this.website}...\n`
       );
       this.productsByBrand.set(brandKey, -1);
-      // await this.fetchBrandProducts(brandKey);
+      await this.fetchBrandProducts(brandKey);
     }
 
     // Mark this product as processed
@@ -339,9 +348,7 @@ export class Crawler {
       // Navigate to go current page URL
       await this.crawlerUtils.navigateToUrl(
         contextAndPage.page,
-        this.page.url(),
-        true,
-        10000
+        this.page.url()
       );
 
       // Extract brand selector
@@ -359,7 +366,7 @@ export class Crawler {
         await this.crawlerUtils.waitForPageLoad(
           contextAndPage.page,
           PRODUCT_CARD_SELECTOR[this.website],
-          false,
+          true,
           5000
         );
 

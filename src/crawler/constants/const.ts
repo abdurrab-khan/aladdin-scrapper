@@ -17,10 +17,10 @@ const MAX_EMPTY_PAGES_ALLOWED = 5;
 const MIN_PRODUCTS_PER_PAGE = 5;
 
 // The maximum percentage discount to consider a product as a best deal
-const MAX_PERCENTAGE_DISCOUNT = 65;
+const MAX_PERCENTAGE_DISCOUNT = 75;
 
 // The maximum percentage discount to consider a product as a brand deal
-const MAX_PERCENTAGE_DISCOUNT_BRAND = 75;
+const MAX_PERCENTAGE_DISCOUNT_BRAND = 30;
 
 // The maximum percentage to take full page screenshot
 const MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT = 80;

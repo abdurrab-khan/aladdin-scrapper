@@ -262,9 +262,7 @@ class CrawlerUtils {
         } else {
           // If no valid products found after checking a few, log a warning
           if (i < 3) {
-            throw new Error(
-              `No valid products found for this brand (${details?.brand ?? ""})`
-            );
+            throw new Error(`No valid products found for this brand`);
           }
 
           return null; // Skip invalid product
@@ -347,37 +345,33 @@ class CrawlerUtils {
     brand: string
   ): Promise<ElementHandle<HTMLElement | SVGElement> | null> {
     try {
-      const sections =
-        (await page.$$(FLIPKART_FETCH_BRAND_PRODUCTS["mainSection"])) || [];
+      const sections = await page.$$(
+        FLIPKART_FETCH_BRAND_PRODUCTS["mainSection"]
+      );
 
-      const brandSection = sections.find(async (section) => {
-        const titleElement = await section.$(
+      for (const section of sections) {
+        const title = await section.$(
           FLIPKART_FETCH_BRAND_PRODUCTS["sectionTitle"]
         );
 
-        const text = await titleElement?.textContent();
-        return text?.trim().toLowerCase().includes("brand");
-      });
+        if (
+          title &&
+          (await title?.textContent())?.trim().toLowerCase() === "brand"
+        ) {
+          // If the section is collapsed, click to expand it
+          if (((await section.boundingBox())?.height ?? 0) < 60) {
+            await section.click();
+            await page.waitForTimeout(500);
+          }
 
-      if (brandSection) {
-        // Expand the brand section if it's collapsible
-        await brandSection.click();
+          const input = await section.$(FLIPKART_FETCH_BRAND_PRODUCTS["input"]);
+          await input?.fill(brand);
 
-        const inputElement = await brandSection.$(
-          FLIPKART_FETCH_BRAND_PRODUCTS["input"]
-        );
-
-        if (inputElement) {
-          await inputElement.fill(brand);
-
-          // Find all brand selectors
-          const allBrandSelectors = await brandSection.$$(
+          const brandSector = await section.$(
             FLIPKART_FETCH_BRAND_PRODUCTS["selector"]
           );
 
-          if (allBrandSelectors && allBrandSelectors.length > 0) {
-            return allBrandSelectors[0] || null;
-          }
+          return brandSector || null;
         }
       }
 
