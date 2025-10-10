@@ -1,7 +1,7 @@
 import type { Browser, ElementHandle, Page } from "playwright";
 
 import CrawlerUtils from "../utils/crawlerUtils.js";
-import { isValidProductDeal } from "../utils/utils.js";
+import { isValidProductDeal, randomDelay } from "../utils/utils.js";
 import type { E_COMMERCE } from "../../types/index.js";
 
 import {
@@ -27,7 +27,7 @@ export class Crawler {
 
   protected pageNumber: number = 0;
 
-  public page: Page;
+  private page: Page;
   private browser: Browser;
   private website: E_COMMERCE;
 
@@ -189,7 +189,7 @@ export class Crawler {
         let fullPageScreenShot: string | null = null;
 
         // Limit to 5 tabs at a time to avoid memory issues
-        if (takeFullPageScreenShot && this.tabsOpened < 5) {
+        if (this.tabsOpened < 5 && takeFullPageScreenShot) {
           // Increase tabs opened count
           this.tabsOpened += 1;
 
@@ -368,9 +368,12 @@ export class Crawler {
         await this.crawlerUtils.waitForPageLoad(
           contextAndPage.page,
           PRODUCT_CARD_SELECTOR[this.website],
-          true,
+          false,
           5000
         );
+
+        // Wait for a random time between 1.5 to 2.5 seconds
+        await contextAndPage.page.waitForTimeout(randomDelay(1.5, 2.5));
 
         // Finally extract the products
         const rawProducts = await contextAndPage.page.$$(

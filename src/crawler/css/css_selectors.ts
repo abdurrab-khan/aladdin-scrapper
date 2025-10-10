@@ -19,10 +19,8 @@ export const PRODUCT_DETAILS: ProductDetailsType = {
     name: "h2.a-color-base.a-text-normal span",
     price: "span.a-price.a-text-price[data-a-strike='true'] span.a-offscreen",
     discountPrice: "span.a-price span.a-price-whole",
-    rating:
-      "div.a-spacing-top-micro[data-cy='reviews-block'] span.a-size-small.a-color-base",
-    reviews:
-      "div.a-spacing-top-micro[data-cy='reviews-block'] span.puis-normal-weight-text.s-underline-text",
+    rating: "i.a-icon-star-mini[data-cy='reviews-ratings-slot']",
+    reviews: "div[data-cy='reviews-block'] a.a-link-normal",
     brand: "h2.a-size-mini.s-line-clamp-1 span.a-size-base-plus.a-color-base",
     discountType:
       "span.a-badge-label span.a-badge-text[data-a-badge-color=sx-cloud]",

@@ -1,6 +1,7 @@
+import { MAX_PERCENTAGE_DISCOUNT } from "../constants/const.js";
+
 import type { BrowserContextOptions } from "playwright";
 import type { E_COMMERCE } from "../../types/index.js";
-import { MAX_PERCENTAGE_DISCOUNT } from "../constants/const.js";
 
 /**
  * Generate a random delay between min and max seconds

@@ -46,16 +46,28 @@ export const cleanData = async (
   switch (key) {
     case "price":
     case "discountPrice": {
-      // Removing all non-numeric characters except for the decimal point
       const cleaned = elementText?.replace(/[^\d.]/g, "");
       return cleaned ? parseFloat(cleaned) : null;
     }
     case "rating": {
-      const cleaned = elementText?.replace(/[^\d.]/g, "");
+      const cleaned = elementText?.match(/\d+(\.\d+)?/)?.at(0);
       return cleaned ? parseFloat(cleaned) : null;
     }
     case "reviews": {
-      const cleaned = elementText?.replace(/[^\d]/g, "");
+      let cleaned = elementText
+        ?.trim()
+        ?.replace(/[^0-9a-zA-Z.]/g, "")
+        ?.toLowerCase();
+
+      if (!cleaned) return null;
+
+      const num = parseFloat(cleaned);
+
+      if (elementText?.endsWith("k")) return num * 1_000;
+      if (elementText?.endsWith("m")) return num * 1_000_000;
+      if (elementText?.endsWith("b")) return num * 1_000_000_000;
+      if (elementText?.endsWith("t")) return num * 1_000_000_000_000;
+
       return cleaned ? parseInt(cleaned, 10) : null;
     }
     case "url": {
