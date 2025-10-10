@@ -59,28 +59,12 @@ export const cleanData = async (
       return cleaned ? parseInt(cleaned, 10) : null;
     }
     case "url": {
-      const urlElement = (await element?.getAttribute("href")) ?? null;
-
-      if (urlElement?.startsWith("https") || !urlElement) {
-        return urlElement;
-      }
-
-      const baseUrl = BASE_URLS[website] || "";
-      return baseUrl && urlElement
-        ? new URL(urlElement, baseUrl).toString()
-        : null;
+      const url = (await element?.getAttribute("href")) ?? null;
+      return urlSorter(url, website);
     }
     case "images": {
-      const imageElement = (await element?.getAttribute("src")) ?? null;
-
-      if (imageElement?.startsWith("https") || !imageElement) {
-        return imageElement;
-      }
-
-      const baseUrl = BASE_URLS[website] || "";
-      return baseUrl && imageElement
-        ? new URL(imageElement, baseUrl).toString()
-        : null;
+      const imageUrl = (await element?.getAttribute("src")) ?? null;
+      return increaseImageQuality(imageUrl, website);
     }
     default:
       return elementText?.trim() || null;
@@ -97,4 +81,59 @@ export const generateRandomUserAgent = (): string => {
   )}.0.${Math.floor(Math.random() * (5793 - 4000) + 4000)}.${Math.floor(
     Math.random() * (140 - 10) + 10
   )} Safari/537.36`;
+};
+
+/**
+ * Increase image quality by modifying the URL parameters for known e-commerce sites.
+ * @param image_url - string
+ * @param website - E_COMMERCE
+ * @returns - string
+ */
+export const increaseImageQuality = (
+  image_url: string | null,
+  website: E_COMMERCE
+): string | null => {
+  if (image_url == null) return null;
+
+  if (website === "amazon") {
+    return image_url.replace(/_AC_UL\d+_/, "_AC_UL720_");
+  } else if (website === "flipkart") {
+    return image_url
+      .replace(/q=\d+/, "q=100")
+      .replace(/image\/[0-9]+\/[0-9]+/, "image/720/720");
+  }
+
+  return image_url;
+};
+
+/**
+ * Sort and clean product URLs by removing unnecessary query parameters and fragments.
+ * @param url - string
+ * @param website - E_COMMERCE
+ * @returns - string
+ */
+export const urlSorter = (
+  url: string | null,
+  website: E_COMMERCE
+): string | null => {
+  if (!url) return null;
+
+  const urlParser = new URL(url, BASE_URLS[website]);
+
+  if (website === "amazon") {
+    let pathName: string | null = urlParser.pathname;
+
+    // Handling special case for Amazon India URLs with sspa/click
+    if (url.match(/sspa\/click?/)) {
+      pathName = urlParser.searchParams.get("url");
+    }
+
+    return pathName == null
+      ? url
+      : `${urlParser.origin}${pathName.replace(/\/ref=.*/g, "")}`;
+  } else if (website === "flipkart") {
+    return `${urlParser.origin}${urlParser.pathname}`;
+  }
+
+  return url;
 };

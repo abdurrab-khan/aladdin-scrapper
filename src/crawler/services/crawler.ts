@@ -28,15 +28,16 @@ export class Crawler {
   protected pageNumber: number = 0;
 
   public page: Page;
+  private browser: Browser;
   private website: E_COMMERCE;
+
+  private maxPrice: number;
+  private crawlerUtils: CrawlerUtils;
+  private tabsOpened: number = 0;
   private productsCount: number = 0;
   private emptyPageThreshold: number = 3;
   private productsByBrand = new Map();
   private alreadyProcessedProducts = new Set<string>();
-  private maxPrice: number;
-  private crawlerUtils: CrawlerUtils;
-  private browser: Browser;
-  private tabsOpened: number = 0;
 
   constructor(website: E_COMMERCE, page: Page, browser: Browser) {
     this.page = page;
@@ -69,7 +70,8 @@ export class Crawler {
 
   // @Extract product details from the card element
   protected async extractProducts(): Promise<void> {
-    if (this.isDone) return; // If already done, return
+    // If already done, return
+    if (this.isDone) return;
 
     const cardSelector = PRODUCT_CARD_SELECTOR[this.website];
 
@@ -257,10 +259,10 @@ export class Crawler {
 
       this.products.push(...product); // Insert products to the main list
       this.productsCount += product.length; // Update products count
+    } else {
+      // Check for empty page threshold
+      this.increaseEmptyPageThreshold(product);
     }
-
-    // Check for empty page threshold
-    this.increaseEmptyPageThreshold(product);
 
     // Check if max products reached
     if (this.productsCount >= MAX_PRODUCTS_PER_WEBSITE) this.isDone = true;

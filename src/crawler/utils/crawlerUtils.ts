@@ -38,8 +38,8 @@ class CrawlerUtils {
   public async navigateToUrl(
     page: Page,
     url: string,
-    waitSelector: string = PRODUCT_CARD_SELECTOR[this.website],
     showRandomDelay = true,
+    waitSelector: string = PRODUCT_CARD_SELECTOR[this.website],
     timeout = 10000
   ): Promise<void> {
     try {
@@ -67,7 +67,8 @@ class CrawlerUtils {
   public async extractProductData(
     product: ElementHandle<SVGElement | HTMLElement>
   ): Promise<ProductSelectorValue | null> {
-    if (!product) return null; // Return null if product is null or undefined
+    // Return null if product is null or undefined
+    if (!product) return null;
 
     const productCSSSelector = PRODUCT_DETAILS[this.website];
 
@@ -135,8 +136,8 @@ class CrawlerUtils {
         await this.navigateToUrl(
           contextAndPage.page,
           productUrl,
-          FULL_PAGE_SELECTOR[this.website],
-          false
+          false,
+          FULL_PAGE_SELECTOR[this.website]
         );
 
         // Get the bounding box of the main product element
@@ -297,43 +298,56 @@ class CrawlerUtils {
 
       // Get bounding box of the first product to determine screenshot area
       const boundingBox = await products[0]?.boundingBox();
-      if (!boundingBox) return null;
 
-      const screenShotPath = await this.takeScreenshot(fileName, page, "", {
-        clip: getClippingForGroupedScreenshot(
+      if (boundingBox) {
+        const clip = getClippingForGroupedScreenshot(
           boundingBox,
           productDetails.length
-        ),
-      });
+        );
 
-      // Let's take a screen shot
-      if (screenShotPath) {
-        return {
-          name: "Grouped " + productDetails[0]?.brand + " Products",
-          url: "",
-          details: {
-            brand: productDetails[0]?.brand || "Various",
-            startPrice: productDetails[0]?.price || 0,
-            discountStartPrice: productDetails[0]?.discountPrice || 0,
-            productCount: productDetails.length,
-            avgRating:
-              parseFloat(
-                (
-                  productDetails.reduce((sum, p) => sum + (p.rating || 0), 0) /
-                  productDetails.filter((p) => p.rating).length
-                ).toFixed(2)
-              ) || undefined,
-            totalReviews:
-              productDetails.reduce((sum, p) => sum + (p.reviews || 0), 0) ||
-              undefined,
-          } as GroupProductDetails,
-          images: {
-            card: screenShotPath,
-            image: productDetails.map((p) => p.images as string),
-            fullPage: null,
-          },
-          isGrouped: true,
-        };
+        // Let's adjust the width of the viewport and screen size based on the layout
+        if (boundingBox.height < boundingBox.width) {
+          await page.setViewportSize({
+            height: 1080,
+            width: 1100,
+          });
+        }
+
+        const screenShotPath = await this.takeScreenshot(fileName, page, "", {
+          clip,
+        });
+
+        // Let's take a screen shot
+        if (screenShotPath) {
+          return {
+            name: "Grouped " + productDetails[0]?.brand + " Products",
+            url: "",
+            details: {
+              brand: productDetails[0]?.brand || "Various",
+              startPrice: productDetails[0]?.price || 0,
+              discountStartPrice: productDetails[0]?.discountPrice || 0,
+              productCount: productDetails.length,
+              avgRating:
+                parseFloat(
+                  (
+                    productDetails.reduce(
+                      (sum, p) => sum + (p.rating || 0),
+                      0
+                    ) / productDetails.filter((p) => p.rating).length
+                  ).toFixed(2)
+                ) || undefined,
+              totalReviews:
+                productDetails.reduce((sum, p) => sum + (p.reviews || 0), 0) ||
+                undefined,
+            } as GroupProductDetails,
+            images: {
+              card: screenShotPath,
+              image: productDetails.map((p) => p.images as string),
+              fullPage: null,
+            },
+            isGrouped: true,
+          };
+        }
       }
     }
 
