@@ -1,0 +1,485 @@
+[
+  {
+    "category": "menClothings",
+    "subCategories": {
+      "tshirts": {
+        "maxPrice": 8000,
+        "minPrice": 1000,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "shirts": {
+        "maxPrice": 10000,
+        "minPrice": 2000,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "jeans": {
+        "maxPrice": 15000,
+        "minPrice": 5000,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "pants": {
+        "maxPrice": 12000,
+        "minPrice": 4000,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "trousers": {
+        "maxPrice": 12000,
+        "minPrice": 4000,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    },
+    "lowPriorityCategories": {
+      "watches": {
+        "maxPrice": 20000,
+        "minPrice": 5000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "sunglasses": {
+        "maxPrice": 15000,
+        "minPrice": 3000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    }
+  },
+  {
+    "category": "shoes",
+    "subCategories": {
+      "sneakers": {
+        "maxPrice": 10000,
+        "minPrice": 3000,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "formalShoes": {
+        "maxPrice": 12000,
+        "minPrice": 4000,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "casualShoes": {
+        "maxPrice": 10000,
+        "minPrice": 3000,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    }
+  },
+  {
+    "category": "laptopAndDesktop",
+    "subCategories": {
+      "laptops": {
+        "maxPrice": 80000,
+        "minPrice": 30000,
+        "maxDiscount": 10,
+        "maxBrandDiscount": 5,
+        "maxDiscountForFullPageScreenshot": 15,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "monitor": {
+        "maxPrice": 40000,
+        "minPrice": 10000,
+        "maxDiscount": 10,
+        "maxBrandDiscount": 5,
+        "maxDiscountForFullPageScreenshot": 15,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "mouse": {
+        "maxPrice": 5000,
+        "minPrice": 1000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "keyboard": {
+        "maxPrice": 7000,
+        "minPrice": 1500,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    }
+  },
+  {
+    "category": "healthAndPersonalCare",
+    "subCategories": {
+      "trimmer": {
+        "maxPrice": 8000,
+        "minPrice": 2000,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "hairDryer": {
+        "maxPrice": 6000,
+        "minPrice": 1500,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    }
+  },
+  {
+    "category": "beautyAndPersonalCare",
+    "subCategories": {
+      "bathAndBody": {
+        "maxPrice": 3000,
+        "minPrice": 500,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    }
+  },
+  {
+    "category": "nutritionAndSupplements",
+    "subCategories": {
+      "proteinPowder": {
+        "maxPrice": 8000,
+        "minPrice": 2000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "vitaminsAndSupplements": {
+        "maxPrice": 5000,
+        "minPrice": 1000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    }
+  },
+  {
+    "category": "sportsAndFitness",
+    "subCategories": {
+      "fitnessEquipments": {
+        "maxPrice": 5000,
+        "minPrice": 1000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    }
+  },
+  {
+    "category": "homeAppliances",
+    "subCategories": {
+      "iron": {
+        "maxPrice": 4000,
+        "minPrice": 1000,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "waterPurifier": {
+        "maxPrice": 20000,
+        "minPrice": 5000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "waterGeyser": {
+        "maxPrice": 10000,
+        "minPrice": 3000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "washingMachine": {
+        "maxPrice": 40000,
+        "minPrice": 15000,
+        "maxDiscount": 10,
+        "maxBrandDiscount": 5,
+        "maxDiscountForFullPageScreenshot": 15,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "refrigerator": {
+        "maxPrice": 50000,
+        "minPrice": 20000,
+        "maxDiscount": 10,
+        "maxBrandDiscount": 5,
+        "maxDiscountForFullPageScreenshot": 15,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "television": {
+        "maxPrice": 60000,
+        "minPrice": 25000,
+        "maxDiscount": 10,
+        "maxBrandDiscount": 5,
+        "maxDiscountForFullPageScreenshot": 15,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "airCooler": {
+        "maxPrice": 15000,
+        "minPrice": 4000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "airConditioner": {
+        "maxPrice": 50000,
+        "minPrice": 20000,
+        "maxDiscount": 10,
+        "maxBrandDiscount": 5,
+        "maxDiscountForFullPageScreenshot": 15,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    }
+  },
+  {
+    "category": "kitchenAppliances",
+    "subCategories": {
+      "microwaveOven": {
+        "maxPrice": 20000,
+        "minPrice": 5000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "mixerJuicerGrinder": {
+        "maxPrice": 10000,
+        "minPrice": 3000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "coffeeMaker": {
+        "maxPrice": 8000,
+        "minPrice": 2000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "popUpToaster": {
+        "maxPrice": 5000,
+        "minPrice": 1000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    }
+  },
+  {
+    "category": "homeFurnishing"
+  },
+  {
+    "category": "homeDecor",
+    "subCategories": {
+      "wallArts": {
+        "maxPrice": 5000,
+        "minPrice": 1000,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "clocks": {
+        "maxPrice": 3000,
+        "minPrice": 800,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    }
+  },
+  {
+    "category": "smartProducts",
+    "subCategories": {
+      "smartLight": {
+        "maxPrice": 10000,
+        "minPrice": 3000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    }
+  },
+  {
+    "category": "audio",
+    "subCategories": {
+      "headphones": {
+        "maxPrice": 10000,
+        "minPrice": 2000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "speakers": {
+        "maxPrice": 15000,
+        "minPrice": 3000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "trueWirelessEarbuds": {
+        "maxPrice": 8000,
+        "minPrice": 2000,
+        "maxDiscount": 15,
+        "maxBrandDiscount": 10,
+        "maxDiscountForFullPageScreenshot": 20,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    }
+  }
+]

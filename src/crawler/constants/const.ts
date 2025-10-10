@@ -2,7 +2,7 @@
 const MAX_PRODUCTS_PER_WEBSITE = 30;
 
 // The maximum number of products to fetch by brand
-const MAX_PRODUCTS_BY_BRAND = 2;
+const MAX_PRODUCTS_BY_BRAND = 4;
 
 // The maximum number of products to fetch by brand (old constant, kept for reference)
 const MAX_PRODUCTS_BY_BRAND_COUNT = 4;
