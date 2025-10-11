@@ -1,5 +1,5 @@
 // The maximum number of products to scrape from a single website
-const MAX_PRODUCTS_PER_WEBSITE = 30;
+const MAX_PRODUCTS_PER_WEBSITE = 10;
 
 // The maximum number of products to fetch by brand
 const MAX_PRODUCTS_BY_BRAND = 4;

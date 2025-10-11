@@ -399,7 +399,42 @@
     }
   },
   {
-    "category": "homeFurnishing"
+    "category": "homeFurnishing",
+    "subCategories": {
+      "curtains": {
+        "maxPrice": 5000,
+        "minPrice": 1000,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "cushionCovers": {
+        "maxPrice": 2000,
+        "minPrice": 500,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      },
+      "bedSheets": {
+        "maxPrice": 6000,
+        "minPrice": 1500,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "",
+          "flipkart": ""
+        }
+      }
+    }
   },
   {
     "category": "homeDecor",

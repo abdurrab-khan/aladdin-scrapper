@@ -28,11 +28,18 @@ class CrawlerUtils {
   private browser: Browser;
   private page: Page;
   private website: E_COMMERCE;
+  private subCategory: string;
 
-  constructor(browser: Browser, page: Page, website: E_COMMERCE) {
-    this.website = website;
+  constructor(
+    browser: Browser,
+    page: Page,
+    website: E_COMMERCE,
+    subCategory: string
+  ) {
     this.browser = browser;
     this.page = page;
+    this.website = website;
+    this.subCategory = subCategory;
   }
 
   public async navigateToUrl(
@@ -40,7 +47,7 @@ class CrawlerUtils {
     url: string,
     showRandomDelay = true,
     waitSelector: string = PRODUCT_CARD_SELECTOR[this.website],
-    timeout = 10000
+    timeout = 60000
   ): Promise<void> {
     try {
       const nRes = await page.goto(url, {
@@ -170,7 +177,7 @@ class CrawlerUtils {
         type: "png",
         caret: "hide",
         animations: "disabled",
-        timeout: 10000,
+        timeout: 60000,
         ...screenShotConfig,
       });
 
@@ -198,7 +205,7 @@ class CrawlerUtils {
     page?: Page,
     selector?: string,
     showAdditionalDelay = true,
-    timeout = 10000
+    timeout = 60000
   ): Promise<void> {
     try {
       const targetPage = page || this.page;
@@ -246,7 +253,9 @@ class CrawlerUtils {
   public async getBrandProducts(
     page: Page,
     products: ElementHandle<SVGElement | HTMLElement>[],
-    max_price: number
+    minPrice: number,
+    maxPrice: number,
+    maxDiscountPercentage: number
   ): Promise<Product | null> {
     if (!products || products.length === 0) return null;
 
@@ -257,7 +266,13 @@ class CrawlerUtils {
 
         if (
           details &&
-          isValidProductDeal(details.price, details.discountPrice, max_price)
+          isValidProductDeal(
+            details.price,
+            details.discountPrice,
+            minPrice,
+            maxPrice,
+            maxDiscountPercentage
+          )
         ) {
           return details; // Return valid product details
         } else {
@@ -297,21 +312,24 @@ class CrawlerUtils {
       }_${ulid()}`;
 
       // Get bounding box of the first product to determine screenshot area
-      const boundingBox = await products[0]?.boundingBox();
+      let boundingBox = await products[0]?.boundingBox();
 
       if (boundingBox) {
+        // Let's adjust the width of the viewport and screen size based on the layout
+        if (boundingBox.height < boundingBox.width) {
+          await page.setViewportSize({
+            height: 1750,
+            width: 1500,
+          });
+
+          // Re-fetch the bounding box after viewport change
+          boundingBox = (await products[0]?.boundingBox()) ?? boundingBox;
+        }
+
         const clip = getClippingForGroupedScreenshot(
           boundingBox,
           productDetails.length
         );
-
-        // Let's adjust the width of the viewport and screen size based on the layout
-        if (boundingBox.height < boundingBox.width) {
-          await page.setViewportSize({
-            height: 1080,
-            width: 1100,
-          });
-        }
 
         const screenShotPath = await this.takeScreenshot(fileName, page, "", {
           clip,
@@ -321,6 +339,7 @@ class CrawlerUtils {
         if (screenShotPath) {
           return {
             name: "Grouped " + productDetails[0]?.brand + " Products",
+            category: this.subCategory,
             url: "",
             details: {
               brand: productDetails[0]?.brand || "Various",

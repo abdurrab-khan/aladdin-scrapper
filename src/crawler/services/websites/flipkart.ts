@@ -1,11 +1,18 @@
 import type { Browser, Page } from "playwright";
 import { Crawler } from "../crawler.js";
+import type { SubCategoryInfo } from "../../../types/index.js";
 
 export class FlipkartService extends Crawler {
   private url: string;
 
-  constructor(url: string, page: Page, browser: Browser) {
-    super("flipkart", page, browser);
+  constructor(
+    browser: Browser,
+    page: Page,
+    url: string,
+    subCategory: string,
+    subCategoryDetails: SubCategoryInfo
+  ) {
+    super(browser, page, "flipkart", subCategory, subCategoryDetails);
     this.url = url;
   }
 

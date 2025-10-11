@@ -1,5 +1,5 @@
 import type { Browser, Page } from "playwright";
-import type { E_COMMERCE } from "../../types/index.js";
+import type { E_COMMERCE, SubCategoryInfo } from "../../types/index.js";
 
 /**
  * Factory class to create scraper instances based on the platform.
@@ -7,23 +7,37 @@ import type { E_COMMERCE } from "../../types/index.js";
  */
 export default class CrawlerFactory {
   static async create(
-    url: string,
+    browser: Browser,
     page: Page,
     website: E_COMMERCE,
-    browser: Browser
+    url: string,
+    subCategory: string,
+    subCategoryInfo: SubCategoryInfo
   ) {
     switch (website) {
       case "amazon": {
         const { AmazonService } = await import(
           "../services/websites/amazon.js"
         );
-        return new AmazonService(url, page, browser);
+        return new AmazonService(
+          browser,
+          page,
+          url,
+          subCategory,
+          subCategoryInfo
+        );
       }
       case "flipkart": {
         const { FlipkartService } = await import(
           "../services/websites/flipkart.js"
         );
-        return new FlipkartService(url, page, browser);
+        return new FlipkartService(
+          browser,
+          page,
+          url,
+          subCategory,
+          subCategoryInfo
+        );
       }
       default:
         throw new Error(`Unsupported website: ${website}`);

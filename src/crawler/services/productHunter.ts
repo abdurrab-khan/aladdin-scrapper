@@ -1,15 +1,26 @@
 import type { Browser } from "playwright";
 import CrawlerFactory from "../utils/crawlerFactory.js";
-import type { E_COMMERCE } from "../../types/index.js";
+import type { E_COMMERCE, SubCategoryInfo } from "../../types/index.js";
 import getContext from "../utils/browser/getContext.js";
 
 async function productsHunter(
   browser: Browser,
   url: string,
-  website: E_COMMERCE
+  website: E_COMMERCE,
+  subCategory: string,
+  subCategoryInfo: SubCategoryInfo
 ) {
   const { context, page } = await getContext(browser); // Get browser context and page
-  const crawler = await CrawlerFactory.create(url, page, website, browser); // Create the appropriate crawler
+
+  // Create the appropriate crawler
+  const crawler = await CrawlerFactory.create(
+    browser,
+    page,
+    website,
+    url,
+    subCategory,
+    subCategoryInfo
+  );
 
   try {
     // Start fetching products
@@ -20,7 +31,7 @@ async function productsHunter(
     console.log(`⚠️  Error happen while crawling ${website}:`, error);
   } finally {
     await context.close(); // Ensure the context is closed after operation
-    return crawler && crawler.products.length > 0 ? crawler.products : null; // Return products or null
+    return crawler && crawler.products.length > 0 ? crawler.products : []; // Return products or null
   }
 }
 

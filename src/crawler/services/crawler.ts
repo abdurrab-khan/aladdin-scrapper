@@ -2,7 +2,7 @@ import type { Browser, ElementHandle, Page } from "playwright";
 
 import CrawlerUtils from "../utils/crawlerUtils.js";
 import { isValidProductDeal, randomDelay } from "../utils/utils.js";
-import type { E_COMMERCE } from "../../types/index.js";
+import type { E_COMMERCE, SubCategoryInfo } from "../../types/index.js";
 
 import {
   NEXT_BUTTON_SELECTOR,
@@ -10,8 +10,6 @@ import {
 } from "../css/css_selectors.js";
 import {
   MAX_EMPTY_PAGES_ALLOWED,
-  MAX_PERCENTAGE_DISCOUNT_BRAND,
-  MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT,
   MAX_PRODUCTS_BY_BRAND,
   MAX_PRODUCTS_BY_BRAND_COUNT,
   MAX_PRODUCTS_PER_WEBSITE,
@@ -31,20 +29,28 @@ export class Crawler {
   private browser: Browser;
   private website: E_COMMERCE;
 
-  private maxPrice: number;
   private crawlerUtils: CrawlerUtils;
   private tabsOpened: number = 0;
   private productsCount: number = 0;
   private emptyPageThreshold: number = 3;
   private productsByBrand = new Map();
   private alreadyProcessedProducts = new Set<string>();
+  private subCategory: string;
+  private subCategoryDetails: SubCategoryInfo;
 
-  constructor(website: E_COMMERCE, page: Page, browser: Browser) {
+  constructor(
+    browser: Browser,
+    page: Page,
+    website: E_COMMERCE,
+    subCategory: string,
+    subCategoryDetails: SubCategoryInfo
+  ) {
     this.page = page;
     this.website = website;
     this.browser = browser;
-    this.maxPrice = 2500; // TODO: Make it dynamic based on user input
-    this.crawlerUtils = new CrawlerUtils(browser, page, website);
+    this.subCategory = subCategory;
+    this.subCategoryDetails = subCategoryDetails;
+    this.crawlerUtils = new CrawlerUtils(browser, page, website, subCategory);
   }
 
   // @Navigate to the given URL
@@ -131,8 +137,6 @@ export class Crawler {
         true
       );
 
-      if (this.tabsOpened !== 0) this.tabsOpened = 0; // Reset tabs opened count if not zero
-
       // Increase the page number after successful navigation
       this.pageNumber += 1;
 
@@ -180,7 +184,8 @@ export class Crawler {
         // Taking screen shot
         const fileName = `${this.website}_${ulid()}`;
         const takeFullPageScreenShot =
-          discountPercent >= MAX_PERCENTAGE_TO_TAKE_FULL_PAGE_SCREENSHOT;
+          discountPercent >=
+          this.subCategoryDetails.maxDiscountForFullPageScreenshot;
 
         const cardScreenShot = await this.crawlerUtils.takeScreenshot(
           fileName,
@@ -188,8 +193,10 @@ export class Crawler {
         );
         let fullPageScreenShot: string | null = null;
 
+        console.log("Total Opended Tabs: ", this.tabsOpened);
+
         // Limit to 5 tabs at a time to avoid memory issues
-        if (this.tabsOpened < 5 && takeFullPageScreenShot) {
+        if (this.tabsOpened < 3 && takeFullPageScreenShot) {
           // Increase tabs opened count
           this.tabsOpened += 1;
 
@@ -223,6 +230,7 @@ export class Crawler {
         return {
           name: productData.name,
           url: productData.url,
+          category: this.subCategory,
           details: {
             brand: productData.brand,
             price: productData.price,
@@ -278,7 +286,7 @@ export class Crawler {
     const conditionToAddBrand =
       brand !== "Unknown" &&
       this.productsByBrand.get(brandKey) !== -1 &&
-      discountPercentage >= MAX_PERCENTAGE_DISCOUNT_BRAND;
+      discountPercentage >= this.subCategoryDetails.maxBrandDiscount;
 
     // Track products by brand with best discount
     if (conditionToAddBrand) {
@@ -332,7 +340,13 @@ export class Crawler {
     url: string
   ): boolean {
     const isValid =
-      isValidProductDeal(price, discountPrice, this.maxPrice) &&
+      isValidProductDeal(
+        price,
+        discountPrice,
+        this.subCategoryDetails.minPrice,
+        this.subCategoryDetails.maxPrice,
+        this.subCategoryDetails.maxDiscount
+      ) &&
       this.alreadyProcessedProducts.has(url) === false &&
       this.productsByBrand.get(brand) !== -1 &&
       this.productsCount < MAX_PRODUCTS_PER_WEBSITE;
@@ -384,7 +398,9 @@ export class Crawler {
         const products = await this.crawlerUtils.getBrandProducts(
           contextAndPage.page,
           rawProducts.slice(0, MAX_PRODUCTS_BY_BRAND_COUNT),
-          this.maxPrice
+          this.subCategoryDetails.minPrice,
+          this.subCategoryDetails.maxPrice,
+          this.subCategoryDetails.maxDiscount
         );
 
         // Insert the products if found

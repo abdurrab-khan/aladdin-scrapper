@@ -1,0 +1,66 @@
+{
+  "shoes": {
+    "subCategories": [
+      "sneakers",
+      "formalShoes",
+      "casualShoes"
+    ],
+    "lowPriorityCategories": []
+  },
+  "menClothings": {
+    "subCategories": [
+      "tshirts",
+      "shirts",
+      "jeans"
+    ],
+    "lowPriorityCategories": []
+  },
+  "laptopAndDesktop": {
+    "subCategories": [
+      "laptops",
+      "monitor",
+      "mouse"
+    ],
+    "lowPriorityCategories": []
+  },
+  "healthAndPersonalCare": {
+    "subCategories": [],
+    "lowPriorityCategories": []
+  },
+  "beautyAndPersonalCare": {
+    "subCategories": [],
+    "lowPriorityCategories": []
+  },
+  "nutritionAndSupplements": {
+    "subCategories": [],
+    "lowPriorityCategories": []
+  },
+  "sportsAndFitness": {
+    "subCategories": [],
+    "lowPriorityCategories": []
+  },
+  "homeAppliances": {
+    "subCategories": [],
+    "lowPriorityCategories": []
+  },
+  "kitchenAppliances": {
+    "subCategories": [],
+    "lowPriorityCategories": []
+  },
+  "homeFurnishing": {
+    "subCategories": [],
+    "lowPriorityCategories": []
+  },
+  "homeDecor": {
+    "subCategories": [],
+    "lowPriorityCategories": []
+  },
+  "smartProducts": {
+    "subCategories": [],
+    "lowPriorityCategories": []
+  },
+  "audio": {
+    "subCategories": [],
+    "lowPriorityCategories": []
+  }
+}

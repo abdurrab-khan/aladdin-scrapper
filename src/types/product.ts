@@ -19,6 +19,7 @@ export type GroupProductDetails = {
 
 export interface Product {
   name: string;
+  category: string;
   details: SingleProductDetails | GroupProductDetails;
   images: {
     image: string | string[];

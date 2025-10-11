@@ -1,5 +1,3 @@
-import { MAX_PERCENTAGE_DISCOUNT } from "../constants/const.js";
-
 import type { BrowserContextOptions } from "playwright";
 import type { E_COMMERCE } from "../../types/index.js";
 
@@ -99,17 +97,19 @@ export function getClippingForGroupedScreenshot(
 export function isValidProductDeal(
   price: number,
   discountPrice: number,
-  maxPrice: number
+  minPrice: number,
+  maxPrice: number,
+  maxDiscountPercentage: number
 ) {
   const discountPercentage = ((price - discountPrice) / price) * 100;
 
   // Validate price, discount price, and discount percentage
   const isValid =
-    price > 0 &&
+    price > minPrice &&
     price < maxPrice &&
     discountPrice > 0 &&
     discountPrice < price &&
-    discountPercentage > MAX_PERCENTAGE_DISCOUNT;
+    discountPercentage > maxDiscountPercentage;
 
   return isValid;
 }
