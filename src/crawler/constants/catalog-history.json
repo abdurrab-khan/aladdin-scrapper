@@ -2,61 +2,82 @@
   "shoes": {
     "subCategories": [
       "sneakers",
-      "formalShoes",
-      "casualShoes"
+      "formalShoes"
     ],
     "lowPriorityCategories": []
   },
   "menClothings": {
     "subCategories": [
       "tshirts",
-      "shirts",
-      "jeans"
+      "shirts"
     ],
     "lowPriorityCategories": []
   },
   "laptopAndDesktop": {
     "subCategories": [
       "laptops",
-      "monitor",
-      "mouse"
+      "monitor"
     ],
     "lowPriorityCategories": []
   },
   "healthAndPersonalCare": {
-    "subCategories": [],
+    "subCategories": [
+      "trimmer",
+      "hairDryer"
+    ],
     "lowPriorityCategories": []
   },
   "beautyAndPersonalCare": {
-    "subCategories": [],
+    "subCategories": [
+      "bathAndBody"
+    ],
     "lowPriorityCategories": []
   },
   "nutritionAndSupplements": {
-    "subCategories": [],
+    "subCategories": [
+      "proteinPowder",
+      "vitaminsAndSupplements"
+    ],
     "lowPriorityCategories": []
   },
   "sportsAndFitness": {
-    "subCategories": [],
+    "subCategories": [
+      "fitnessEquipments"
+    ],
     "lowPriorityCategories": []
   },
   "homeAppliances": {
-    "subCategories": [],
+    "subCategories": [
+      "iron",
+      "waterPurifier"
+    ],
     "lowPriorityCategories": []
   },
   "kitchenAppliances": {
-    "subCategories": [],
+    "subCategories": [
+      "microwaveOven",
+      "mixerJuicerGrinder"
+    ],
     "lowPriorityCategories": []
   },
   "homeFurnishing": {
-    "subCategories": [],
+    "subCategories": [
+      "curtains",
+      "cushionCovers"
+    ],
     "lowPriorityCategories": []
   },
   "homeDecor": {
-    "subCategories": [],
+    "subCategories": [
+      "wallArts",
+      "clocks"
+    ],
     "lowPriorityCategories": []
   },
   "smartProducts": {
-    "subCategories": [],
+    "subCategories": [
+      "smartLight"
+    ],
     "lowPriorityCategories": []
   },
   "audio": {

@@ -13,6 +13,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.17.1",
   "dependencies": {
+    "@supabase/supabase-js": "^2.75.0",
     "playwright": "^1.55.0",
     "ulid": "^3.0.1"
   },

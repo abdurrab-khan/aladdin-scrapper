@@ -6,36 +6,39 @@ import getBrowser from "./utils/browser/getBrowser.js";
  * Scrape products from the given URL and e-commerce website.
  */
 export async function scrapeProducts(selection: SelectionResult): Promise<any> {
-  const urls = selection.urls;
+  const selectionDetails = Object.entries(selection.subcategoriesDetails);
 
-  if (!urls || urls.length === 0) {
-    console.warn("⚠️  No URLs provided for scraping.");
-    return null;
+  console.log("🚀  Starting product scraping...");
+
+  if (selectionDetails.length === 0) {
+    console.warn("⚠️  No subcategories selected for scraping.");
+    return [];
   }
 
-  const browser = await getBrowser({ headless: false });
+  const browser = await getBrowser({ headless: true });
 
   try {
     const products = await Promise.all(
-      urls.map((u, i) => {
+      selectionDetails.map(([category, details]) => {
+        const urls = Object.entries(details.urls);
+
         return Promise.all(
-          u.map(([website, url]) => {
-            const subCategoryInfo =
-              selection?.subcategoriesDetails[selection?.subcategories[i]!];
+          urls.map(([ecommerce, url]) => {
+            console.log(
+              `🔍 Scraping subcategory: ${category}  - E-commerce: ${ecommerce}`
+            );
 
             return productsHunter(
               browser,
               url,
-              website,
-              selection.subcategories[i]!, // TODO: handle undefined
-              subCategoryInfo! // TODO: handle undefined
+              ecommerce as "amazon" | "flipkart",
+              category,
+              details
             );
           })
         );
       })
     );
-
-    console.log("✅  Scraping completed: ", products);
 
     return products.flat(2);
   } catch (error) {

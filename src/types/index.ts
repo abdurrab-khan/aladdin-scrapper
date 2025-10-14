@@ -19,15 +19,13 @@ export interface SubCategory {
   maxBrandDiscount: number;
   maxDiscountForFullPageScreenshot: number;
   urls: {
-    amazon: string;
-    flipkart: string;
+    [k in E_COMMERCE]: string;
   };
 }
 
-export type SubCategoryInfo = Omit<SubCategory, "urls">;
 
 export type SubCategoryDetails = {
-  [subCat: string]: Omit<SubCategory, "urls">;
+  [subCat: string]: SubCategory;
 };
 
 export interface Category {
@@ -48,6 +46,5 @@ export interface SelectionResult {
   category: string;
   subcategories: string[];
   subcategoriesDetails: SubCategoryDetails;
-  urls: Array<[E_COMMERCE, string][]>;
   isLowPriority: boolean;
 }

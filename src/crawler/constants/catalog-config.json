@@ -3,36 +3,36 @@
     "category": "menClothings",
     "subCategories": {
       "tshirts": {
-        "maxPrice": 8000,
-        "minPrice": 1000,
-        "maxDiscount": 20,
-        "maxBrandDiscount": 15,
-        "maxDiscountForFullPageScreenshot": 25,
+        "maxPrice": 1500,
+        "minPrice": 150,
+        "maxDiscount": 75,
+        "maxBrandDiscount": 80,
+        "maxDiscountForFullPageScreenshot": 85,
         "urls": {
-          "amazon": "",
-          "flipkart": ""
+          "amazon": "https://www.amazon.in/s?k=t-shirt&i=apparel&rh=n%3A1968123031&s=popularity-rank",
+          "flipkart": "https://www.flipkart.com/clothing-and-accessories/topwear/tshirt/men-tshirt/pr?sid=clo,ash,ank,edy&otracker=categorytree"
         }
       },
       "shirts": {
-        "maxPrice": 10000,
-        "minPrice": 2000,
-        "maxDiscount": 20,
-        "maxBrandDiscount": 15,
-        "maxDiscountForFullPageScreenshot": 25,
+        "maxPrice": 1500,
+        "minPrice": 150,
+        "maxDiscount": 75,
+        "maxBrandDiscount": 80,
+        "maxDiscountForFullPageScreenshot": 85,
         "urls": {
-          "amazon": "",
-          "flipkart": ""
+          "amazon": "https://www.amazon.in/s?k=shirts&i=apparel&rh=n%3A94998646031&s=popularity-rank",
+          "flipkart": "https://www.flipkart.com/mens-shirts/pr?sid=clo%2Cash%2Caxc%2Cmmk&otracker=categorytree"
         }
       },
       "jeans": {
-        "maxPrice": 15000,
-        "minPrice": 5000,
-        "maxDiscount": 20,
-        "maxBrandDiscount": 15,
-        "maxDiscountForFullPageScreenshot": 25,
+        "maxPrice": 2500,
+        "minPrice": 200,
+        "maxDiscount": 75,
+        "maxBrandDiscount": 75,
+        "maxDiscountForFullPageScreenshot": 82,
         "urls": {
           "amazon": "",
-          "flipkart": ""
+          "flipkart": "https://www.flipkart.com/clothing-and-accessories/bottomwear/jeans/men-jeans/pr?sid=clo,vua,k58,i51&otracker=categorytree"
         }
       },
       "pants": {

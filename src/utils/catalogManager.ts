@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import type {
   Category,
-  E_COMMERCE,
   SelectionResult,
   History,
   SubCategoryDetails,
@@ -88,9 +87,9 @@ class CatalogRotationManager {
     if (!category.lowPriorityCategories) return [];
 
     const allLowPriority = Object.keys(category.lowPriorityCategories);
-    const completed = this.history[categoryName].lowPriorityCategories;
+    const completed = this?.history[categoryName]?.lowPriorityCategories;
 
-    return allLowPriority.filter((subcat) => !completed.includes(subcat));
+    return allLowPriority.filter((subcat) => !completed?.includes(subcat));
   }
 
   private shouldMoveToLowPriority(category: Category): boolean {
@@ -119,8 +118,7 @@ class CatalogRotationManager {
 
     for (const subCat of subcategories) {
       if (category.subCategories[subCat]) {
-        const { urls, ...rest } = category.subCategories[subCat];
-        details[subCat] = rest;
+        details[subCat] = category.subCategories[subCat];
       }
     }
 
@@ -143,7 +141,7 @@ class CatalogRotationManager {
     });
 
     for (const category of sortedCategories) {
-      if (results.length >= 3) break;
+      if (results.length >= 2) break;
 
       const categoryName = category.category;
       this.initializeHistoryForCategory(categoryName);
@@ -159,18 +157,10 @@ class CatalogRotationManager {
           results.push({
             category: categoryName,
             subcategories: selected,
-            urls: selected.map((subCat) => {
-              const subCategoryDetails = category.subCategories[subCat];
-
-              if (subCategoryDetails && subCategoryDetails.urls) {
-                return Object.entries(subCategoryDetails.urls) as [
-                  E_COMMERCE,
-                  string
-                ][];
-              }
-
-              return [];
-            }),
+            subcategoriesDetails: this.getSubcategoryDetails(
+              category,
+              selected
+            ),
             isLowPriority: true,
           });
         }
@@ -178,7 +168,7 @@ class CatalogRotationManager {
         const uncompletedSubcats = this.getUncompletedSubcategories(category);
 
         if (uncompletedSubcats.length > 0) {
-          const selected = uncompletedSubcats.slice(0, 3);
+          const selected = uncompletedSubcats.slice(0, 2);
           results.push({
             category: categoryName,
             subcategories: selected,
@@ -186,18 +176,6 @@ class CatalogRotationManager {
               category,
               selected
             ),
-            urls: selected.map((subCat) => {
-              const subCategoryDetails = category.subCategories[subCat];
-
-              if (subCategoryDetails && subCategoryDetails.urls) {
-                return Object.entries(subCategoryDetails.urls) as [
-                  E_COMMERCE,
-                  string
-                ][];
-              }
-
-              return [];
-            }),
             isLowPriority: false,
           });
         }
