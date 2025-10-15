@@ -49,7 +49,9 @@
   "homeAppliances": {
     "subCategories": [
       "iron",
-      "waterPurifier"
+      "waterPurifier",
+      "waterGeyser",
+      "washingMachine"
     ],
     "lowPriorityCategories": []
   },
@@ -81,7 +83,10 @@
     "lowPriorityCategories": []
   },
   "audio": {
-    "subCategories": [],
+    "subCategories": [
+      "headphones",
+      "speakers"
+    ],
     "lowPriorityCategories": []
   }
 }

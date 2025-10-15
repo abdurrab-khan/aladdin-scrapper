@@ -1,20 +1,34 @@
-import { createClient } from "@supabase/supabase-js";
-import type { Product } from "../types/product.js";
 import { readFileSync } from "node:fs";
+import { createClient } from "@supabase/supabase-js";
 
+import type { Product } from "../types/product.js";
+
+// cspell:ignore supabase
 /**
  * Supabase Client
  * @description This class handles all interactions with the Supabase database.
  * It provides methods to connect, query, and manage data within the Supabase environment.
  */
+
 class SupabaseClient {
   private supabaseClient;
   private uploadedImageUrls: string[] = [];
 
   constructor() {
+    if (!process.env["SUPABASE_URL"] || !process.env["SUPABASE_KEY"]) {
+      throw new Error(
+        "Supabase URL or Key is not defined in environment variables."
+      );
+    }
+
     this.supabaseClient = createClient(
       process.env["SUPABASE_URL"] || "",
-      process.env["SUPABASE_KEY"] || ""
+      process.env["SUPABASE_KEY"] || "",
+      {
+        db: {
+          schema: "public",
+        },
+      }
     );
   }
 
@@ -24,7 +38,6 @@ class SupabaseClient {
         flag: "r",
       });
 
-      // cspell:disable-next-line
       const response = await this.supabaseClient.storage
         .from("aladdin")
         .upload(imagePath, imageBuffer, {
@@ -49,16 +62,15 @@ class SupabaseClient {
 
   private async insertProducts(products: Product[]): Promise<void> {
     try {
-      const { error } = await this.supabaseClient.rpc(
-        "insert_products",
-        products
-      );
+      const { error } = await this.supabaseClient.rpc("insert_products_v2", {
+        products: products,
+      });
 
       if (error) {
         throw error;
       }
     } catch (error) {
-      console.error("⚠️ Error inserting products:", error);
+      console.error("⚠️  Error inserting products:", error);
     }
   }
 

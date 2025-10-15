@@ -1,8 +1,12 @@
+import { ulid } from "ulid";
 import type { Browser, ElementHandle, Page } from "playwright";
 
+import { randomDelay } from "../utils/utils.js";
 import CrawlerUtils from "../utils/crawlerUtils.js";
-import { isValidProductDeal, randomDelay } from "../utils/utils.js";
-import type { E_COMMERCE, SubCategoryInfo } from "../../types/index.js";
+import getContext from "../utils/browser/getContext.js";
+
+import type { E_COMMERCE, SubCategory } from "../../types/index.js";
+import type { Product, SingleProductDetails } from "../../types/product.js";
 
 import {
   NEXT_BUTTON_SELECTOR,
@@ -15,9 +19,6 @@ import {
   MAX_PRODUCTS_PER_WEBSITE,
   MIN_PRODUCTS_PER_PAGE,
 } from "../constants/const.js";
-import getContext from "../utils/browser/getContext.js";
-import type { Product, SingleProductDetails } from "../../types/product.js";
-import { ulid } from "ulid";
 
 export class Crawler {
   public products: Product[] = [];
@@ -36,21 +37,41 @@ export class Crawler {
   private productsByBrand = new Map();
   private alreadyProcessedProducts = new Set<string>();
   private subCategory: string;
-  private subCategoryDetails: SubCategoryInfo;
+  private subCategoryDetails: SubCategory;
+
+  // Private Product Details
+  private productPrivateInfo: Record<
+    "userId" | "platformId" | "associatedAppId",
+    string
+  >;
 
   constructor(
     browser: Browser,
     page: Page,
     website: E_COMMERCE,
     subCategory: string,
-    subCategoryDetails: SubCategoryInfo
+    subCategoryDetails: SubCategory
   ) {
     this.page = page;
     this.website = website;
     this.browser = browser;
     this.subCategory = subCategory;
     this.subCategoryDetails = subCategoryDetails;
-    this.crawlerUtils = new CrawlerUtils(browser, page, website, subCategory);
+
+    this.productPrivateInfo = {
+      userId: process.env["USER_ID"] || "",
+      platformId: this.getPlatformId(),
+      associatedAppId: process.env["APP_ID"] || "",
+    };
+
+    this.crawlerUtils = new CrawlerUtils(
+      browser,
+      page,
+      website,
+      subCategory,
+      subCategoryDetails,
+      this.productPrivateInfo
+    );
   }
 
   // @Navigate to the given URL
@@ -169,12 +190,7 @@ export class Crawler {
       // If product details found, process further
       if (
         productData &&
-        this.checkDeepValidation(
-          productData.price,
-          productData.discountPrice,
-          productData.brand,
-          productData.url
-        )
+        this.checkDeepValidation(productData.brand, productData.url)
       ) {
         const { brand, price, discountPrice } = productData;
         const discountPercent = Math.round(
@@ -193,8 +209,6 @@ export class Crawler {
         );
         let fullPageScreenShot: string | null = null;
 
-        console.log("Total Opended Tabs: ", this.tabsOpened);
-
         // Limit to 5 tabs at a time to avoid memory issues
         if (this.tabsOpened < 3 && takeFullPageScreenShot) {
           // Increase tabs opened count
@@ -211,7 +225,7 @@ export class Crawler {
           this.tabsOpened -= 1;
         }
 
-        if (!cardScreenShot && !fullPageScreenShot) {
+        if (!cardScreenShot) {
           console.warn(
             `⚠️  Failed to take screenshot for product: ${productData.name} (${productData.url})`
           );
@@ -246,7 +260,10 @@ export class Crawler {
             fullPage: fullPageScreenShot,
           },
           isGrouped: false,
-        } as Product;
+          userId: this.productPrivateInfo.userId,
+          platformId: this.getPlatformId(),
+          associatedAppId: this.productPrivateInfo.associatedAppId,
+        };
       }
 
       return null;
@@ -333,20 +350,8 @@ export class Crawler {
   }
 
   // @Private method to check deep validation for brand and URL
-  private checkDeepValidation(
-    price: number,
-    discountPrice: number,
-    brand: string,
-    url: string
-  ): boolean {
+  private checkDeepValidation(brand: string, url: string): boolean {
     const isValid =
-      isValidProductDeal(
-        price,
-        discountPrice,
-        this.subCategoryDetails.minPrice,
-        this.subCategoryDetails.maxPrice,
-        this.subCategoryDetails.maxDiscount
-      ) &&
       this.alreadyProcessedProducts.has(url) === false &&
       this.productsByBrand.get(brand) !== -1 &&
       this.productsCount < MAX_PRODUCTS_PER_WEBSITE;
@@ -397,10 +402,7 @@ export class Crawler {
         // Final extraction of product details
         const products = await this.crawlerUtils.getBrandProducts(
           contextAndPage.page,
-          rawProducts.slice(0, MAX_PRODUCTS_BY_BRAND_COUNT),
-          this.subCategoryDetails.minPrice,
-          this.subCategoryDetails.maxPrice,
-          this.subCategoryDetails.maxDiscount
+          rawProducts.slice(0, MAX_PRODUCTS_BY_BRAND_COUNT)
         );
 
         // Insert the products if found
@@ -426,6 +428,14 @@ export class Crawler {
         await contextAndPage.page.close();
         await contextAndPage.context.close();
       }
+    }
+  }
+
+  private getPlatformId(): string {
+    if (this.website === "amazon") {
+      return process.env["AMAZON_PLATFORM_ID"] || "";
+    } else {
+      return process.env["FLIPKART_PLATFORM_ID"] || "";
     }
   }
 }

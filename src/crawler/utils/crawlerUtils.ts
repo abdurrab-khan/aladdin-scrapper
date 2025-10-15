@@ -1,45 +1,137 @@
+import { ulid } from "ulid";
 import getContext from "./browser/getContext.js";
 import { cleanData, hasRequiredDetails } from "./helper.js";
 import {
-  AMAZON_FETCH_BRAND_PRODUCTS,
-  FLIPKART_FETCH_BRAND_PRODUCTS,
-  FULL_PAGE_SELECTOR,
-  PRODUCT_CARD_SELECTOR,
-  PRODUCT_DETAILS,
-} from "../css/css_selectors.js";
-import {
-  getClippingForGroupedScreenshot,
-  getClippingForScreenshot,
-  getContextOptionsForScreenShot,
-  isValidProductDeal,
   randomDelay,
+  isValidProductDeal,
+  getClippingForScreenshot,
+  getClippingForGroupedScreenshot,
+  getContextOptionsForScreenShot,
 } from "./utils.js";
 
+import {
+  PRODUCT_DETAILS,
+  FULL_PAGE_SELECTOR,
+  PRODUCT_CARD_SELECTOR,
+  AMAZON_FETCH_BRAND_PRODUCTS,
+  FLIPKART_FETCH_BRAND_PRODUCTS,
+} from "../css/css_selectors.js";
 import type {
   E_COMMERCE,
+  SubCategory,
   ProductSelector,
   ProductSelectorValue,
 } from "../../types/index.js";
-import type { GroupProductDetails, Product } from "../../types/product.js";
 import type { Browser, ElementHandle, Page } from "playwright";
-import { ulid } from "ulid";
+import type { GroupProductDetails, Product } from "../../types/product.js";
 
 class CrawlerUtils {
   private browser: Browser;
   private page: Page;
   private website: E_COMMERCE;
   private subCategory: string;
+  private subCategoryDetails: SubCategory;
+
+  private ProductPrivateInfo: Record<
+    "userId" | "platformId" | "associatedAppId",
+    string
+  >;
 
   constructor(
     browser: Browser,
     page: Page,
     website: E_COMMERCE,
-    subCategory: string
+    subCategory: string,
+    subCategoryDetails: SubCategory,
+    productPrivateInfo: Record<
+      "userId" | "platformId" | "associatedAppId",
+      string
+    >
   ) {
     this.browser = browser;
     this.page = page;
     this.website = website;
     this.subCategory = subCategory;
+    this.subCategoryDetails = subCategoryDetails;
+    this.ProductPrivateInfo = productPrivateInfo;
+  }
+
+  private async getFlipkartBrandSelector(
+    page: Page,
+    brand: string
+  ): Promise<ElementHandle<HTMLElement | SVGElement> | null> {
+    try {
+      const sections = await page.$$(
+        FLIPKART_FETCH_BRAND_PRODUCTS["mainSection"]
+      );
+
+      for (const section of sections) {
+        const title = await section.$(
+          FLIPKART_FETCH_BRAND_PRODUCTS["sectionTitle"]
+        );
+
+        if (
+          title &&
+          (await title?.textContent())?.trim().toLowerCase() === "brand"
+        ) {
+          // If the section is collapsed, click to expand it
+          if (((await section.boundingBox())?.height ?? 0) < 60) {
+            await section.click();
+            await page.waitForTimeout(500);
+          }
+
+          const input = await section.$(FLIPKART_FETCH_BRAND_PRODUCTS["input"]);
+          await input?.fill(brand);
+
+          const brandSector = await section.$(
+            FLIPKART_FETCH_BRAND_PRODUCTS["selector"]
+          );
+
+          return brandSector || null;
+        }
+      }
+
+      return null;
+    } catch (error) {
+      console.error("⚠️ Error fetching flipkart brand selector:", error);
+      return null;
+    }
+  }
+
+  private async getAmazonBrandSelector(
+    page: Page,
+    brand: string
+  ): Promise<ElementHandle<HTMLElement | SVGElement> | null> {
+    try {
+      const seeMoreBtn = await page.$(AMAZON_FETCH_BRAND_PRODUCTS["seeMore"]);
+
+      if (seeMoreBtn) {
+        // Click to expand the brand list
+        await seeMoreBtn.click();
+
+        const allBrandSelectors = await page.$$(
+          AMAZON_FETCH_BRAND_PRODUCTS["selector"]
+        );
+
+        // Iterate through each brand selector to find the matching brand
+        for (const brandSelector of allBrandSelectors) {
+          const text = (await brandSelector.textContent())
+            ?.trim()
+            .toLowerCase();
+
+          // Create a case-insensitive regex to match the brand
+          const matchRegex = new RegExp(brand, "i");
+          if (matchRegex.test(text || "")) {
+            return brandSelector;
+          }
+        }
+      }
+
+      return null;
+    } catch (error) {
+      console.error("⚠️ Error fetching amazon brand selector:", error);
+      return null;
+    }
   }
 
   public async navigateToUrl(
@@ -108,7 +200,16 @@ class CrawlerUtils {
       if (!productDetails.brand)
         productDetails.brand = productDetails.name.split(" ")[0] ?? "Unknown";
 
-      return productDetails;
+      // Validate the extracted product details
+      const hasValidDetails = isValidProductDeal(
+        productDetails.price,
+        productDetails.discountPrice,
+        this.subCategoryDetails.minPrice,
+        this.subCategoryDetails.maxPrice,
+        this.subCategoryDetails.maxDiscount
+      );
+
+      return hasValidDetails ? productDetails : null;
     } catch (error) {
       console.log(
         `⚠️  Error extracting product data:`,
@@ -252,10 +353,7 @@ class CrawlerUtils {
 
   public async getBrandProducts(
     page: Page,
-    products: ElementHandle<SVGElement | HTMLElement>[],
-    minPrice: number,
-    maxPrice: number,
-    maxDiscountPercentage: number
+    products: ElementHandle<SVGElement | HTMLElement>[]
   ): Promise<Product | null> {
     if (!products || products.length === 0) return null;
 
@@ -264,16 +362,7 @@ class CrawlerUtils {
       products.map(async (product, i) => {
         const details = await this.extractProductData(product);
 
-        if (
-          details &&
-          isValidProductDeal(
-            details.price,
-            details.discountPrice,
-            minPrice,
-            maxPrice,
-            maxDiscountPercentage
-          )
-        ) {
+        if (details) {
           return details; // Return valid product details
         } else {
           // If no valid products found after checking a few, log a warning
@@ -365,90 +454,15 @@ class CrawlerUtils {
               fullPage: null,
             },
             isGrouped: true,
+            userId: this.ProductPrivateInfo.userId,
+            platformId: this.ProductPrivateInfo.platformId,
+            associatedAppId: this.ProductPrivateInfo.associatedAppId,
           };
         }
       }
     }
 
     return null;
-  }
-
-  private async getFlipkartBrandSelector(
-    page: Page,
-    brand: string
-  ): Promise<ElementHandle<HTMLElement | SVGElement> | null> {
-    try {
-      const sections = await page.$$(
-        FLIPKART_FETCH_BRAND_PRODUCTS["mainSection"]
-      );
-
-      for (const section of sections) {
-        const title = await section.$(
-          FLIPKART_FETCH_BRAND_PRODUCTS["sectionTitle"]
-        );
-
-        if (
-          title &&
-          (await title?.textContent())?.trim().toLowerCase() === "brand"
-        ) {
-          // If the section is collapsed, click to expand it
-          if (((await section.boundingBox())?.height ?? 0) < 60) {
-            await section.click();
-            await page.waitForTimeout(500);
-          }
-
-          const input = await section.$(FLIPKART_FETCH_BRAND_PRODUCTS["input"]);
-          await input?.fill(brand);
-
-          const brandSector = await section.$(
-            FLIPKART_FETCH_BRAND_PRODUCTS["selector"]
-          );
-
-          return brandSector || null;
-        }
-      }
-
-      return null;
-    } catch (error) {
-      console.error("⚠️ Error fetching flipkart brand selector:", error);
-      return null;
-    }
-  }
-
-  private async getAmazonBrandSelector(
-    page: Page,
-    brand: string
-  ): Promise<ElementHandle<HTMLElement | SVGElement> | null> {
-    try {
-      const seeMoreBtn = await page.$(AMAZON_FETCH_BRAND_PRODUCTS["seeMore"]);
-
-      if (seeMoreBtn) {
-        // Click to expand the brand list
-        await seeMoreBtn.click();
-
-        const allBrandSelectors = await page.$$(
-          AMAZON_FETCH_BRAND_PRODUCTS["selector"]
-        );
-
-        // Iterate through each brand selector to find the matching brand
-        for (const brandSelector of allBrandSelectors) {
-          const text = (await brandSelector.textContent())
-            ?.trim()
-            .toLowerCase();
-
-          // Create a case-insensitive regex to match the brand
-          const matchRegex = new RegExp(brand, "i");
-          if (matchRegex.test(text || "")) {
-            return brandSelector;
-          }
-        }
-      }
-
-      return null;
-    } catch (error) {
-      console.error("⚠️ Error fetching amazon brand selector:", error);
-      return null;
-    }
   }
 }
 

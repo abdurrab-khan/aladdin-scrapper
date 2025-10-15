@@ -1,6 +1,6 @@
 import type { Browser, Page } from "playwright";
 import { Crawler } from "../crawler.js";
-import type { SubCategoryInfo } from "../../../types/index.js";
+import type { SubCategory } from "../../../types/index.js";
 
 export class AmazonService extends Crawler {
   private url: string;
@@ -10,7 +10,7 @@ export class AmazonService extends Crawler {
     page: Page,
     url: string,
     subCategory: string,
-    subCategoryDetails: SubCategoryInfo
+    subCategoryDetails: SubCategory
   ) {
     super(browser, page, "amazon", subCategory, subCategoryDetails);
     this.url = url;

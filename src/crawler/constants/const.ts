@@ -1,5 +1,5 @@
 // The maximum number of products to scrape from a single website
-const MAX_PRODUCTS_PER_WEBSITE = 10;
+const MAX_PRODUCTS_PER_WEBSITE = 30;
 
 // The maximum number of products to fetch by brand
 const MAX_PRODUCTS_BY_BRAND = 4;
@@ -8,7 +8,7 @@ const MAX_PRODUCTS_BY_BRAND = 4;
 const MAX_PRODUCTS_BY_BRAND_COUNT = 4;
 
 // The maximum number of products to send per category
-const MAX_PRODUCT_PER_CATEGORY = 8;
+const MAX_PRODUCT_PER_CATEGORY = 6;
 
 // The maximum number of empty pages allowed before stopping the scraper
 const MAX_EMPTY_PAGES_ALLOWED = 5;

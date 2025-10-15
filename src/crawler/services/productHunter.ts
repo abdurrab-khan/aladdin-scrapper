@@ -1,6 +1,6 @@
 import type { Browser } from "playwright";
 import CrawlerFactory from "../utils/crawlerFactory.js";
-import type { E_COMMERCE, SubCategoryInfo } from "../../types/index.js";
+import type { E_COMMERCE, SubCategory } from "../../types/index.js";
 import getContext from "../utils/browser/getContext.js";
 
 async function productsHunter(
@@ -8,7 +8,7 @@ async function productsHunter(
   url: string,
   website: E_COMMERCE,
   subCategory: string,
-  subCategoryInfo: SubCategoryInfo
+  subCategoryInfo: SubCategory
 ) {
   const { context, page } = await getContext(browser); // Get browser context and page
 

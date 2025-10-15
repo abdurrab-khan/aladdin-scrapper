@@ -95,12 +95,14 @@ export function getClippingForGroupedScreenshot(
 
 // ============== PRODUCT RELATED HELPER FUNCTIONS ==============
 export function isValidProductDeal(
-  price: number,
-  discountPrice: number,
+  price: number | null,
+  discountPrice: number | null,
   minPrice: number,
   maxPrice: number,
   maxDiscountPercentage: number
 ) {
+  if (price === null || discountPrice === null) return false;
+
   const discountPercentage = ((price - discountPrice) / price) * 100;
 
   // Validate price, discount price, and discount percentage

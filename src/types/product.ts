@@ -20,12 +20,15 @@ export type GroupProductDetails = {
 export interface Product {
   name: string;
   category: string;
+  url: string;
+  isGrouped: boolean;
   details: SingleProductDetails | GroupProductDetails;
   images: {
     image: string | string[];
     card: string;
     fullPage: string | null;
   };
-  url: string;
-  isGrouped: boolean;
+  userId: string;
+  platformId: string;
+  associatedAppId: string;
 }
