@@ -1,3 +1,4 @@
+import type RedisDB from "../db/redis.js";
 import type { SelectionResult } from "../types/index.js";
 import type { Product, SingleProductDetails } from "../types/product.js";
 import { MAX_PRODUCT_PER_CATEGORY } from "./constants/const.js";
@@ -9,7 +10,10 @@ type SingleProducts = Product & { details: SingleProductDetails };
 /**
  * Scrape products from the given URL and e-commerce website.
  */
-export async function scrapeProducts(selection: SelectionResult): Promise<any> {
+export async function scrapeProducts(
+  selection: SelectionResult,
+  redis: RedisDB
+): Promise<any> {
   const selectionDetails = Object.entries(selection.subcategoriesDetails);
 
   if (selectionDetails.length === 0) {
@@ -30,6 +34,7 @@ export async function scrapeProducts(selection: SelectionResult): Promise<any> {
               browser,
               url,
               ecommerce as "amazon" | "flipkart",
+              redis,
               category,
               details
             )

@@ -14,79 +14,47 @@
     "lowPriorityCategories": []
   },
   "laptopAndDesktop": {
-    "subCategories": [
-      "laptops",
-      "monitor"
-    ],
+    "subCategories": [],
     "lowPriorityCategories": []
   },
   "healthAndPersonalCare": {
-    "subCategories": [
-      "trimmer",
-      "hairDryer"
-    ],
+    "subCategories": [],
     "lowPriorityCategories": []
   },
   "beautyAndPersonalCare": {
-    "subCategories": [
-      "bathAndBody"
-    ],
+    "subCategories": [],
     "lowPriorityCategories": []
   },
   "nutritionAndSupplements": {
-    "subCategories": [
-      "proteinPowder",
-      "vitaminsAndSupplements"
-    ],
+    "subCategories": [],
     "lowPriorityCategories": []
   },
   "sportsAndFitness": {
-    "subCategories": [
-      "fitnessEquipments"
-    ],
+    "subCategories": [],
     "lowPriorityCategories": []
   },
   "homeAppliances": {
-    "subCategories": [
-      "iron",
-      "waterPurifier",
-      "waterGeyser",
-      "washingMachine"
-    ],
+    "subCategories": [],
     "lowPriorityCategories": []
   },
   "kitchenAppliances": {
-    "subCategories": [
-      "microwaveOven",
-      "mixerJuicerGrinder"
-    ],
+    "subCategories": [],
     "lowPriorityCategories": []
   },
   "homeFurnishing": {
-    "subCategories": [
-      "curtains",
-      "cushionCovers"
-    ],
+    "subCategories": [],
     "lowPriorityCategories": []
   },
   "homeDecor": {
-    "subCategories": [
-      "wallArts",
-      "clocks"
-    ],
+    "subCategories": [],
     "lowPriorityCategories": []
   },
   "smartProducts": {
-    "subCategories": [
-      "smartLight"
-    ],
+    "subCategories": [],
     "lowPriorityCategories": []
   },
   "audio": {
-    "subCategories": [
-      "headphones",
-      "speakers"
-    ],
+    "subCategories": [],
     "lowPriorityCategories": []
   }
 }

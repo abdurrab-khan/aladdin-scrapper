@@ -19,6 +19,7 @@ import {
   MAX_PRODUCTS_PER_WEBSITE,
   MIN_PRODUCTS_PER_PAGE,
 } from "../constants/const.js";
+import type RedisDB from "../../db/redis.js";
 
 export class Crawler {
   public products: Product[] = [];
@@ -29,6 +30,7 @@ export class Crawler {
   private page: Page;
   private browser: Browser;
   private website: E_COMMERCE;
+  private redis: RedisDB;
 
   private crawlerUtils: CrawlerUtils;
   private tabsOpened: number = 0;
@@ -49,6 +51,7 @@ export class Crawler {
     browser: Browser,
     page: Page,
     website: E_COMMERCE,
+    redis: RedisDB,
     subCategory: string,
     subCategoryDetails: SubCategory
   ) {
@@ -56,6 +59,7 @@ export class Crawler {
     this.website = website;
     this.browser = browser;
     this.subCategory = subCategory;
+    this.redis = redis;
     this.subCategoryDetails = subCategoryDetails;
 
     this.productPrivateInfo = {
@@ -190,7 +194,7 @@ export class Crawler {
       // If product details found, process further
       if (
         productData &&
-        this.checkDeepValidation(productData.brand, productData.url)
+        (await this.checkDeepValidation(productData.brand, productData.url))
       ) {
         const { brand, price, discountPrice } = productData;
         const discountPercent = Math.round(
@@ -350,13 +354,20 @@ export class Crawler {
   }
 
   // @Private method to check deep validation for brand and URL
-  private checkDeepValidation(brand: string, url: string): boolean {
+  private async checkDeepValidation(
+    brand: string,
+    url: string
+  ): Promise<boolean> {
     const isValid =
       this.alreadyProcessedProducts.has(url) === false &&
       this.productsByBrand.get(brand) !== -1 &&
       this.productsCount < MAX_PRODUCTS_PER_WEBSITE;
 
-    return isValid;
+    if (isValid) {
+      return !(await this.redis.isUrlCached(url));
+    }
+
+    return false;
   }
 
   // @Private method to fetch products by brand (Not implemented yet)

@@ -16,6 +16,7 @@
     "@supabase/supabase-js": "^2.75.0",
     "dotenv": "^17.2.3",
     "playwright": "^1.55.0",
+    "redis": "^5.8.3",
     "ulid": "^3.0.1"
   },
   "devDependencies": {

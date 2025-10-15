@@ -2,11 +2,13 @@ import type { Browser } from "playwright";
 import CrawlerFactory from "../utils/crawlerFactory.js";
 import type { E_COMMERCE, SubCategory } from "../../types/index.js";
 import getContext from "../utils/browser/getContext.js";
+import type RedisDB from "../../db/redis.js";
 
 async function productsHunter(
   browser: Browser,
   url: string,
   website: E_COMMERCE,
+  redis: RedisDB,
   subCategory: string,
   subCategoryInfo: SubCategory
 ) {
@@ -18,6 +20,7 @@ async function productsHunter(
     page,
     website,
     url,
+    redis,
     subCategory,
     subCategoryInfo
   );

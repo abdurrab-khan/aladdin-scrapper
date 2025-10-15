@@ -1,5 +1,7 @@
-import type { Browser, Page } from "playwright";
 import { Crawler } from "../crawler.js";
+
+import type RedisDB from "../../../db/redis.js";
+import type { Browser, Page } from "playwright";
 import type { SubCategory } from "../../../types/index.js";
 
 export class AmazonService extends Crawler {
@@ -9,10 +11,11 @@ export class AmazonService extends Crawler {
     browser: Browser,
     page: Page,
     url: string,
+    redis: RedisDB,
     subCategory: string,
     subCategoryDetails: SubCategory
   ) {
-    super(browser, page, "amazon", subCategory, subCategoryDetails);
+    super(browser, page, "amazon", redis, subCategory, subCategoryDetails);
     this.url = url;
   }
 

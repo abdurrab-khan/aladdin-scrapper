@@ -1,5 +1,6 @@
 import type { Browser, Page } from "playwright";
-import type { E_COMMERCE, SubCategoryInfo } from "../../types/index.js";
+import type { E_COMMERCE, SubCategory } from "../../types/index.js";
+import type RedisDB from "../../db/redis.js";
 
 /**
  * Factory class to create scraper instances based on the platform.
@@ -11,8 +12,9 @@ export default class CrawlerFactory {
     page: Page,
     website: E_COMMERCE,
     url: string,
+    redis: RedisDB,
     subCategory: string,
-    subCategoryInfo: SubCategoryInfo
+    subCategoryInfo: SubCategory
   ) {
     switch (website) {
       case "amazon": {
@@ -23,6 +25,7 @@ export default class CrawlerFactory {
           browser,
           page,
           url,
+          redis,
           subCategory,
           subCategoryInfo
         );
@@ -35,6 +38,7 @@ export default class CrawlerFactory {
           browser,
           page,
           url,
+          redis,
           subCategory,
           subCategoryInfo
         );
