@@ -2,40 +2,40 @@
   {
     "category": "menClothings",
     "subCategories": {
-      "tshirts": {
+      "T-Shirts": {
         "maxPrice": 1500,
         "minPrice": 150,
         "maxDiscount": 75,
         "maxBrandDiscount": 80,
         "maxDiscountForFullPageScreenshot": 85,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=t-shirt&i=apparel&rh=n%3A1968123031&s=popularity-rank",
-          "flipkart": "https://www.flipkart.com/clothing-and-accessories/topwear/tshirt/men-tshirt/pr?sid=clo,ash,ank,edy&otracker=categorytree"
+          "amazon": "https://www.amazon.in/s?k=t-shirt&i=apparel&rh=n%3A1571271031%2Cn%3A1968024031%2Cn%3A1968120031%2Cn%3A1968123031%2Cp_n_availability%3A1318485031&s=popularity-rank",
+          "flipkart": "https://www.flipkart.com/clothing-and-accessories/topwear/tshirt/men-tshirt/pr?sid=clo%2Cash%2Cank%2Cedy&otracker=categorytree"
         }
       },
-      "shirts": {
-        "maxPrice": 1500,
+      "Shirts": {
+        "maxPrice": 2000,
         "minPrice": 150,
-        "maxDiscount": 75,
+        "maxDiscount": 78,
         "maxBrandDiscount": 80,
         "maxDiscountForFullPageScreenshot": 85,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=shirts&i=apparel&rh=n%3A94998646031&s=popularity-rank",
+          "amazon": "https://www.amazon.in/s?k=shirts&i=apparel&rh=n%3A94998646031%2Cp_n_availability%3A1318485031&s=popularity-rank",
           "flipkart": "https://www.flipkart.com/mens-shirts/pr?sid=clo%2Cash%2Caxc%2Cmmk&otracker=categorytree"
         }
       },
-      "jeans": {
+      "Jeans": {
         "maxPrice": 2500,
         "minPrice": 200,
         "maxDiscount": 75,
         "maxBrandDiscount": 75,
         "maxDiscountForFullPageScreenshot": 82,
         "urls": {
-          "amazon": "",
-          "flipkart": "https://www.flipkart.com/clothing-and-accessories/bottomwear/jeans/men-jeans/pr?sid=clo,vua,k58,i51&otracker=categorytree"
+          "amazon": "https://www.amazon.in/s?k=jeans&i=apparel&rh=n%3A1571271031%2Cn%3A1968024031%2Cn%3A1968076031%2Cp_n_availability%3A1318485031%2Cp_n_pct-off-with-tax%3A2665401031&s=popularity-rank&dc&ds=v1%3Ay%2FAIZ7JdvnWykWFRC%2B9PkIxCXoNo2bEV97nHG9TseVw",
+          "flipkart": "https://www.flipkart.com/clothing-and-accessories/bottomwear/jeans/men-jeans/pr?sid=clo%2Cvua%2Ck58%2Ci51&otracker=categorytree&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.discount_range_v1%255B%255D%3D50%2525%2Bor%2Bmore"
         }
       },
-      "pants": {
+      "Pants": {
         "maxPrice": 12000,
         "minPrice": 4000,
         "maxDiscount": 20,
@@ -46,7 +46,7 @@
           "flipkart": ""
         }
       },
-      "trousers": {
+      "Trousers": {
         "maxPrice": 12000,
         "minPrice": 4000,
         "maxDiscount": 20,
@@ -59,7 +59,7 @@
       }
     },
     "lowPriorityCategories": {
-      "watches": {
+      "Watches": {
         "maxPrice": 20000,
         "minPrice": 5000,
         "maxDiscount": 15,
@@ -70,7 +70,7 @@
           "flipkart": ""
         }
       },
-      "sunglasses": {
+      "Sunglasses": {
         "maxPrice": 15000,
         "minPrice": 3000,
         "maxDiscount": 15,
@@ -86,7 +86,7 @@
   {
     "category": "shoes",
     "subCategories": {
-      "sneakers": {
+      "Sneakers": {
         "maxPrice": 10000,
         "minPrice": 3000,
         "maxDiscount": 20,
@@ -97,7 +97,7 @@
           "flipkart": ""
         }
       },
-      "formalShoes": {
+      "Formal Shoes": {
         "maxPrice": 12000,
         "minPrice": 4000,
         "maxDiscount": 20,
@@ -108,7 +108,7 @@
           "flipkart": ""
         }
       },
-      "casualShoes": {
+      "Casual Shoes": {
         "maxPrice": 10000,
         "minPrice": 3000,
         "maxDiscount": 20,
@@ -124,7 +124,7 @@
   {
     "category": "laptopAndDesktop",
     "subCategories": {
-      "laptops": {
+      "Laptops": {
         "maxPrice": 80000,
         "minPrice": 30000,
         "maxDiscount": 10,
@@ -135,7 +135,7 @@
           "flipkart": ""
         }
       },
-      "monitor": {
+      "Monitor": {
         "maxPrice": 40000,
         "minPrice": 10000,
         "maxDiscount": 10,
@@ -146,7 +146,7 @@
           "flipkart": ""
         }
       },
-      "mouse": {
+      "Mouse": {
         "maxPrice": 5000,
         "minPrice": 1000,
         "maxDiscount": 15,
@@ -157,7 +157,7 @@
           "flipkart": ""
         }
       },
-      "keyboard": {
+      "Keyboard": {
         "maxPrice": 7000,
         "minPrice": 1500,
         "maxDiscount": 15,
@@ -173,7 +173,7 @@
   {
     "category": "healthAndPersonalCare",
     "subCategories": {
-      "trimmer": {
+      "Trimmer": {
         "maxPrice": 8000,
         "minPrice": 2000,
         "maxDiscount": 20,
@@ -184,7 +184,7 @@
           "flipkart": ""
         }
       },
-      "hairDryer": {
+      "Hair Dryer": {
         "maxPrice": 6000,
         "minPrice": 1500,
         "maxDiscount": 20,
@@ -200,7 +200,7 @@
   {
     "category": "beautyAndPersonalCare",
     "subCategories": {
-      "bathAndBody": {
+      "Bath and Body": {
         "maxPrice": 3000,
         "minPrice": 500,
         "maxDiscount": 20,
@@ -216,7 +216,7 @@
   {
     "category": "nutritionAndSupplements",
     "subCategories": {
-      "proteinPowder": {
+      "Protein Powder": {
         "maxPrice": 8000,
         "minPrice": 2000,
         "maxDiscount": 15,
@@ -227,7 +227,7 @@
           "flipkart": ""
         }
       },
-      "vitaminsAndSupplements": {
+      "Vitamins and Supplements": {
         "maxPrice": 5000,
         "minPrice": 1000,
         "maxDiscount": 15,
@@ -243,7 +243,7 @@
   {
     "category": "sportsAndFitness",
     "subCategories": {
-      "fitnessEquipments": {
+      "Fitness Equipments": {
         "maxPrice": 5000,
         "minPrice": 1000,
         "maxDiscount": 15,
@@ -259,7 +259,7 @@
   {
     "category": "homeAppliances",
     "subCategories": {
-      "iron": {
+      "Iron": {
         "maxPrice": 4000,
         "minPrice": 1000,
         "maxDiscount": 20,
@@ -270,7 +270,7 @@
           "flipkart": ""
         }
       },
-      "waterPurifier": {
+      "Water Purifier": {
         "maxPrice": 20000,
         "minPrice": 5000,
         "maxDiscount": 15,
@@ -281,7 +281,7 @@
           "flipkart": ""
         }
       },
-      "waterGeyser": {
+      "Water Geyser": {
         "maxPrice": 10000,
         "minPrice": 3000,
         "maxDiscount": 15,
@@ -292,7 +292,7 @@
           "flipkart": ""
         }
       },
-      "washingMachine": {
+      "Washing Machine": {
         "maxPrice": 40000,
         "minPrice": 15000,
         "maxDiscount": 10,
@@ -303,7 +303,7 @@
           "flipkart": ""
         }
       },
-      "refrigerator": {
+      "Refrigerator": {
         "maxPrice": 50000,
         "minPrice": 20000,
         "maxDiscount": 10,
@@ -314,7 +314,7 @@
           "flipkart": ""
         }
       },
-      "television": {
+      "Television": {
         "maxPrice": 60000,
         "minPrice": 25000,
         "maxDiscount": 10,
@@ -325,7 +325,7 @@
           "flipkart": ""
         }
       },
-      "airCooler": {
+      "Air Cooler": {
         "maxPrice": 15000,
         "minPrice": 4000,
         "maxDiscount": 15,
@@ -336,7 +336,7 @@
           "flipkart": ""
         }
       },
-      "airConditioner": {
+      "Air Conditioner": {
         "maxPrice": 50000,
         "minPrice": 20000,
         "maxDiscount": 10,
@@ -352,7 +352,7 @@
   {
     "category": "kitchenAppliances",
     "subCategories": {
-      "microwaveOven": {
+      "MicrowaveOven": {
         "maxPrice": 20000,
         "minPrice": 5000,
         "maxDiscount": 15,
@@ -363,7 +363,7 @@
           "flipkart": ""
         }
       },
-      "mixerJuicerGrinder": {
+      "Mixer Juicer Grinder": {
         "maxPrice": 10000,
         "minPrice": 3000,
         "maxDiscount": 15,
@@ -374,7 +374,7 @@
           "flipkart": ""
         }
       },
-      "coffeeMaker": {
+      "Coffee Maker": {
         "maxPrice": 8000,
         "minPrice": 2000,
         "maxDiscount": 15,
@@ -385,7 +385,7 @@
           "flipkart": ""
         }
       },
-      "popUpToaster": {
+      "PopUpToaster": {
         "maxPrice": 5000,
         "minPrice": 1000,
         "maxDiscount": 15,
@@ -401,7 +401,7 @@
   {
     "category": "homeFurnishing",
     "subCategories": {
-      "curtains": {
+      "Curtains": {
         "maxPrice": 5000,
         "minPrice": 1000,
         "maxDiscount": 20,
@@ -412,7 +412,7 @@
           "flipkart": ""
         }
       },
-      "cushionCovers": {
+      "Cushion Covers": {
         "maxPrice": 2000,
         "minPrice": 500,
         "maxDiscount": 20,
@@ -423,7 +423,7 @@
           "flipkart": ""
         }
       },
-      "bedSheets": {
+      "BedSheets": {
         "maxPrice": 6000,
         "minPrice": 1500,
         "maxDiscount": 20,
@@ -439,7 +439,7 @@
   {
     "category": "homeDecor",
     "subCategories": {
-      "wallArts": {
+      "WallArts": {
         "maxPrice": 5000,
         "minPrice": 1000,
         "maxDiscount": 20,
@@ -450,7 +450,7 @@
           "flipkart": ""
         }
       },
-      "clocks": {
+      "Clocks": {
         "maxPrice": 3000,
         "minPrice": 800,
         "maxDiscount": 20,
@@ -466,7 +466,7 @@
   {
     "category": "smartProducts",
     "subCategories": {
-      "smartLight": {
+      "SmartLight": {
         "maxPrice": 10000,
         "minPrice": 3000,
         "maxDiscount": 15,
@@ -482,7 +482,7 @@
   {
     "category": "audio",
     "subCategories": {
-      "headphones": {
+      "Headphones": {
         "maxPrice": 10000,
         "minPrice": 2000,
         "maxDiscount": 15,
@@ -493,7 +493,7 @@
           "flipkart": ""
         }
       },
-      "speakers": {
+      "Speakers": {
         "maxPrice": 15000,
         "minPrice": 3000,
         "maxDiscount": 15,
@@ -504,7 +504,7 @@
           "flipkart": ""
         }
       },
-      "trueWirelessEarbuds": {
+      "TrueWirelessEarbuds": {
         "maxPrice": 8000,
         "minPrice": 2000,
         "maxDiscount": 15,

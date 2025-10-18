@@ -1,15 +1,15 @@
 {
   "shoes": {
     "subCategories": [
-      "sneakers",
-      "formalShoes"
+      "Sneakers",
+      "Formal Shoes"
     ],
     "lowPriorityCategories": []
   },
   "menClothings": {
     "subCategories": [
-      "tshirts",
-      "shirts"
+      "T-Shirts",
+      "Shirts"
     ],
     "lowPriorityCategories": []
   },

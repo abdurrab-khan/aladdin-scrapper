@@ -370,6 +370,15 @@ export class Crawler {
     return false;
   }
 
+  // @Private method to get platform ID based on website
+  private getPlatformId(): string {
+    if (this.website === "amazon") {
+      return process.env["AMAZON_PLATFORM_ID"] || "";
+    } else {
+      return process.env["FLIPKART_PLATFORM_ID"] || "";
+    }
+  }
+
   // @Private method to fetch products by brand (Not implemented yet)
   private async fetchBrandProducts(brand: string): Promise<void> {
     let contextAndPage: Awaited<ReturnType<typeof getContext>> | null = null;
@@ -439,14 +448,6 @@ export class Crawler {
         await contextAndPage.page.close();
         await contextAndPage.context.close();
       }
-    }
-  }
-
-  private getPlatformId(): string {
-    if (this.website === "amazon") {
-      return process.env["AMAZON_PLATFORM_ID"] || "";
-    } else {
-      return process.env["FLIPKART_PLATFORM_ID"] || "";
     }
   }
 }

@@ -12,7 +12,7 @@ import type { Product } from "../types/product.js";
 
 class SupabaseClient {
   private supabaseClient;
-  private uploadedImageUrls: string[] = [];
+  private uploadedImageUrls: Record<string, string> = {};
 
   constructor() {
     if (!process.env["SUPABASE_URL"] || !process.env["SUPABASE_KEY"]) {
@@ -45,10 +45,10 @@ class SupabaseClient {
           contentType: "image/png",
         });
 
-      if (response.error) {
+      if (response.error || !response.data?.fullPath) {
         console.error("⚠️ Error uploading image:", imagePath, response.error);
       } else {
-        this.uploadedImageUrls.push(imagePath);
+        this.uploadedImageUrls[imagePath] = response.data.fullPath;
       }
     } catch (error) {
       console.error("⚠️ Error uploading image:", imagePath, error);
@@ -74,17 +74,6 @@ class SupabaseClient {
     }
   }
 
-  private getProductsWithImages(products: Product[]): Product[] {
-    return products.filter((p) => {
-      const hasCardImage = this.uploadedImageUrls.includes(p.images.card || "");
-      const hasFullPageImage =
-        !p.images.fullPage ||
-        this.uploadedImageUrls.includes(p.images.fullPage);
-
-      return hasCardImage && hasFullPageImage;
-    });
-  }
-
   private getProductsImages(products: Product[]): string[] {
     return products.reduce((acc: string[], p: Product) => {
       if (p.images.card) acc.push(p.images.card);
@@ -93,13 +82,23 @@ class SupabaseClient {
     }, []);
   }
 
+  private getProductsWithImages(products: Product[]): Product[] {
+    return products.filter((p) => {
+      const hasCardImage = this.uploadedImageUrls[p.images.card] !== undefined;
+      const hasFullPageImage =
+        !p.images.fullPage ||
+        this.uploadedImageUrls[p.images.fullPage] !== undefined;
+
+      return hasCardImage && hasFullPageImage;
+    });
+  }
+
   public async saveProducts(products: Product[]): Promise<void> {
     try {
       const imagePaths = this.getProductsImages(products);
       await this.uploadImages(imagePaths);
 
       const productsWithImages = this.getProductsWithImages(products);
-
       if (productsWithImages.length > 0) {
         await this.insertProducts(productsWithImages);
         console.log(
@@ -107,13 +106,13 @@ class SupabaseClient {
         );
       } else {
         console.log(
-          "⚠️ No products with all images uploaded successfully. Skipping database insertion."
+          "⚠️  No products with all images uploaded successfully. Skipping database insertion."
         );
       }
     } catch (error) {
       console.error("⚠️ Error inserting products:", error);
     } finally {
-      this.uploadedImageUrls = []; // Clear the uploaded image URLs after processing
+      this.uploadedImageUrls = {}; // Clear the uploaded image URLs after processing
     }
   }
 }

@@ -228,7 +228,7 @@ class CrawlerUtils {
       | Parameters<ElementHandle["screenshot"]>[0]
       | NonNullable<Parameters<Page["screenshot"]>[0]> = {}
   ): Promise<string | null> {
-    const fullFilePath = `./products/${fileName}.png`;
+    const fullFilePath = `products/${fileName}.png`;
     let contextAndPage: Awaited<ReturnType<typeof getContext>> | null = null;
 
     try {

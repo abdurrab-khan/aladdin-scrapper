@@ -245,8 +245,8 @@ class CatalogRotationManager {
 
 // Usage example
 const manager = new CatalogRotationManager(
-  "./src/crawler/constants/catalog-config.json",
-  "./src/crawler/constants/catalog-history.json"
+  "./src/catalogInfo/catalog-config.json",
+  "./src/catalogInfo/catalog-history.json"
 );
 
 export default manager;

@@ -1,9 +1,10 @@
+import getBrowser from "./utils/browser/getBrowser.js";
+import productsHunter from "./services/productHunter.js";
+import { MAX_PRODUCT_PER_CATEGORY } from "./constants/const.js";
+
 import type RedisDB from "../db/redis.js";
 import type { SelectionResult } from "../types/index.js";
 import type { Product, SingleProductDetails } from "../types/product.js";
-import { MAX_PRODUCT_PER_CATEGORY } from "./constants/const.js";
-import productsHunter from "./services/productHunter.js";
-import getBrowser from "./utils/browser/getBrowser.js";
 
 type SingleProducts = Product & { details: SingleProductDetails };
 
@@ -13,7 +14,7 @@ type SingleProducts = Product & { details: SingleProductDetails };
 export async function scrapeProducts(
   selection: SelectionResult,
   redis: RedisDB
-): Promise<any> {
+): Promise<Product[] | null> {
   const selectionDetails = Object.entries(selection.subcategoriesDetails);
 
   if (selectionDetails.length === 0) {
