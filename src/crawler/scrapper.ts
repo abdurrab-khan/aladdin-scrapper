@@ -30,16 +30,20 @@ export async function scrapeProducts(
         const urls = Object.entries(details.urls);
 
         return Promise.all(
-          urls.map(([ecommerce, url]) =>
-            productsHunter(
+          urls.map(([ecommerce, url]) => {
+            if (!url) {
+              return Promise.resolve([] as Product[]);
+            }
+
+            return productsHunter(
               browser,
               url,
               ecommerce as "amazon" | "flipkart",
               redis,
               category,
               details
-            )
-          )
+            );
+          })
         ).then((res) => {
           const flattened = res.flat();
 
