@@ -22,6 +22,7 @@ class CatalogRotationManager {
 
   private loadConfig(): Category[] {
     const data = fs.readFileSync(this.configPath, "utf-8");
+
     return JSON.parse(data);
   }
 
@@ -49,14 +50,15 @@ class CatalogRotationManager {
 
   private getCategoryCompletionScore(category: Category): number {
     const categoryName = category.category;
+
     this.initializeHistoryForCategory(categoryName);
 
-    const totalSubcats = Object.keys(category.subCategories).length ?? 0;
+    const totalSubcats = Object.keys(category?.subCategories ?? {}).length ?? 0;
     const completedSubcats =
       this.history[categoryName]?.subCategories.length ?? 0;
 
     const totalLowPriority = category.lowPriorityCategories
-      ? Object.keys(category.lowPriorityCategories).length
+      ? Object.keys(category?.lowPriorityCategories ?? {}).length
       : 0;
     const completedLowPriority =
       this.history[categoryName]?.lowPriorityCategories.length ?? 0;
@@ -74,7 +76,7 @@ class CatalogRotationManager {
     const categoryName = category.category;
     this.initializeHistoryForCategory(categoryName);
 
-    const allSubcats = Object.keys(category.subCategories);
+    const allSubcats = Object.keys(category?.subCategories ?? {});
     const completed = this.history[categoryName]?.subCategories;
 
     return allSubcats.filter((subcat) => !completed?.includes(subcat));
@@ -86,7 +88,7 @@ class CatalogRotationManager {
 
     if (!category.lowPriorityCategories) return [];
 
-    const allLowPriority = Object.keys(category.lowPriorityCategories);
+    const allLowPriority = Object.keys(category?.lowPriorityCategories ?? {});
     const completed = this?.history[categoryName]?.lowPriorityCategories;
 
     return allLowPriority.filter((subcat) => !completed?.includes(subcat));
@@ -101,6 +103,7 @@ class CatalogRotationManager {
     return this.config.every((category) => {
       const uncompletedSubcats = this.getUncompletedSubcategories(category);
       const uncompletedLowPriority = this.getUncompletedLowPriority(category);
+
       return (
         uncompletedSubcats.length === 0 && uncompletedLowPriority.length === 0
       );

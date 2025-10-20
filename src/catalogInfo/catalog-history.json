@@ -1,11 +1,4 @@
 {
-  "shoes": {
-    "subCategories": [
-      "Sneakers",
-      "Formal Shoes"
-    ],
-    "lowPriorityCategories": []
-  },
   "menClothings": {
     "subCategories": [
       "T-Shirts",
@@ -13,25 +6,43 @@
     ],
     "lowPriorityCategories": []
   },
+  "footWear": {
+    "subCategories": [
+      "Sneakers",
+      "Formal Shoes"
+    ],
+    "lowPriorityCategories": []
+  },
   "laptopAndDesktop": {
-    "subCategories": [],
+    "subCategories": [
+      "Laptops",
+      "Monitor"
+    ],
     "lowPriorityCategories": []
   },
   "healthAndPersonalCare": {
-    "subCategories": [],
+    "subCategories": [
+      "Trimmer",
+      "Hair Dryer"
+    ],
     "lowPriorityCategories": []
   },
-  "beautyAndPersonalCare": {
+  "bathEssentials": {
     "subCategories": [],
     "lowPriorityCategories": []
   },
   "nutritionAndSupplements": {
     "subCategories": [],
-    "lowPriorityCategories": []
+    "lowPriorityCategories": [
+      "Protein Powder"
+    ]
   },
   "sportsAndFitness": {
     "subCategories": [],
-    "lowPriorityCategories": []
+    "lowPriorityCategories": [
+      "Home Gym Combos",
+      "Dumbbells"
+    ]
   },
   "homeAppliances": {
     "subCategories": [],
