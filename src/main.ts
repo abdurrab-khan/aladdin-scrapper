@@ -14,6 +14,8 @@ async function main() {
     await redisClient.connect(); // Connect to Redis
     const selection = manager.run();
 
+    console.log("🛠  Starting product scraping for selected categories...\n");
+
     for (let i = 0; i < selection.length; i++) {
       const s = selection[i];
 

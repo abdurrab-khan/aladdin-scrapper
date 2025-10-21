@@ -4,68 +4,77 @@
       "T-Shirts",
       "Shirts"
     ],
-    "lowPriorityCategories": []
+    "lowPriorityCategories": [],
+    "timeStamp": 1761030646891,
+    "lastLowPriorityRun": 1761029513208
   },
   "footWear": {
     "subCategories": [
       "Sneakers",
       "Formal Shoes"
     ],
-    "lowPriorityCategories": []
+    "lowPriorityCategories": [],
+    "timeStamp": 1761030646891,
+    "lastLowPriorityRun": 1760337065761
   },
   "laptopAndDesktop": {
-    "subCategories": [
-      "Laptops",
-      "Monitor"
-    ],
-    "lowPriorityCategories": []
+    "subCategories": [],
+    "lowPriorityCategories": [],
+    "timeStamp": 1761030601310,
+    "lastLowPriorityRun": 1760337065761
   },
   "healthAndPersonalCare": {
-    "subCategories": [
-      "Trimmer",
-      "Hair Dryer"
-    ],
-    "lowPriorityCategories": []
-  },
-  "bathEssentials": {
     "subCategories": [],
-    "lowPriorityCategories": []
+    "lowPriorityCategories": [],
+    "timeStamp": 1761029564967,
+    "lastLowPriorityRun": 1760337065761
   },
   "nutritionAndSupplements": {
     "subCategories": [],
-    "lowPriorityCategories": [
-      "Protein Powder"
-    ]
+    "lowPriorityCategories": [],
+    "timeStamp": 1761029508085,
+    "lastLowPriorityRun": 1761029508085
   },
   "sportsAndFitness": {
     "subCategories": [],
-    "lowPriorityCategories": [
-      "Home Gym Combos",
-      "Dumbbells"
-    ]
+    "lowPriorityCategories": [],
+    "timeStamp": 1761029513208,
+    "lastLowPriorityRun": 1761029513208
   },
   "homeAppliances": {
     "subCategories": [],
-    "lowPriorityCategories": []
+    "lowPriorityCategories": [],
+    "timeStamp": 1761030625586,
+    "lastLowPriorityRun": 1760337065761
   },
   "kitchenAppliances": {
     "subCategories": [],
-    "lowPriorityCategories": []
+    "lowPriorityCategories": [],
+    "timeStamp": 1761030625586,
+    "lastLowPriorityRun": 1760337065761
   },
   "homeFurnishing": {
     "subCategories": [],
-    "lowPriorityCategories": []
+    "lowPriorityCategories": [],
+    "timeStamp": 1761029513208,
+    "lastLowPriorityRun": 1761029513208
   },
   "homeDecor": {
     "subCategories": [],
-    "lowPriorityCategories": []
+    "lowPriorityCategories": [],
+    "timeStamp": 1761029510728,
+    "lastLowPriorityRun": 1761029510728
   },
   "smartProducts": {
     "subCategories": [],
-    "lowPriorityCategories": []
+    "lowPriorityCategories": [],
+    "timeStamp": 1761029510728,
+    "lastLowPriorityRun": 1761029510728
   },
   "audio": {
     "subCategories": [],
-    "lowPriorityCategories": []
+    "lowPriorityCategories": [],
+    "timeStamp": 1761030464045,
+    "lastLowPriorityRun": 1760337065761
   }
 }

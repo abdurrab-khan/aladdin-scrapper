@@ -23,7 +23,6 @@ export interface SubCategory {
   };
 }
 
-
 export type SubCategoryDetails = {
   [subCat: string]: SubCategory;
 };
@@ -37,6 +36,8 @@ export interface Category {
 export interface HistoryCategory {
   subCategories: string[];
   lowPriorityCategories: string[];
+  lastLowPriorityRun: number | null;
+  timeStamp: number | null;
 }
 
 export interface History {
