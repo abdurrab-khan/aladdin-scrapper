@@ -7,43 +7,43 @@
         "minPrice": 120,
         "maxDiscount": 75,
         "maxBrandDiscount": 75,
-        "maxDiscountForFullPageScreenshot": 85,
+        "maxDiscountForFullPageScreenshot": 86,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=t-shirt&i=apparel&rh=n%3A1571271031%2Cn%3A1968024031%2Cn%3A1968120031%2Cn%3A1968123031%2Cp_n_availability%3A1318485031&s=popularity-rank",
-          "flipkart": "https://www.flipkart.com/clothing-and-accessories/topwear/tshirt/men-tshirt/pr?sid=clo%2Cash%2Cank%2Cedy&otracker=categorytree"
+          "amazon": "https://www.amazon.in/s?k=t-shirt&i=apparel&rh=n%3A1968123031%2Cp_36%3A-370000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&s=popularity-rank&dc&ds=v1%3AnB7umLF5YPgLn1tj3qbDjQrSI1EIObvqymHFt404XRk&qid=1761453264&rnid=26921223031&ref=sr_nr_p_n_deal_type_1",
+          "flipkart": "https://www.flipkart.com/clothing-and-accessories/topwear/tshirt/men-tshirt/pr?sid=clo%2Cash%2Cank%2Cedy&otracker=categorytree&p%5B%5D=facets.ideal_for%255B%255D%3DMen&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.offer_type%255B%255D%3DBuy%2BMore%252C%2BSave%2BMore&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
         }
       },
       "Shirts": {
-        "maxPrice": 2000,
+        "maxPrice": 2300,
         "minPrice": 150,
-        "maxDiscount": 78,
-        "maxBrandDiscount": 80,
+        "maxDiscount": 75,
+        "maxBrandDiscount": 78,
         "maxDiscountForFullPageScreenshot": 85,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=shirts&i=apparel&rh=n%3A94998646031%2Cp_n_availability%3A1318485031&s=popularity-rank",
-          "flipkart": "https://www.flipkart.com/mens-shirts/pr?sid=clo%2Cash%2Caxc%2Cmmk&otracker=categorytree"
+          "amazon": "https://www.amazon.in/s?k=shirts&i=apparel&rh=n%3A1571271031%2Cn%3A1968024031%2Cn%3A1968120031%2Cn%3A94998646031%2Cp_36%3A15000-510000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&s=popularity-rank&dc&ds=v1%3Akb3Vh8JMMCWqqHpn2Yqe78wCJ8nK04gwgdIODeA6geE&qid=1761454031&rnid=1968120031&ref=sr_nr_n_2",
+          "flipkart": "https://www.flipkart.com/mens-shirts/pr?sid=clo%2Cash%2Caxc%2Cmmk&otracker=categorytree&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.ideal_for%255B%255D%3DMen"
         }
       },
       "Jeans": {
-        "maxPrice": 2500,
-        "minPrice": 200,
+        "maxPrice": 2400,
+        "minPrice": 180,
         "maxDiscount": 75,
         "maxBrandDiscount": 75,
-        "maxDiscountForFullPageScreenshot": 82,
+        "maxDiscountForFullPageScreenshot": 80,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=jeans&i=apparel&rh=n%3A1571271031%2Cn%3A1968024031%2Cn%3A1968076031%2Cp_n_availability%3A1318485031%2Cp_n_pct-off-with-tax%3A2665401031&s=popularity-rank",
-          "flipkart": "https://www.flipkart.com/clothing-and-accessories/bottomwear/jeans/men-jeans/pr?sid=clo%2Cvua%2Ck58%2Ci51&otracker=categorytree"
+          "amazon": "https://www.amazon.in/s?k=jeans&i=apparel&rh=n%3A1968076031%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&s=popularity-rank&dc=&qid=1761454542&rnid=4595083031&ref=sr_nr_p_36_0_0&low-price=&high-price=2650",
+          "flipkart": "https://www.flipkart.com/clothing-and-accessories/bottomwear/jeans/men-jeans/pr?sid=clo%2Cvua%2Ck58%2Ci51&otracker=categorytree&p%5B%5D=facets.ideal_for%255B%255D%3DMen&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&page=1"
         }
       },
       "Trousers": {
         "maxPrice": 1800,
-        "minPrice": 150,
+        "minPrice": 135,
         "maxDiscount": 75,
-        "maxBrandDiscount": 80,
-        "maxDiscountForFullPageScreenshot": 82,
+        "maxBrandDiscount": 78,
+        "maxDiscountForFullPageScreenshot": 85,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=pants&i=apparel&rh=n%3A1968125031%2Cp_n_availability%3A1318485031&dc&qid=1760892830&rnid=1318483031&ref=sr_nr_p_n_availability_2&ds=v1%3AJCYQ0V%2F6PcynwLZ2HxxdQb%2B0XIh5Nb%2FpKxL%2FFqOazyc",
-          "flipkart": "https://www.flipkart.com/mens-trousers/pr?sid=clo,vua,mle,lhk&otracker=categorytree"
+          "amazon": "https://www.amazon.in/s?k=pants&i=apparel&rh=n%3A1968125031%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc=&qid=1761455572&rnid=4595083031&ref=sr_nr_p_36_0_0&low-price=&high-price=2800",
+          "flipkart": "https://www.flipkart.com/mens-trousers/pr?sid=clo%2Cvua%2Cmle%2Clhk&otracker=categorytree&p%5B%5D=facets.ideal_for%255B%255D%3DMen&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
         }
       }
     },
@@ -55,8 +55,8 @@
         "maxBrandDiscount": 10,
         "maxDiscountForFullPageScreenshot": 20,
         "urls": {
-          "amazon": "",
-          "flipkart": ""
+          "amazon": "https://www.amazon.in/s?k=watches&rh=p_36%3A-215000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc&crid=OSKRU5WEHRWS&qid=1761470886&rnid=26921223031&sprefix=watche%2Caps%2C206&ref=sr_nr_p_n_deal_type_1&ds=v1%3AZOMVFfzKyoPZsI2U3ejzhwQIhA%2F4h4DWmAWKVkg7Dmo",
+          "flipkart": "https://www.flipkart.com/watches/wrist-watches/pr?sid=r18,f13&p[]=facets.price_range.from%3DMin&p[]=facets.price_range.to%3D1000&p[]=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p[]=facets.ideal_for%255B%255D%3DMen&p[]=facets.offer_type%255B%255D%3DSpecial%2BPrice&otracker=categorytree"
         }
       },
       "Smart Watch": {
@@ -67,7 +67,7 @@
         "maxDiscountForFullPageScreenshot": 20,
         "urls": {
           "amazon": "",
-          "flipkart": ""
+          "flipkart": "https://www.flipkart.com/wearable-smart-devices/smart-watches/pr?sid=ajy%2Cbuh&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D5000&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DExclude%2BOut%2Bof%2BStock"
         }
       },
       "Sunglasses": {
@@ -78,7 +78,18 @@
         "maxDiscountForFullPageScreenshot": 20,
         "urls": {
           "amazon": "",
-          "flipkart": ""
+          "flipkart": "https://www.flipkart.com/search?q=sunglasses&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D2000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.ideal_for%255B%255D%3DMen"
+        }
+      },
+      "Perfume": {
+        "maxPrice": 8000,
+        "minPrice": 1500,
+        "maxDiscount": 25,
+        "maxBrandDiscount": 20,
+        "maxDiscountForFullPageScreenshot": 30,
+        "urls": {
+          "amazon": "https://www.amazon.in/s?k=perfume&rh=p_36%3A-150000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031%2Cp_n_target_audience_browse-bin%3A1463349031&dc&crid=33VF2RFOK1FHR&qid=1761472097&rnid=1463347031&sprefix=perfume%2Caps%2C204&ref=sr_nr_p_n_target_audience_browse-bin_2&ds=v1%3Af4v5xUZzsPecKLIf2IFX5h%2FW5%2BVBTaGNP%2B%2FMoYaAKpc",
+          "flipkart": "https://www.flipkart.com/beauty-and-grooming/fragrances/perfume/pr?sid=g9b%2C0yh%2Cjhz&otracker=categorytree&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.ideal_for%255B%255D%3DMen&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       }
     }
@@ -87,14 +98,14 @@
     "category": "footWear",
     "subCategories": {
       "Sneakers": {
-        "maxPrice": 3500,
+        "maxPrice": 2500,
         "minPrice": 250,
         "maxDiscount": 75,
-        "maxBrandDiscount": 80,
-        "maxDiscountForFullPageScreenshot": 85,
+        "maxBrandDiscount": 77,
+        "maxDiscountForFullPageScreenshot": 80,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=shoes&i=shoes&rh=n%3A1983396031%2Cn%3A1983577031%2Cp_36%3A-400000&dc&crid=25A4Y9WP7L5ZZ&qid=1760970287&rnid=4516629031&sprefix=shoes%2Caps%2C206",
-          "flipkart": "https://www.flipkart.com/mens-footwear/mens-casual-shoes/pr?sid=osp,cil,e1f&q=shoes&p[]=facets.price_range.from%3DMin&p[]=facets.price_range.to%3D3000&p[]=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&otracker=categorytree"
+          "amazon": "https://www.amazon.in/s?k=shoes&i=shoes&rh=n%3A1571283031%2Cn%3A1983396031%2Cn%3A1983518031%2Cn%3A9780814031%2Cn%3A1983577031%2Cp_36%3A-250000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc&ds=v1%3A%2FC8tJPB%2FqINY8FY9Tjtuyc0pzA%2F22nhZchOgiL%2FdX4w&crid=25A4Y9WP7L5ZZ&qid=1761456142&rnid=9780814031&sprefix=shoes%2Caps%2C206&ref=sr_nr_n_1",
+          "flipkart": "https://www.flipkart.com/mens-footwear/mens-casual-shoes/pr?sid=osp%2Ccil%2Ce1f&q=shoes&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&otracker=categorytree&p%5B%5D=facets.ideal_for%255B%255D%3DMen&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D2000&page=2"
         }
       },
       "Formal Shoes": {
@@ -104,8 +115,8 @@
         "maxBrandDiscount": 75,
         "maxDiscountForFullPageScreenshot": 80,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=shoes&i=shoes&rh=n%3A1571283031%2Cn%3A1983396031%2Cn%3A1983518031%2Cn%3A1983572031&dc=&crid=25A4Y9WP7L5ZZ&qid=1760970598&rnid=4516629031&sprefix=shoes%2Caps%2C206&ref=sr_nr_p_36_0_0&low-price=&high-price=4000",
-          "flipkart": "https://www.flipkart.com/mens-footwear/mens-formal-shoes/pr?sid=osp,cil,ssb&q=shoes&p[]=facets.price_range.from%3DMin&p[]=facets.price_range.to%3D3000&p[]=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&otracker=categorytree"
+          "amazon": "https://www.amazon.in/s?k=shoes&i=shoes&rh=n%3A1983572031%2Cp_36%3A-255000%2Cp_n_deal_type%3A26921226031%2Cp_n_availability%3A1318485031&dc&ds=v1%3AtcS8TcYHb%2BcHrBB%2FhWH5eg25fiLDfCknpKz6sHBfyyQ&crid=25A4Y9WP7L5ZZ&qid=1761456277&rnid=1318483031&sprefix=shoes%2Caps%2C206&ref=sr_nr_p_n_availability_2",
+          "flipkart": "https://www.flipkart.com/mens-footwear/mens-formal-shoes/pr?sid=osp%2Ccil%2Cssb&q=shoes&p%5B%5D=facets.price_range.from%3DMin&otracker=categorytree&p%5B%5D=facets.price_range.to%3D2000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.ideal_for%255B%255D%3DMen"
         }
       }
     }
@@ -115,46 +126,46 @@
     "subCategories": {
       "Laptops": {
         "maxPrice": 85000,
-        "minPrice": 12000,
+        "minPrice": 18000,
         "maxDiscount": 45,
-        "maxBrandDiscount": 30,
+        "maxBrandDiscount": 40,
         "maxDiscountForFullPageScreenshot": 50,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=laptop&i=computers&rh=n%3A1375424031&qid=1760893439&rnid=7252027031&ref=sr_nr_p_36_0_0&low-price=&high-price=111600",
-          "flipkart": "https://www.flipkart.com/laptops/pr?sid=6bo,b5g&otracker=categorytree"
+          "amazon": "https://www.amazon.in/s?k=laptop&i=computers&rh=n%3A1375424031%2Cp_n_deal_type%3A26921226031%2Cp_36%3A-5010000%2Cp_n_availability%3A1318485031&dc&qid=1761456791&rnid=1318483031&ref=sr_nr_p_n_availability_2&ds=v1%3AwaQyC3QeOJ1%2B%2BktphvGAuFzA3GpVw4d7UXoMFXRFhy0",
+          "flipkart": "https://www.flipkart.com/laptops/pr?sid=6bo%2Cb5g&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D50000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       },
       "Monitor": {
-        "maxPrice": 25000,
+        "maxPrice": 20000,
         "minPrice": 2000,
-        "maxDiscount": 40,
-        "maxBrandDiscount": 35,
-        "maxDiscountForFullPageScreenshot": 50,
+        "maxDiscount": 50,
+        "maxBrandDiscount": 55,
+        "maxDiscountForFullPageScreenshot": 60,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=monitors&i=computers&rh=n%3A1375425031%2Cp_36%3A-4020000&qid=1760893843&rnid=1318502031",
-          "flipkart": "https://www.flipkart.com/computers/monitors/pr?sid=6bo%2C9no&otracker=categorytree&p%5B%5D=facets.price_range.from%3D1000&p%5B%5D=facets.price_range.to%3D30000"
+          "amazon": "https://www.amazon.in/s?k=pc+monitor&i=computers&rh=n%3A1375425031%2Cp_n_deal_type%3A26921226031%2Cp_n_availability%3A1318485031&dc=&qid=1761457663&rnid=1318502031&xpid=Fs54fXFODp12k&ref=sr_nr_p_36_0_0&low-price=4400&high-price=20000",
+          "flipkart": "https://www.flipkart.com/computers/monitors/pr?sid=6bo%2C9no&otracker=categorytree&p%5B%5D=facets.price_range.from%3D5000&p%5B%5D=facets.price_range.to%3D20000&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
         }
       },
       "Mouse": {
-        "maxPrice": 5000,
-        "minPrice": 200,
+        "maxPrice": 2500,
+        "minPrice": 250,
         "maxDiscount": 45,
         "maxBrandDiscount": 50,
         "maxDiscountForFullPageScreenshot": 60,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=mouse&crid=2YGCAS6JKB4LL&qid=1760894182&rnid=1318502031&sprefix=mous%2Caps%2C191&ref=sr_nr_p_36_0_0&low-price=100&high-price=4900",
-          "flipkart": "https://www.flipkart.com/laptop-accessories/mouse/pr?sid=6bo%2Cai3%2C2ay&otracker=nmenu_sub_Electronics_0_Mouse&p%5B%5D=facets.price_range.from%3D250&p%5B%5D=facets.price_range.to%3D5000"
+          "amazon": "https://www.amazon.in/s?k=mouse&rh=p_n_deal_type%3A26921226031%2Cp_n_availability%3A1318485031&dc=&crid=2YGCAS6JKB4LL&qid=1761461606&rnid=1318502031&sprefix=mous%2Caps%2C191&ref=sr_nr_p_36_0_0&low-price=200&high-price=2500",
+          "flipkart": "https://www.flipkart.com/laptop-accessories/mouse/pr?sid=6bo%2Cai3%2C2ay&otracker=nmenu_sub_Electronics_0_Mouse&p%5B%5D=facets.price_range.from%3D250&p%5B%5D=facets.price_range.to%3D2000&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       },
       "Keyboard": {
         "maxPrice": 5000,
         "minPrice": 250,
         "maxDiscount": 45,
-        "maxBrandDiscount": 50,
+        "maxBrandDiscount": 55,
         "maxDiscountForFullPageScreenshot": 60,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=keyboard&crid=V5U9MOAG79GO&qid=1760894493&rnid=1318502031&sprefix=keyboard%2Caps%2C206&ref=sr_nr_p_36_0_0&low-price=200&high-price=5800",
-          "flipkart": "https://www.flipkart.com/laptop-accessories/keyboards/pr?sid=6bo%2Cai3%2C3oe&q=keyboard&otracker=categorytree&p%5B%5D=facets.price_range.from%3D250&p%5B%5D=facets.price_range.to%3D5000"
+          "amazon": "https://www.amazon.in/s?k=keyboard&rh=p_36%3A20000-580000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc&crid=V5U9MOAG79GO&qid=1761461248&rnid=26921223031&sprefix=keyboard%2Caps%2C206&ref=sr_nr_p_n_deal_type_1&ds=v1%3APuEa5VJVU3Wq%2BdfpzOLwVUUQVWsYPJPaPO%2BxnrXy6Ek",
+          "flipkart": "https://www.flipkart.com/laptop-accessories/keyboards/pr?sid=6bo%2Cai3%2C3oe&q=keyboard&p%5B%5D=facets.price_range.from%3D500&p%5B%5D=facets.price_range.to%3D5000&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       }
     }
@@ -163,25 +174,25 @@
     "category": "healthAndPersonalCare",
     "subCategories": {
       "Trimmer": {
-        "maxPrice": 2500,
+        "maxPrice": 2000,
         "minPrice": 400,
-        "maxDiscount": 40,
-        "maxBrandDiscount": 45,
+        "maxDiscount": 45,
+        "maxBrandDiscount": 50,
         "maxDiscountForFullPageScreenshot": 60,
         "urls": {
           "amazon": "",
-          "flipkart": "https://www.flipkart.com/health-personal-care-appliances/personal-care-appliances/trimmers/pr?sid=zlw,79s,by3&q=personal+care&otracker=categorytree"
+          "flipkart": "https://www.flipkart.com/health-personal-care-appliances/personal-care-appliances/trimmers/pr?sid=zlw%2C79s%2Cby3&q=personal+care&otracker=categorytree&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       },
       "Hair Dryer": {
-        "maxPrice": 2500,
+        "maxPrice": 2000,
         "minPrice": 400,
-        "maxDiscount": 40,
-        "maxBrandDiscount": 45,
+        "maxDiscount": 45,
+        "maxBrandDiscount": 50,
         "maxDiscountForFullPageScreenshot": 60,
         "urls": {
           "amazon": "",
-          "flipkart": "https://www.flipkart.com/health-personal-care-appliances/personal-care-appliances/hair-dryers/pr?sid=zlw,79s,mh8&q=personal+care&otracker=categorytree"
+          "flipkart": "https://www.flipkart.com/health-personal-care-appliances/personal-care-appliances/hair-dryers/pr?sid=zlw%2C79s%2Cmh8&q=personal+care&otracker=categorytree&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       }
     }
@@ -192,13 +203,13 @@
     "lowPriorityCategories": {
       "Protein Powder": {
         "maxPrice": 5000,
-        "minPrice": 700,
-        "maxDiscount": 70,
-        "maxBrandDiscount": 75,
-        "maxDiscountForFullPageScreenshot": 80,
+        "minPrice": 500,
+        "maxDiscount": 60,
+        "maxBrandDiscount": 60,
+        "maxDiscountForFullPageScreenshot": 70,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=protein+powder&rh=p_n_availability%3A1318485031&dc=&crid=2TUC19SFQR4DE&qid=1760971309&rnid=2485523031&sprefix=protein+powder%2Caps%2C220&ref=sr_nr_p_36_0_0&low-price=&high-price=5000",
-          "flipkart": "https://www.flipkart.com/health-care/health-supplements/protein-supplement/pr?sid=hlc,etg,1rx&otracker=categorytree"
+          "amazon": "https://www.amazon.in/s?k=protein+powder&rh=p_36%3A20000-500000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc&crid=2TUC19SFQR4DE&qid=1761462247&rnid=26921223031&sprefix=protein+powder%2Caps%2C220&ref=sr_nr_p_n_deal_type_1&ds=v1%3A2Hbvtr4z%2FWdmYTJSKmjMe0SRE%2F5xervzZEvNCZ%2FRb10",
+          "flipkart": "https://www.flipkart.com/health-care/health-supplements/protein-supplement/pr?sid=hlc%2Cetg%2C1rx&otracker=categorytree&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
         }
       }
     }
@@ -214,8 +225,8 @@
         "maxBrandDiscount": 80,
         "maxDiscountForFullPageScreenshot": 82,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=home+gym+combos&i=sporting&rh=n%3A26381705031%2Cp_36%3A-500000%2Cp_n_availability%3A1318485031&dc&qid=1760972200&rnid=1318483031&ref=sr_nr_p_n_availability_2&ds=v1%3AX1BL1ftWADog9%2BVVfsbMyOUhr5fdjv3dXjd8lVlFhUo",
-          "flipkart": "https://www.flipkart.com/exercise-fitness/fitness-equipment/home-gym-combos/pr?sid=qoc%2Camf%2Cpz0&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D5000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
+          "amazon": "https://www.amazon.in/s?k=home+gym+combos&i=sporting&rh=n%3A26381705031%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc=&qid=1761469883&rnid=1318502031&ref=sr_nr_p_36_0_0&low-price=&high-price=5000",
+          "flipkart": "https://www.flipkart.com/exercise-fitness/fitness-equipment/home-gym-combos/pr?sid=qoc%2Camf%2Cpz0&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D5000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       },
       "Dumbbells": {
@@ -225,8 +236,8 @@
         "maxBrandDiscount": 80,
         "maxDiscountForFullPageScreenshot": 82,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=dumbbells&i=sporting&rh=n%3A3404717031%2Cp_36%3A-510000%2Cp_n_availability%3A1318485031&dc&qid=1760972020&rnid=1318483031&ref=sr_nr_p_n_availability_2&ds=v1%3An%2Bx%2B6f%2FaxwcDwOak%2Bx65sytA3H6WLQAXLh%2BRwBTrkxY",
-          "flipkart": "https://www.flipkart.com/exercise-fitness/fitness-accessories/dumbbells/pr?sid=qoc%2Cacb%2Czuc&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D5000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
+          "amazon": "https://www.amazon.in/s?k=dumbbells&i=sporting&rh=n%3A3404717031%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc=&qid=1761469945&rnid=1318502031&ref=sr_nr_p_36_0_0&low-price=&high-price=5100",
+          "flipkart": "https://www.flipkart.com/exercise-fitness/fitness-accessories/dumbbells/pr?sid=qoc%2Cacb%2Czuc&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D5000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       }
     }
@@ -237,12 +248,12 @@
       "Iron": {
         "maxPrice": 4000,
         "minPrice": 250,
-        "maxDiscount": 55,
-        "maxBrandDiscount": 60,
+        "maxDiscount": 60,
+        "maxBrandDiscount": 65,
         "maxDiscountForFullPageScreenshot": 75,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=dry+iron&crid=16RQB0S9KJN2B&qid=1760969905&rnid=3444809031&sprefix=dry+iron%2Caps%2C192&ref=sr_nr_p_36_0_0&low-price=&high-price=2000",
-          "flipkart": "https://www.flipkart.com/iron/pr?sid=j9e%2Cabm%2Ca0u&q=dry+iron&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D2000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
+          "amazon": "",
+          "flipkart": "https://www.flipkart.com/iron/pr?sid=j9e%2Cabm%2Ca0u&q=dry+iron&otracker=categorytree&p%5B%5D=facets.price_range.from%3D250&p%5B%5D=facets.price_range.to%3D2000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       },
       "Water Purifier": {
@@ -250,21 +261,21 @@
         "minPrice": 1700,
         "maxDiscount": 75,
         "maxBrandDiscount": 72,
-        "maxDiscountForFullPageScreenshot": 80,
+        "maxDiscountForFullPageScreenshot": 78,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=water+purifier&rh=p_36%3A-1000000%2Cp_n_availability%3A1318485031&dc&crid=1RHNRJ846ZHDC&qid=1760972298&rnid=1318483031&sprefix=%2Caps%2C204&ref=sr_nr_p_n_availability_2&ds=v1%3AbTdIWEs354R5f6rGCdySCNZZjAzSNTXKWuzOIVJ7jhw",
-          "flipkart": "https://www.flipkart.com/water-purifiers/pr?sid=j9e%2Cabm%2Ci45&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D10000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
+          "amazon": "https://www.amazon.in/s?k=water+purifier&rh=p_36%3A110000-1000000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc&crid=1RHNRJ846ZHDC&qid=1761469730&rnid=26921223031&sprefix=%2Caps%2C204&xpid=acEgrPoZLjh6o&ref=sr_pg_1",
+          "flipkart": "https://www.flipkart.com/water-purifiers/pr?sid=j9e%2Cabm%2Ci45&otracker=categorytree&p%5B%5D=facets.price_range.from%3D1000&p%5B%5D=facets.price_range.to%3D10000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       },
       "Water Geyser": {
         "maxPrice": 10000,
         "minPrice": 1600,
-        "maxDiscount": 60,
+        "maxDiscount": 68,
         "maxBrandDiscount": 65,
         "maxDiscountForFullPageScreenshot": 75,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=water+geyser&rh=p_n_availability%3A1318485031&dc=&crid=254ST6G1BKBIL&qid=1760972586&rnid=3444809031&sprefix=water+geyser%2Caps%2C247&ref=sr_nr_p_36_0_0&low-price=&high-price=10000",
-          "flipkart": "https://www.flipkart.com/water-geysers/pr?sid=j9e%2Cabm%2Cbfm&p%5B%5D=facets.price_range.from%3DMin&otracker=categorytree&p%5B%5D=facets.price_range.to%3D10000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
+          "amazon": "https://www.amazon.in/s?k=water+geyser&rh=p_36%3A80000-1000000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc&crid=254ST6G1BKBIL&qid=1761469789&rnid=26921223031&sprefix=water+geyser%2Caps%2C247&ref=sr_nr_p_n_deal_type_1&ds=v1%3Aj%2Fk9vu4SDKyuUFH1acnZ2AKcnZKNNsTRcCSgqlY76wA",
+          "flipkart": "https://www.flipkart.com/water-geysers/pr?sid=j9e%2Cabm%2Cbfm&otracker=categorytree&p%5B%5D=facets.price_range.from%3D1000&p%5B%5D=facets.price_range.to%3D10000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       },
       "Washing Machine": {
@@ -275,7 +286,7 @@
         "maxDiscountForFullPageScreenshot": 15,
         "urls": {
           "amazon": "",
-          "flipkart": ""
+          "flipkart": "https://www.flipkart.com/washing-machines/pr?sid=j9e%2Cabm%2C8qx&otracker=categorytree&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D20000"
         }
       },
       "Refrigerator": {
@@ -285,8 +296,8 @@
         "maxBrandDiscount": 5,
         "maxDiscountForFullPageScreenshot": 15,
         "urls": {
-          "amazon": "",
-          "flipkart": ""
+          "amazon": "https://www.amazon.in/s?k=Refrigerator&rh=n%3A1380263031%2Cn%3A1380365031%2Cp_36%3A-2070000%2Cp_n_deal_type%3A26921226031%2Cp_n_availability%3A1318485031&dc&ds=v1%3AyTBNfyy2%2BqN%2BM%2FZ%2B8un5qrGQw3HSQNRuOEltj91Qmco&crid=RPCOWBK347MP&qid=1761470342&rnid=3576079031&sprefix=refrigerator%2Caps%2C193&ref=sr_nr_n_2",
+          "flipkart": "https://www.flipkart.com/refrigerators/pr?sid=j9e%2Cabm%2Chzg&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D25000&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
         }
       },
       "Television": {
@@ -296,8 +307,8 @@
         "maxBrandDiscount": 5,
         "maxDiscountForFullPageScreenshot": 15,
         "urls": {
-          "amazon": "",
-          "flipkart": ""
+          "amazon": "https://www.amazon.in/s?k=television&rh=n%3A1389396031%2Cp_36%3A-2000000%2Cp_n_deal_type%3A26921226031%2Cp_n_availability%3A1318485031&dc&ds=v1%3Ak98bRuIeWVzycGs4LRKtk9qMKuxzYhonJHrrzH7e46s&crid=2QEMSLTWLHICP&qid=1761470317&rnid=3576079031&sprefix=televison%2Caps%2C200&ref=sr_nr_n_1",
+          "flipkart": "https://www.flipkart.com/search?q=television&sid=ckf%2Cczl&as=on&as-show=on&otracker=AS_QueryStore_OrganicAutoSuggest_1_5_na_na_na&otracker1=AS_QueryStore_OrganicAutoSuggest_1_5_na_na_na&as-pos=1&as-type=RECENT&suggestionId=television%7CTelevisions&requestId=8c81d2e1-373d-40ed-b87b-90fca70dfc94&as-backfill=on&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D30000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       },
       "Air Cooler": {
@@ -307,8 +318,8 @@
         "maxBrandDiscount": 10,
         "maxDiscountForFullPageScreenshot": 20,
         "urls": {
-          "amazon": "",
-          "flipkart": ""
+          "amazon": "https://www.amazon.in/s?k=air+cooler&rh=p_36%3A-1530000%2Cp_n_deal_type%3A26921226031%2Cp_n_availability%3A1318485031&dc&qid=1761470473&rnid=1318483031&ref=sr_nr_p_n_availability_2&ds=v1%3A9fy0TI43cajlgSdyLMPNJEsgpIcCsTTLL%2BkiO8pykyk",
+          "flipkart": "https://www.flipkart.com/air-coolers/pr?sid=j9e,abm,52j&p[]=facets.price_range.from%3DMin&p[]=facets.price_range.to%3D15000&p[]=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p[]=facets.offer_type%255B%255D%3DSpecial%2BPrice&otracker=categorytree"
         }
       },
       "Air Conditioner": {
@@ -319,7 +330,18 @@
         "maxDiscountForFullPageScreenshot": 15,
         "urls": {
           "amazon": "",
-          "flipkart": ""
+          "flipkart": "https://www.flipkart.com/air-conditioners/pr?sid=j9e%2Cabm%2Cc54&p%5B%5D=facets.price_range.from%3DMin&otracker=categorytree&p%5B%5D=facets.price_range.to%3D30000&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
+        }
+      },
+      "Fans": {
+        "maxPrice": 5000,
+        "minPrice": 1000,
+        "maxDiscount": 20,
+        "maxBrandDiscount": 15,
+        "maxDiscountForFullPageScreenshot": 25,
+        "urls": {
+          "amazon": "https://www.amazon.in/s?k=ceiling+fan&rh=n%3A2083427031%2Cn%3A4369221031%2Cp_36%3A40000-380000%2Cp_n_deal_type%3A26921226031%2Cp_n_availability%3A1318485031&dc&ds=v1%3ARoOpFlWcyKmOD8zASXU%2Fp2lFb0b7W60ZP9SOmk66Ts4&qid=1761472290&rnid=3576079031&ref=sr_nr_n_2",
+          "flipkart": "https://www.flipkart.com/fan/pr?sid=j9e%2Cabm%2Clbz&p%5B%5D=facets.price_range.from%3DMin&otracker=categorytree&p%5B%5D=facets.price_range.to%3D3500&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       }
     }
@@ -334,8 +356,8 @@
         "maxBrandDiscount": 35,
         "maxDiscountForFullPageScreenshot": 40,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=microoven&rh=p_36%3A-1540000%2Cp_n_availability%3A1318485031&dc&crid=9RQOHWO1VV0C&qid=1760968606&rnid=1318483031&sprefix=microoven%2Caps%2C218&ref=sr_nr_p_n_availability_2&ds=v1%3ASd49SR%2BtQZCrfOyCDJ43CiIrayjimyLfabhZ41GTYPU",
-          "flipkart": "https://www.flipkart.com/microwave-ovens/pr?sid=j9e%2Cm38%2Co49&q=microwave+oven&otracker=categorytree&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
+          "amazon": "https://www.amazon.in/s?k=microwave&crid=104G16GV72KX0&qid=1761468785&rnid=5271547031&sprefix=microwave%2Caps%2C224&ref=sr_nr_p_36_0_0&low-price=&high-price=10000",
+          "flipkart": "https://www.flipkart.com/microwave-ovens/pr?sid=j9e%2Cm38%2Co49&q=microwave+oven&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D10000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       },
       "Mixer Juicer Grinder": {
@@ -345,8 +367,8 @@
         "maxBrandDiscount": 65,
         "maxDiscountForFullPageScreenshot": 75,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=mixer+juicer+grinder&i=kitchen&rh=n%3A1380045031%2Cp_36%3A-550000&dc&crid=1CK3KKGYUFXR3&qid=1760969423&rnid=3444809031&sprefix=mixer+juicer+grinder%2Caps%2C205&xpid=Fff1dLq4II9Sn&ref=sr_pg_1",
-          "flipkart": "https://www.flipkart.com/mixerjuicergrinders/pr?sid=j9e%2Cm38%2C7ek&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D5000"
+          "amazon": "https://www.amazon.in/s?k=mixer+juicer+grinder&i=kitchen&rh=n%3A1380045031%2Cp_36%3A100000-500000%2Cp_n_deal_type%3A26921226031%2Cp_n_availability%3A1318485031&dc&crid=1CK3KKGYUFXR3&qid=1761468962&rnid=1318483031&sprefix=mixer+juicer+grinder%2Caps%2C205&xpid=Fff1dLq4II9Sn&ref=sr_nr_p_n_availability_2&ds=v1%3AbUJvClYTuycdcZIAXMyAm%2FZI1Rv%2BwN7xuyisDJrnkkQ",
+          "flipkart": "https://www.flipkart.com/mixerjuicergrinders/pr?sid=j9e%2Cm38%2C7ek&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D5000&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
         }
       },
       "Coffee Maker": {
@@ -356,8 +378,8 @@
         "maxBrandDiscount": 50,
         "maxDiscountForFullPageScreenshot": 60,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=coffee+maker&i=kitchen&rh=n%3A1379960031%2Cp_36%3A-1570000&dc&crid=5KUPMJ61E6YU&qid=1760969467&rnid=3444809031&sprefix=coffee+make%2Caps%2C210&ref=sr_nr_p_36_0_0",
-          "flipkart": "https://www.flipkart.com/coffee-makers/pr?sid=j9e%2Cm38%2Cwqo&otracker=categorytree&p%5B%5D=facets.price_range.from%3D500&p%5B%5D=facets.price_range.to%3D10000"
+          "amazon": "https://www.amazon.in/s?k=coffee+maker&i=kitchen&rh=n%3A1379960031%2Cp_36%3A50000-1050000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc&crid=5KUPMJ61E6YU&qid=1761469014&rnid=26921223031&sprefix=coffee+make%2Caps%2C210&ref=sr_nr_p_n_deal_type_1&ds=v1%3AMJWW%2FVohE6Jtat7aoimp0Y%2F0VDKZVaG32romceocJ44",
+          "flipkart": "https://www.flipkart.com/coffee-makers/pr?sid=j9e%2Cm38%2Cwqo&otracker=categorytree&p%5B%5D=facets.price_range.from%3D500&p%5B%5D=facets.price_range.to%3D10000&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
         }
       },
       "PopUpToaster": {
@@ -368,7 +390,18 @@
         "maxDiscountForFullPageScreenshot": 60,
         "urls": {
           "amazon": "",
-          "flipkart": "https://www.flipkart.com/popup-toasters/pr?sid=j9e%2Cm38%2Ctxh&q=popuptoster&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D4000"
+          "flipkart": "https://www.flipkart.com/popup-toasters/pr?sid=j9e%2Cm38%2Ctxh&q=popuptoster&otracker=categorytree&p%5B%5D=facets.price_range.from%3D500&p%5B%5D=facets.price_range.to%3D4000&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
+        }
+      },
+      "Cookware": {
+        "maxPrice": 8000,
+        "minPrice": 500,
+        "maxDiscount": 60,
+        "maxBrandDiscount": 70,
+        "maxDiscountForFullPageScreenshot": 75,
+        "urls": {
+          "amazon": "",
+          "flipkart": "https://www.flipkart.com/kitchen-cookware-serveware/cookware/pr?sid=upp%2Ctnx&otracker=categorytree&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       }
     }
@@ -384,8 +417,8 @@
         "maxBrandDiscount": 75,
         "maxDiscountForFullPageScreenshot": 80,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=curtains&i=kitchen&rh=n%3A1380479031%2Cn%3A1380480031&dc=&crid=5TFU447KA4YL&qid=1760967686&rnid=3444809031&sprefix=curtains%2Caps%2C233&ref=sr_nr_p_36_0_0&low-price=&high-price=2050",
-          "flipkart": "https://www.flipkart.com/home-furnishing/curtains-accessories/curtains/pr?sid=jra%2Csl5%2C2va&q=curtains&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D2000"
+          "amazon": "https://www.amazon.in/s?k=curtains&i=kitchen&rh=n%3A1380480031%2Cp_36%3A-205000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc&crid=5TFU447KA4YL&qid=1761468468&rnid=26921223031&sprefix=curtains%2Caps%2C233&ref=sr_nr_p_n_deal_type_1&ds=v1%3AqYfXq5MMULYlx3wuJMgh%2Fq3yhinfqqLHdqNVAGB4hlw",
+          "flipkart": "https://www.flipkart.com/home-furnishing/curtains-accessories/curtains/pr?sid=jra%2Csl5%2C2va&q=curtains&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D2000&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
         }
       },
       "Cushion Covers": {
@@ -396,7 +429,7 @@
         "maxDiscountForFullPageScreenshot": 80,
         "urls": {
           "amazon": "",
-          "flipkart": "https://www.flipkart.com/search?q=cushion+covers&sid=jra%2Cixy%2Cjgq&as=on&as-show=on&otracker=AS_QueryStore_OrganicAutoSuggest_1_4_na_na_na&otracker1=AS_QueryStore_OrganicAutoSuggest_1_4_na_na_na&as-pos=1&as-type=RECENT&suggestionId=cushion+covers%7CCushion+Covers&requestId=92e56a1a-ac94-4407-89f5-3f1238e3d104&as-backfill=on"
+          "flipkart": "https://www.flipkart.com/search?q=cushion+covers&sid=jra%2Cixy%2Cjgq&as=on&as-show=on&otracker=AS_QueryStore_OrganicAutoSuggest_1_4_na_na_na&otracker1=AS_QueryStore_OrganicAutoSuggest_1_4_na_na_na&as-pos=1&as-type=RECENT&suggestionId=cushion+covers%7CCushion+Covers&requestId=92e56a1a-ac94-4407-89f5-3f1238e3d104&as-backfill=on&p%5B%5D=facets.price_range.from%3D500&p%5B%5D=facets.price_range.to%3D1000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       },
       "BedSheets": {
@@ -407,7 +440,7 @@
         "maxDiscountForFullPageScreenshot": 85,
         "urls": {
           "amazon": "",
-          "flipkart": "https://www.flipkart.com/home-furnishing/bed-linen-blankets/bedsheets/pr?sid=jra%2Cknw%2Cqcw&q=bedsheet&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D2000"
+          "flipkart": "https://www.flipkart.com/home-furnishing/bed-linen-blankets/bedsheets/pr?sid=jra%2Cknw%2Cqcw&q=bedsheet&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D2000&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
         }
       }
     }
@@ -423,8 +456,8 @@
         "maxBrandDiscount": 64,
         "maxDiscountForFullPageScreenshot": 70,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=clocks&i=kitchen&rh=n%3A1380392031%2Cp_36%3A-350000&dc&page=2&xpid=9oYYSKwXlmgTY&crid=2HAB2SC3YVK57&qid=1760967396&rnid=3444809031&sprefix=clocks%2Caps%2C198",
-          "flipkart": "https://www.flipkart.com/home-decor/clocks/pr?sid=arb%2Ckjw&q=clocks&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D4000"
+          "amazon": "https://www.amazon.in/s?k=clocks&i=kitchen&rh=n%3A1380392031%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc=&crid=2HAB2SC3YVK57&qid=1761463445&rnid=3444809031&sprefix=clocks%2Caps%2C198&xpid=9oYYSKwXlmgTY&ref=sr_nr_p_36_0_0&low-price=&high-price=2500",
+          "flipkart": "https://www.flipkart.com/home-decor/clocks/pr?sid=arb%2Ckjw&q=clocks&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D2000&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       }
     }
@@ -436,12 +469,12 @@
       "SmartLight": {
         "maxPrice": 2500,
         "minPrice": 120,
-        "maxDiscount": 70,
-        "maxBrandDiscount": 75,
-        "maxDiscountForFullPageScreenshot": 80,
+        "maxDiscount": 65,
+        "maxBrandDiscount": 70,
+        "maxDiscountForFullPageScreenshot": 75,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=smartlight&crid=3OGQ6ZTQ761J3&qid=1760967144&rnid=3444809031&sprefix=smartlight%2Caps%2C240&ref=sr_nr_p_36_0_0&low-price=&high-price=1300",
-          "flipkart": "https://www.flipkart.com/automation-robotics/smart-lighting/pr?sid=igc%2Cb4q&otracker=categorytree&p%5B%5D=facets.lighting_type%255B%255D%3DSmart%2BBulb&p%5B%5D=facets.lighting_type%255B%255D%3DLight%2BStrip&p%5B%5D=facets.discount_range_v1%255B%255D%3D40%2525%2Bor%2Bmore"
+          "amazon": "https://www.amazon.in/s?k=smartlight&rh=p_36%3A-130000%2Cp_n_deal_type%3A26921226031%2Cp_n_availability%3A1318485031&dc&crid=3OGQ6ZTQ761J3&qid=1761462533&rnid=1318483031&sprefix=smartlight%2Caps%2C240&ref=sr_nr_p_n_availability_2&ds=v1%3A1ouWdUuMn%2FGcSp7I8NS145tjuhTJ24X%2BRK6uZcBqFKY",
+          "flipkart": "https://www.flipkart.com/automation-robotics/smart-lighting/pr?sid=igc%2Cb4q&otracker=categorytree&p%5B%5D=facets.lighting_type%255B%255D%3DSmart%2BBulb&p%5B%5D=facets.lighting_type%255B%255D%3DLight%2BStrip&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       }
     }
@@ -454,21 +487,64 @@
         "minPrice": 150,
         "maxDiscount": 60,
         "maxBrandDiscount": 70,
-        "maxDiscountForFullPageScreenshot": 75,
+        "maxDiscountForFullPageScreenshot": 72,
         "urls": {
-          "amazon": "https://www.amazon.in/s?i=electronics&rh=n%3A976419031%2Cn%3A29561348031%2Cn%3A1388921031%2Cn%3A14146390031&s=popularity-rank&dc=&fs=true&qid=1760896153&rnid=1318502031&ref=sr_nr_p_36_0_0&low-price=&high-price=3500",
-          "flipkart": "https://www.flipkart.com/headset/headphones/pr?sid=fcn%2Cgc3&otracker=categorytree&p%5B%5D=facets.price_range.from%3D600&p%5B%5D=facets.price_range.to%3D2600"
+          "amazon": "https://www.amazon.in/s?i=electronics&rh=n%3A14146390031%2Cp_36%3A-250000%2Cp_n_deal_type%3A26921226031%2Cp_n_availability%3A1318485031&s=popularity-rank&dc&fs=true&qid=1761462691&rnid=1318483031&ref=sr_nr_p_n_availability_2&ds=v1%3AQRh%2BVzPJpO1fxz8V00IoE%2BOQ27eJWm9nRJdPsazX1%2Bc",
+          "flipkart": "https://www.flipkart.com/headset/headphones/pr?sid=fcn%2Cgc3&otracker=categorytree&p%5B%5D=facets.price_range.from%3D600&p%5B%5D=facets.price_range.to%3D2600&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
         }
       },
       "TrueWirelessEarbuds": {
-        "maxPrice": 4500,
+        "maxPrice": 2500,
         "minPrice": 150,
-        "maxDiscount": 45,
-        "maxBrandDiscount": 50,
+        "maxDiscount": 50,
+        "maxBrandDiscount": 60,
+        "maxDiscountForFullPageScreenshot": 85,
+        "urls": {
+          "amazon": "https://www.amazon.in/s?i=electronics&rh=n%3A14146389031%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&s=popularity-rank&dc=&fs=true&qid=1761462897&rnid=1318502031&ref=sr_nr_p_36_0_0&low-price=200&high-price=2500",
+          "flipkart": "https://www.flipkart.com/headset/earphones/wireless-earphones/pr?sid=fcn%2C821%2Ca7x&otracker=categorytree&p%5B%5D=facets.price_range.from%3D600&p%5B%5D=facets.price_range.to%3D2600&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice"
+        }
+      }
+    }
+  },
+  {
+    "category": "smartPhone",
+    "subCategories": {
+      "SmartPhone": {
+        "maxPrice": 20000,
+        "minPrice": 5000,
+        "maxDiscount": 25,
+        "maxBrandDiscount": 30,
+        "maxDiscountForFullPageScreenshot": 35,
+        "urls": {
+          "amazon": "https://www.amazon.in/s?k=smartphones&rh=n%3A1389401031%2Cp_36%3A50000-2000000%2Cp_n_deal_type%3A26921226031%2Cp_n_availability%3A1318485031&dc&ds=v1%3A6%2F3%2BvG6u6kXKXJ1ENt8Wv%2F1gk6V7bXG5kZ1kZ5Y6U4U&crid=1Y3A1WQ5TN9K0&qid=1761463175&rnid=26921223031&sprefix=smartphone%2Caps%2C208&ref=sr_nr_p_n_deal_type_1",
+          "flipkart": "https://www.flipkart.com/mobiles/pr?sid=tyy%2C4io&q=smartphone&otracker=categorytree&p%5B%5D=facets.price_range.from%3D5000&p%5B%5D=facets.price_range.to%3D20000&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DExclude%2BOut%2Bof%2BStock"
+        }
+      }
+    }
+  },
+  {
+    "category": "bathAndPersonalCare",
+    "subCategories": {
+      "Soap": {
+        "maxPrice": 500,
+        "minPrice": 50,
+        "maxDiscount": 38,
+        "maxBrandDiscount": 42,
+        "maxDiscountForFullPageScreenshot": 50,
+        "urls": {
+          "amazon": "https://www.amazon.in/s?k=soap&rh=n%3A1374415031%2Cn%3A1374295031%2Cp_36%3A-150000%2Cp_n_deal_type%3A26921226031%2Cp_n_availability%3A1318485031&dc&ds=v1%3AG4DMyua2n3sCR3bTq3LJDtTppQRxMglK8MeDYNdrios&qid=1761471441&rnid=3576079031&ref=sr_nr_n_2",
+          "flipkart": "https://www.flipkart.com/beauty-and-grooming/bath-shower/bath-essentials/bath-soap/pr?sid=g9b%2C5nz%2Cb1b%2Cyug&otracker=categorytree&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.fulfilled_by%255B%255D%3DF-Assured"
+        }
+      },
+      "Washing Powder": {
+        "maxPrice": 1000,
+        "minPrice": 100,
+        "maxDiscount": 52,
+        "maxBrandDiscount": 58,
         "maxDiscountForFullPageScreenshot": 60,
         "urls": {
-          "amazon": "https://www.amazon.in/s?i=electronics&rh=n%3A976419031%2Cn%3A29561348031%2Cn%3A1388921031%2Cn%3A14146389031%2Cp_36%3A-350000&s=popularity-rank&dc&fs=true&ds=v1%3Av0%2BB%2BriOdtHyzSvOxMK7QgI3koNDoE0JSMPRnxM2IJA&qid=1760896288&rnid=1388921031",
-          "flipkart": "https://www.flipkart.com/headset/earphones/wireless-earphones/pr?sid=fcn%2C821%2Ca7x&p%5B%5D=facets.price_range.from%3DMin&otracker=categorytree&p%5B%5D=facets.price_range.to%3D2600"
+          "amazon": "https://www.amazon.in/s?k=washing+powder&rh=p_n_deal_type%3A26921226031%2Cp_n_availability%3A1318485031&dc&crid=8LMJCWBSQV65&qid=1761471846&rnid=1318483031&sprefix=washing+powder%2Caps%2C339&ref=sr_nr_p_n_availability_2&ds=v1%3A3LCBdaPxWEkIMsEWqwPgozyhRS0Hwq9K%2Bc9wDHp6KiY",
+          "flipkart": "https://www.flipkart.com/home-cleaning-bathroom-accessories/household-supplies/washing-powders/pr?sid=rja%2Cplv%2Cbwz&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D1500&p%5B%5D=facets.fulfilled_by%255B%255D%3DF-Assured"
         }
       }
     }

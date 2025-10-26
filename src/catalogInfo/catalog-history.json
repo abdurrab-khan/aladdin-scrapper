@@ -5,7 +5,7 @@
       "Shirts"
     ],
     "lowPriorityCategories": [],
-    "timeStamp": 1761030646891,
+    "timeStamp": 1761395846315,
     "lastLowPriorityRun": 1761029513208
   },
   "footWear": {
@@ -14,19 +14,19 @@
       "Formal Shoes"
     ],
     "lowPriorityCategories": [],
-    "timeStamp": 1761030646891,
+    "timeStamp": 1761395846315,
     "lastLowPriorityRun": 1760337065761
   },
   "laptopAndDesktop": {
     "subCategories": [],
     "lowPriorityCategories": [],
-    "timeStamp": 1761030601310,
+    "timeStamp": 1761205300325,
     "lastLowPriorityRun": 1760337065761
   },
   "healthAndPersonalCare": {
     "subCategories": [],
     "lowPriorityCategories": [],
-    "timeStamp": 1761029564967,
+    "timeStamp": 1761043951282,
     "lastLowPriorityRun": 1760337065761
   },
   "nutritionAndSupplements": {
@@ -44,13 +44,13 @@
   "homeAppliances": {
     "subCategories": [],
     "lowPriorityCategories": [],
-    "timeStamp": 1761030625586,
+    "timeStamp": 1761395817702,
     "lastLowPriorityRun": 1760337065761
   },
   "kitchenAppliances": {
     "subCategories": [],
     "lowPriorityCategories": [],
-    "timeStamp": 1761030625586,
+    "timeStamp": 1761312630794,
     "lastLowPriorityRun": 1760337065761
   },
   "homeFurnishing": {
@@ -74,7 +74,7 @@
   "audio": {
     "subCategories": [],
     "lowPriorityCategories": [],
-    "timeStamp": 1761030464045,
+    "timeStamp": 1761105047993,
     "lastLowPriorityRun": 1760337065761
   }
 }
