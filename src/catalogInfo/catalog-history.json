@@ -2,11 +2,13 @@
   "menClothings": {
     "subCategories": [
       "T-Shirts",
-      "Shirts"
+      "Shirts",
+      "Jeans",
+      "Trousers"
     ],
     "lowPriorityCategories": [],
-    "timeStamp": 1761395846315,
-    "lastLowPriorityRun": 1761029513208
+    "timeStamp": 1763988766378,
+    "lastLowPriorityRun": 1763467893134
   },
   "footWear": {
     "subCategories": [
@@ -14,67 +16,104 @@
       "Formal Shoes"
     ],
     "lowPriorityCategories": [],
-    "timeStamp": 1761395846315,
+    "timeStamp": 1763729952482,
     "lastLowPriorityRun": 1760337065761
   },
   "laptopAndDesktop": {
-    "subCategories": [],
+    "subCategories": [
+      "Laptops",
+      "Monitor"
+    ],
     "lowPriorityCategories": [],
-    "timeStamp": 1761205300325,
+    "timeStamp": 1763730407066,
     "lastLowPriorityRun": 1760337065761
   },
   "healthAndPersonalCare": {
-    "subCategories": [],
+    "subCategories": [
+      "Trimmer",
+      "Hair Dryer"
+    ],
     "lowPriorityCategories": [],
-    "timeStamp": 1761043951282,
+    "timeStamp": 1763730407066,
     "lastLowPriorityRun": 1760337065761
   },
   "nutritionAndSupplements": {
     "subCategories": [],
     "lowPriorityCategories": [],
-    "timeStamp": 1761029508085,
-    "lastLowPriorityRun": 1761029508085
+    "timeStamp": 1763467172329,
+    "lastLowPriorityRun": 1763467172329
   },
   "sportsAndFitness": {
     "subCategories": [],
     "lowPriorityCategories": [],
-    "timeStamp": 1761029513208,
-    "lastLowPriorityRun": 1761029513208
+    "timeStamp": 1763467893134,
+    "lastLowPriorityRun": 1763467893134
   },
   "homeAppliances": {
-    "subCategories": [],
+    "subCategories": [
+      "Iron",
+      "Water Purifier",
+      "Water Geyser",
+      "Washing Machine",
+      "Refrigerator",
+      "Television"
+    ],
     "lowPriorityCategories": [],
-    "timeStamp": 1761395817702,
+    "timeStamp": 1763988766378,
     "lastLowPriorityRun": 1760337065761
   },
   "kitchenAppliances": {
-    "subCategories": [],
+    "subCategories": [
+      "MicrowaveOven",
+      "Mixer Juicer Grinder",
+      "Coffee Maker",
+      "PopUpToaster"
+    ],
     "lowPriorityCategories": [],
-    "timeStamp": 1761312630794,
+    "timeStamp": 1763988443983,
     "lastLowPriorityRun": 1760337065761
   },
   "homeFurnishing": {
     "subCategories": [],
     "lowPriorityCategories": [],
-    "timeStamp": 1761029513208,
-    "lastLowPriorityRun": 1761029513208
+    "timeStamp": 1763467893134,
+    "lastLowPriorityRun": 1763467893134
   },
   "homeDecor": {
     "subCategories": [],
     "lowPriorityCategories": [],
-    "timeStamp": 1761029510728,
-    "lastLowPriorityRun": 1761029510728
+    "timeStamp": 1763467493917,
+    "lastLowPriorityRun": 1763467493917
   },
   "smartProducts": {
     "subCategories": [],
     "lowPriorityCategories": [],
-    "timeStamp": 1761029510728,
-    "lastLowPriorityRun": 1761029510728
+    "timeStamp": 1763467493917,
+    "lastLowPriorityRun": 1763467493917
   },
   "audio": {
-    "subCategories": [],
+    "subCategories": [
+      "Headphones",
+      "TrueWirelessEarbuds"
+    ],
     "lowPriorityCategories": [],
-    "timeStamp": 1761105047993,
+    "timeStamp": 1763987788648,
     "lastLowPriorityRun": 1760337065761
+  },
+  "smartPhone": {
+    "subCategories": [
+      "SmartPhone"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1763987788648,
+    "lastLowPriorityRun": 1763542102846
+  },
+  "bathAndPersonalCare": {
+    "subCategories": [
+      "Soap"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1763987788648,
+    "lastLowPriorityRun": 1763542102846
   }
 }
