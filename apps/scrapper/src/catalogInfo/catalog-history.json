@@ -1,0 +1,119 @@
+{
+  "menClothings": {
+    "subCategories": [
+      "T-Shirts",
+      "Shirts",
+      "Jeans",
+      "Trousers"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765977702588,
+    "lastLowPriorityRun": 1765376363846
+  },
+  "footWear": {
+    "subCategories": [
+      "Sneakers",
+      "Formal Shoes"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765812368364,
+    "lastLowPriorityRun": 1760337065761
+  },
+  "laptopAndDesktop": {
+    "subCategories": [
+      "Laptops",
+      "Monitor"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765898040197,
+    "lastLowPriorityRun": 1760337065761
+  },
+  "healthAndPersonalCare": {
+    "subCategories": [
+      "Trimmer",
+      "Hair Dryer"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765898040197,
+    "lastLowPriorityRun": 1760337065761
+  },
+  "nutritionAndSupplements": {
+    "subCategories": [],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765375401110,
+    "lastLowPriorityRun": 1765375401110
+  },
+  "sportsAndFitness": {
+    "subCategories": [],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765376363846,
+    "lastLowPriorityRun": 1765376363846
+  },
+  "homeAppliances": {
+    "subCategories": [
+      "Iron",
+      "Water Purifier",
+      "Water Geyser",
+      "Washing Machine",
+      "Refrigerator",
+      "Television"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765977702588,
+    "lastLowPriorityRun": 1760337065761
+  },
+  "kitchenAppliances": {
+    "subCategories": [
+      "MicrowaveOven",
+      "Mixer Juicer Grinder",
+      "Coffee Maker",
+      "PopUpToaster"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765977465175,
+    "lastLowPriorityRun": 1760337065761
+  },
+  "homeFurnishing": {
+    "subCategories": [],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765376363846,
+    "lastLowPriorityRun": 1765376363846
+  },
+  "homeDecor": {
+    "subCategories": [],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765375784762,
+    "lastLowPriorityRun": 1765375784762
+  },
+  "smartProducts": {
+    "subCategories": [],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765375784762,
+    "lastLowPriorityRun": 1765375784762
+  },
+  "audio": {
+    "subCategories": [
+      "Headphones",
+      "TrueWirelessEarbuds"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765898867641,
+    "lastLowPriorityRun": 1760337065761
+  },
+  "smartPhone": {
+    "subCategories": [
+      "SmartPhone"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765898867641,
+    "lastLowPriorityRun": 1763542102846
+  },
+  "bathAndPersonalCare": {
+    "subCategories": [
+      "Soap"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1765898867641,
+    "lastLowPriorityRun": 1763542102846
+  }
+}

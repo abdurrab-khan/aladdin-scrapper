@@ -1,0 +1,31 @@
+{
+  "name": "screenshot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "lint": "eslint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.24.0",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.88.0",
+    "bullmq": "^5.66.1",
+    "express": "^5.2.1",
+    "ioredis": "^5.8.2",
+    "puppeteer": "^24.33.0",
+    "zod": "^4.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/express": "^5.0.6",
+    "eslint": "^9.39.2",
+    "globals": "^16.5.0",
+    "jiti": "^2.6.1",
+    "typescript-eslint": "^8.50.0"
+  }
+}
