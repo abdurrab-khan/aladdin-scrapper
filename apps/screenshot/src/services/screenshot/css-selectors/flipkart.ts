@@ -11,12 +11,12 @@ interface ISelector {
 
 const selector: ISelector = {
   FULL: {
-    main: ".sU0Kgs.ruXbYP.eq0K9s",
+    main: ".QSCKDh.eRsYMo[style]",
     content: ".QSCKDh.eRsYMo",
     image: ".QSCKDh.dLgFEE.mfzC0s",
   },
   GROUPED: {
-    card: ".RGLWAk",
+    card: ".lvJbLV div[data-id]",
   },
 };
 

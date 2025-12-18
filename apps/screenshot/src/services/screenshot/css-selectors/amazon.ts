@@ -1,5 +1,6 @@
 interface ISelector {
   FULL: {
+    main: string;
     content: string;
     priceSection: string;
     image: string;
@@ -11,12 +12,13 @@ interface ISelector {
 
 const selector: ISelector = {
   FULL: {
+    main: "#ppd, #dp",
     image: "#leftCol",
     content: "#centerCol",
     priceSection: "#rightCol",
   },
   GROUPED: {
-    card: ".RGLWAk",
+    card: ".s-result-item.s-widget-spacing-small:not(.AdHolder)",
   },
 };
 

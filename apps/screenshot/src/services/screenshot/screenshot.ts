@@ -1,11 +1,11 @@
-import puppeteer, { Browser, ElementHandle, Page } from "puppeteer";
+import puppeteer, { Browser, Page } from "puppeteer";
 
 import Utils from "./utils/utils.js";
 import { ScreenShotVaritents, Website } from "@/types/index.js";
 
 interface INavigateToReturn {
-  browser?: Browser;
-  page?: Page;
+  browser: Browser;
+  page: Page;
 }
 
 interface ILaunchBrowserReturn {
@@ -21,7 +21,6 @@ interface IScreenShot {
 
   navigateTo: () => Promise<INavigateToReturn>;
   takeScreenShot: (browser: Browser, page: Page) => Promise<string>;
-  launchBrowser: () => Promise<ILaunchBrowserReturn>;
 }
 
 class ScreenShot implements IScreenShot {
@@ -61,29 +60,14 @@ class ScreenShot implements IScreenShot {
 
   async takeScreenShot(_: Browser, page: Page): Promise<string> {
     try {
-      let element: ElementHandle<Element> | null = null;
-
-      if (this.varient === "FULL") {
-        element = await page.$("");
-      } else if (this.varient === "GROUPED") {
-        element = await page.$("");
-      } else {
-        throw new Error(`Invalid varient type: ${this.varient}`);
-      }
-
-      // error -- if element is not found
-      if (element === null) {
-        throw new Error("Sorry we can't able to find element");
-      }
-
       // calculating -- coordinates of the element which we want
       const clipCoords = await this.utils.calClippedCoords(
+        page,
         this.website,
         this.varient,
-        element,
       );
 
-      const path = "my-image";
+      const path = "my-image.png";
 
       // taking screenshot
       await page.screenshot({
@@ -105,13 +89,20 @@ class ScreenShot implements IScreenShot {
   private async launchBrowser(): Promise<ILaunchBrowserReturn> {
     try {
       const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
       });
       const page = await browser.newPage();
 
       if (!browser.connected) {
         throw new Error("Failed to launch the browser");
       }
+
+      // setting the viewport size
+      await page.setViewport({
+        height: 910,
+        width: 1280,
+        deviceScaleFactor: 1,
+      });
 
       return {
         browser,

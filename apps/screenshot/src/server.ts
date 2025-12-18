@@ -1,9 +1,9 @@
-import Express from "express";
+import express from "express";
 
-const app = Express();
+const app = express();
 
-app.use(Express.json());
-app.use(Express.static("../photos/"));
+app.use(express.json());
+app.use(express.static("../photos/"));
 
 // ALL ROUTES
 import ScreenShotRoute from "./route/screenshot.route.js";
