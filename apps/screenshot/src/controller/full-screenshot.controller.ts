@@ -1,33 +1,24 @@
 import type { Request, Response } from "express";
-import { ApiResponse, AsyncHandler } from "../utils/index.js";
-import ScreenShot from "../services/screenshot/screenshot.js";
-import { Website } from "../types/index.js";
+import { IFullScreenShotRequest } from "../types/index";
+import { ApiResponse, AsyncHandler } from "../utils/index";
+import { validateFullScreenshotRequest } from "../utils/requestValidator";
+import queue from "@/services/bullmq/queue/queue";
 
 const takeFullScreenShot = AsyncHandler(async (req: Request, res: Response) => {
-  const { url, website } = req.body;
+  const { id, url, website } = validateFullScreenshotRequest(
+    req?.body as IFullScreenShotRequest,
+  );
 
-  if (!url || !website) {
-    throw new Error("Url is required to take a screenshot");
-  }
-
-  const screenshotHelper = new ScreenShot(url, website as Website, "FULL");
-  const { page, browser } = await screenshotHelper.navigateTo();
-
-  // let's taking screenshot
-  const screenshot = await screenshotHelper.takeScreenShot(browser, page);
-
-  await page.close();
-  await browser.close();
+  await queue.add("full-screenshot", {
+    id,
+    url,
+    website,
+  });
 
   res.status(200).json(
     new ApiResponse({
       statusCode: 200,
-      message: "screenshot taken successfully",
-      data: [
-        {
-          page: screenshot,
-        },
-      ],
+      message: "Added into queue for taking full page screenshot",
     }),
   );
 });

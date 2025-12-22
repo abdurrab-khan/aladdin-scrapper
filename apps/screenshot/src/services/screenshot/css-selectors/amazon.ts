@@ -6,7 +6,10 @@ interface ISelector {
     image: string;
   };
   GROUPED: {
+    sponsoreCard: string;
     card: string;
+    price: string;
+    discount: string;
   };
 }
 
@@ -18,7 +21,10 @@ const selector: ISelector = {
     priceSection: "#rightCol",
   },
   GROUPED: {
-    card: ".s-result-item.s-widget-spacing-small:not(.AdHolder)",
+    price: "span.a-price.a-text-price[data-a-strike='true'] span.a-offscreen",
+    discount: "span.a-price span.a-price-whole",
+    card: "div.s-result-item.s-asin[id][data-uuid]",
+    sponsoreCard: ".s-result-item.s-widget-spacing-small.AdHolder",
   },
 };
 

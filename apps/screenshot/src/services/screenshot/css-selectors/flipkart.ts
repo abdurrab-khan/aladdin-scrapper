@@ -5,7 +5,10 @@ interface ISelector {
     image: string;
   };
   GROUPED: {
+    sponsoreCard: string;
     card: string;
+    price: string;
+    discount: string;
   };
 }
 
@@ -16,7 +19,10 @@ const selector: ISelector = {
     image: ".QSCKDh.dLgFEE.mfzC0s",
   },
   GROUPED: {
-    card: ".lvJbLV div[data-id]",
+    price: "div.kRYCnD",
+    discount: "div.hZ3P6w",
+    card: "div.QSCKDh .nZIRY7 div[data-id]",
+    sponsoreCard: "div.nZIRY7 div[data-id]:has(.t7gRps, .s4t9tK, .IxWX8O)",
   },
 };
 
