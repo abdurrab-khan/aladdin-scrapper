@@ -7,18 +7,18 @@ import {
   Website,
 } from "@/types";
 import failedQueue from "./queue/failed-queue";
+import supabase from "@/database/supabase";
 
 const workerHandler = async (
-  job: Job<IGroupedScreenShotRequest | IFullScreenShotRequest>,
+  job: Job<IGroupedScreenShotRequest | IFullScreenShotRequest>
 ) => {
   const { queueName, name, data } = job;
-  console.log("Queue name is: ", queueName);
 
   try {
     const screenshotHelper = new ScreenShot(
       data.id,
       data.url,
-      data.website as Website,
+      data.website as Website
     );
     const { page, browser } = await screenshotHelper.navigateTo();
 
@@ -31,17 +31,19 @@ const workerHandler = async (
 
       // setting price details
       screenshotHelper.setPriceDetails(
-        (data as IGroupedScreenShotRequest)?.priceDetails,
+        (data as IGroupedScreenShotRequest)?.priceDetails
       );
     }
 
-    await screenshotHelper.takeScreenShot(browser, page);
+    const path = await screenshotHelper.takeScreenShot(browser, page);
+    await supabase.save_image(data.id, path);
   } catch (err) {
-    // if failed at first time
+    // if job is from main-queue, add it to failed-queue
     if (queueName === "main-queue") {
       failedQueue.add(name, data);
       return;
     }
+
     console.error("Failed to take a screenshot: ", err);
     throw err;
   }

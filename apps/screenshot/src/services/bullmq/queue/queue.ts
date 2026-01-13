@@ -6,9 +6,7 @@ const queue = new Queue("main-queue", {
 });
 
 (async function () {
-  await queue.setGlobalConcurrency(4);
+  await queue.setGlobalConcurrency(5);
 })();
-
-// if error error from main queue, try on more time by adding into failed queue.
 
 export default queue;

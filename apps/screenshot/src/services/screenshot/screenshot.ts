@@ -1,9 +1,12 @@
 import puppeteer, { Browser, Page } from "puppeteer";
 
-import Utils from "./utils/screenshotUtils.js";
+import Utils from "./utils/screenshotUtils";
+
+import AmazonSelector from "./css-selectors/amazon";
+import FlipkartSelector from "./css-selectors/flipkart";
 
 import CustomError from "@/utils/ErrorHandler";
-import ApiResponse from "@/utils/ApiResponse.js";
+import ApiResponse from "@/utils/ApiResponse";
 
 import {
   IGroupedScreenShotRequest,
@@ -31,7 +34,7 @@ interface IScreenShot {
   navigateTo: () => Promise<INavigateToReturn>;
   takeScreenShot: (
     browser: Browser,
-    page: Page,
+    page: Page
   ) => Promise<string | ApiResponse>;
 }
 
@@ -50,12 +53,12 @@ class ScreenShot implements IScreenShot {
     this.utils = new Utils();
   }
 
-  // setting varient
+  // setting variant
   setVarient(varient: ScreenShotVaritents) {
     this.varient = varient;
   }
 
-  // setting priceDetails
+  // setting price Details
   setPriceDetails(priceDetails?: IGroupedScreenShotRequest["priceDetails"]) {
     this.priceDetails = priceDetails;
   }
@@ -78,30 +81,27 @@ class ScreenShot implements IScreenShot {
     } catch (error) {
       throw new Error(
         (error as Error)?.message ??
-          "An unkown error occurred during navigation",
+          "An unkown error occurred during navigation"
       );
     }
   }
 
-  async takeScreenShot(
-    browser: Browser,
-    page: Page,
-  ): Promise<string | ApiResponse> {
+  async takeScreenShot(browser: Browser, page: Page): Promise<string> {
     try {
+      // waiting for main element to be visible.
+      await this.waitForVisible(page);
+
       // calculating -- coordinates of the element which we want
       const clipCoords = await this.utils.calClippedCoords(
         page,
         this.website,
         this.varient,
-        this?.priceDetails,
+        this?.priceDetails
       );
 
-      // if there is some message directly return them
-      if (clipCoords instanceof ApiResponse) {
-        return clipCoords;
-      }
-
-      const path = `${this.varient}_${this.id}_image.png`;
+      const path = `./src/product_images/${this.varient.toLowerCase()}_${
+        this.id
+      }_image.png`;
 
       // taking screenshot
       await page.screenshot({
@@ -120,7 +120,7 @@ class ScreenShot implements IScreenShot {
 
       throw new Error(
         (error as Error)?.message ??
-          "An unknown error occurred during taking screenshot",
+          "An unknown error occurred during taking screenshot"
       );
     } finally {
       // closing page and browser
@@ -139,7 +139,7 @@ class ScreenShot implements IScreenShot {
       const browser = await puppeteer.launch({
         executablePath:
           "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe",
-        headless: false,
+        headless: true,
       });
       const page = await browser.newPage();
 
@@ -161,8 +161,50 @@ class ScreenShot implements IScreenShot {
     } catch (error) {
       throw new Error(
         (error as Error)?.message ??
-          "An unkown error occurred during launching browser",
+          "An unknown error occurred during launching browser"
       );
+    }
+  }
+
+  private async waitForVisible(
+    page: Page,
+    retry = 1,
+    maxRetry = 3
+  ): Promise<void> {
+    let selector = "";
+
+    // getting selector based on >> website, variant
+    if (this.website === "AMAZON") {
+      selector =
+        this.varient === "FULL"
+          ? AmazonSelector.FULL.main
+          : AmazonSelector.GROUPED.card;
+    } else {
+      selector =
+        this.varient === "FULL"
+          ? FlipkartSelector.FULL.main
+          : FlipkartSelector.GROUPED.card;
+    }
+
+    try {
+      await page.waitForSelector(selector, {
+        visible: true,
+        timeout: 1000 * 40,
+      });
+    } catch (err) {
+      if (retry >= maxRetry) {
+        throw new Error(
+          `Element not found: ${selector} for ${this.website}, ${
+            this.varient
+          }, error: ${
+            (err as Error)?.message ??
+            "An unknown error occurred during waiting for main element"
+          }`
+        );
+      }
+
+      await page.reload();
+      await this.waitForVisible(page, retry + 1, maxRetry);
     }
   }
 }
