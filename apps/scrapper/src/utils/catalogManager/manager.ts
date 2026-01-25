@@ -1,47 +1,139 @@
-import * as fs from "fs";
+import ManagerUtils from "./utils.js";
 import type {
   Category,
   SelectionResult,
   History,
   SubCategoryDetails,
-} from "../types/index.js";
+} from "../../types/index.js";
 
 // Types
 class CatalogRotationManager {
   private config: Category[];
   private history: History;
-  private configPath: string;
-  private historyPath: string;
+  private managerUtils: ManagerUtils;
 
   constructor(configPath: string, historyPath: string) {
-    this.configPath = configPath;
-    this.historyPath = historyPath;
-    this.config = this.loadConfig();
-    this.history = this.loadHistory();
+    this.managerUtils = new ManagerUtils(configPath, historyPath);
+
+    // Loading product config and history path
+    this.config = this.managerUtils.loadConfig();
+    this.history = this.managerUtils.loadHistory();
   }
 
-  private loadConfig(): Category[] {
-    const data = fs.readFileSync(this.configPath, "utf-8");
+  run(): SelectionResult[] {
+    console.log("🚀 Starting catalog rotation...\n");
 
-    return JSON.parse(data);
+    const selections = this.selectCategories();
+
+    console.log("📋 Selected categories and subcategories:\n");
+    selections.forEach((selection, index) => {
+      const priorityLabel = selection.isLowPriority
+        ? "🔽 LOW PRIORITY"
+        : "⭐ REGULAR";
+
+      console.log(`${index + 1}. ${selection.category} ${priorityLabel}`);
+      selection.subcategories.forEach((subcat) => {
+        console.log(`   - ${subcat}`);
+      });
+
+      console.log();
+    });
+
+    // Mark as completed
+    this.markAsCompleted(selections);
+
+    console.log("✅ History updated successfully!\n");
+
+    return selections;
   }
 
-  private loadHistory(): History {
-    try {
-      const data = fs.readFileSync(this.historyPath, "utf-8");
-      return JSON.parse(data);
-    } catch {
-      return {};
+  private selectCategories(): SelectionResult[] {
+    // Reset history if categories or lowPriority are all completed
+    this.resetHistory();
+
+    const results: SelectionResult[] = [];
+
+    // Sort categories by completion score (ascending - least completed first)
+    const [shouldUseLowPriority, sortedCategories] = this.getSortedCategories();
+
+    for (const category of sortedCategories) {
+      const totalSubcats = results.reduce((acc, curr) => {
+        return acc + curr.subcategories.length;
+      }, 0);
+      if (totalSubcats >= 4) break;
+
+      const categoryName = category.category;
+      this.initializeHistoryForCategory(categoryName);
+
+      // Check if we should work on regular subcategories or low priority
+      const sliceCount = totalSubcats <= 2 ? 2 : totalSubcats - 2;
+      const unCompletedCats = shouldUseLowPriority
+        ? this.getUncompletedLowPriority(category)
+        : this.getUncompletedSubcategories(category);
+
+      if (unCompletedCats.length === 0) continue;
+
+      const slicedVersion = unCompletedCats.slice(0, sliceCount);
+
+      results.push({
+        category: categoryName,
+        subcategories: slicedVersion,
+        subcategoriesDetails: this.getSubcategoryDetails(
+          category,
+          slicedVersion,
+        ),
+        isLowPriority: shouldUseLowPriority,
+      });
     }
+
+    return results;
   }
 
-  private saveHistory(): void {
-    fs.writeFileSync(this.historyPath, JSON.stringify(this.history, null, 2));
-  }
+  private markAsCompleted(selections: SelectionResult[]): void {
+    for (const selection of selections) {
+      this.initializeHistoryForCategory(selection.category);
 
-  private getObjectKeys(obj?: Record<string, unknown>): string[] {
-    if (!obj) return [];
-    return Object.keys(obj);
+      if (selection.isLowPriority) {
+        // Add to low priority history
+        for (const subcat of selection.subcategories) {
+          if (
+            !this.history[selection.category]?.lowPriorityCategories.includes(
+              subcat,
+            )
+          ) {
+            this.history[selection.category]?.lowPriorityCategories.push(
+              subcat,
+            );
+          }
+
+          // Update last low priority run timestamp if all low priority completed
+          const uncompletedLowPriority = this.getUncompletedLowPriority(
+            this.config.find((cat) => cat.category === selection.category)!,
+          );
+
+          if (uncompletedLowPriority.length === 0) {
+            this.history[selection.category]!.lastLowPriorityRun = Date.now();
+          }
+        }
+      } else {
+        // Add to regular subcategories history
+        for (const subcat of selection.subcategories) {
+          if (
+            !this.history[selection.category]?.subCategories.includes(subcat)
+          ) {
+            this.history[selection.category]?.subCategories.push(subcat);
+          }
+        }
+      }
+
+      // Update timestamp
+      if (this.history[selection.category]) {
+        this.history[selection.category]!.timeStamp = Date.now();
+      }
+    }
+
+    // Saving the history
+    this.managerUtils.saveHistory(this.history);
   }
 
   private initializeHistoryForCategory(categoryName: string): void {
@@ -69,7 +161,7 @@ class CatalogRotationManager {
     this.initializeHistoryForCategory(categoryName);
 
     const totalLowPriority = category.lowPriorityCategories
-      ? this.getObjectKeys(category?.lowPriorityCategories).length
+      ? Object.keys(category?.lowPriorityCategories ?? []).length
       : 0;
     const completedLowPriority =
       this.history[categoryName]?.lowPriorityCategories.length ?? 0;
@@ -82,8 +174,7 @@ class CatalogRotationManager {
 
     this.initializeHistoryForCategory(categoryName);
 
-    const totalSubcats =
-      this.getObjectKeys(category?.subCategories).length ?? 0;
+    const totalSubcats = Object.keys(category?.subCategories ?? []).length ?? 0;
     const completedSubcats =
       this.history[categoryName]?.subCategories.length ?? 0;
 
@@ -95,7 +186,7 @@ class CatalogRotationManager {
 
     this.initializeHistoryForCategory(categoryName);
 
-    const allSubcats = this.getObjectKeys(category?.subCategories);
+    const allSubcats = Object.keys(category?.subCategories ?? []);
     const completed = this.history[categoryName]?.subCategories;
 
     return allSubcats.filter((subcat) => !completed?.includes(subcat));
@@ -107,7 +198,7 @@ class CatalogRotationManager {
 
     if (!category.lowPriorityCategories) return [];
 
-    const allLowPriority = this.getObjectKeys(category?.lowPriorityCategories);
+    const allLowPriority = Object.keys(category?.lowPriorityCategories ?? []);
     const completed = this?.history[categoryName]?.lowPriorityCategories;
 
     return allLowPriority.filter((subcat) => !completed?.includes(subcat));
@@ -116,7 +207,7 @@ class CatalogRotationManager {
   private getEligibleLowPriorityCategories(): Category[] {
     return this.config.filter((category) => {
       const timeStamp = Number(
-        this.history[category.category]?.lastLowPriorityRun
+        this.history[category.category]?.lastLowPriorityRun,
       );
       const oneWeek = 7 * 24 * 60 * 60 * 1000;
 
@@ -166,15 +257,15 @@ class CatalogRotationManager {
             lastLowPriorityRun: value.lastLowPriorityRun || null,
           },
         ];
-      })
+      }),
     );
 
-    this.saveHistory();
+    this.managerUtils.saveHistory(this.history);
   }
 
   private resetLowPriorityHistory(): void {
     console.log(
-      "🔄 All low priority categories completed! Resetting low priority history...\n"
+      "🔄 All low priority categories completed! Resetting low priority history...\n",
     );
 
     this.history = Object.fromEntries(
@@ -188,7 +279,7 @@ class CatalogRotationManager {
             lastLowPriorityRun: value.lastLowPriorityRun || null,
           },
         ];
-      })
+      }),
     );
   }
 
@@ -235,135 +326,26 @@ class CatalogRotationManager {
     const details: SubCategoryDetails = {};
 
     for (const subCat of subcategories) {
-      if (category.subCategories[subCat]) {
-        details[subCat] = category.subCategories[subCat];
+      const subCategoryDetails = category.subCategories[subCat];
+      const lowPriorityDetails = category.lowPriorityCategories
+        ? category.lowPriorityCategories[subCat]
+        : undefined;
+
+      if (subCategoryDetails) {
+        details[subCat] = subCategoryDetails;
+      } else if (lowPriorityDetails) {
+        details[subCat] = lowPriorityDetails;
       }
     }
 
     return details;
-  }
-
-  selectCategories(): SelectionResult[] {
-    // Reset history if categories or lowPriority are all completed
-    this.resetHistory();
-
-    const results: SelectionResult[] = [];
-
-    // Sort categories by completion score (ascending - least completed first)
-    const [shouldUseLowPriority, sortedCategories] = this.getSortedCategories();
-
-    for (const category of sortedCategories) {
-      // Limit to total of 4 subcategories per run
-      const totalSubcats = results.reduce((acc, curr) => {
-        return acc + curr.subcategories.length;
-      }, 0);
-      if (totalSubcats >= 4) break;
-
-      const categoryName = category.category;
-      this.initializeHistoryForCategory(categoryName);
-
-      // Check if we should work on regular subcategories or low priority
-      const sliceCount = totalSubcats <= 2 ? 2 : totalSubcats - 2;
-      const unCompletedCats = shouldUseLowPriority
-        ? this.getUncompletedLowPriority(category)
-        : this.getUncompletedSubcategories(category);
-
-      if (unCompletedCats.length === 0) continue;
-
-      const slicedVersion = unCompletedCats.slice(0, sliceCount);
-
-      results.push({
-        category: categoryName,
-        subcategories: slicedVersion,
-        subcategoriesDetails: this.getSubcategoryDetails(
-          category,
-          slicedVersion
-        ),
-        isLowPriority: shouldUseLowPriority,
-      });
-    }
-
-    return results;
-  }
-
-  markAsCompleted(selections: SelectionResult[]): void {
-    for (const selection of selections) {
-      this.initializeHistoryForCategory(selection.category);
-
-      if (selection.isLowPriority) {
-        // Add to low priority history
-        for (const subcat of selection.subcategories) {
-          if (
-            !this.history[selection.category]?.lowPriorityCategories.includes(
-              subcat
-            )
-          ) {
-            this.history[selection.category]?.lowPriorityCategories.push(
-              subcat
-            );
-          }
-
-          // Update last low priority run timestamp if all low priority completed
-          const uncompletedLowPriority = this.getUncompletedLowPriority(
-            this.config.find((cat) => cat.category === selection.category)!
-          );
-
-          if (uncompletedLowPriority.length === 0) {
-            this.history[selection.category]!.lastLowPriorityRun = Date.now();
-          }
-        }
-      } else {
-        // Add to regular subcategories history
-        for (const subcat of selection.subcategories) {
-          if (
-            !this.history[selection.category]?.subCategories.includes(subcat)
-          ) {
-            this.history[selection.category]?.subCategories.push(subcat);
-          }
-        }
-      }
-
-      // Update timestamp
-      if (this.history[selection.category]) {
-        this.history[selection.category]!.timeStamp = Date.now();
-      }
-    }
-
-    this.saveHistory();
-  }
-
-  run(): SelectionResult[] {
-    console.log("🚀 Starting catalog rotation...\n");
-
-    const selections = this.selectCategories();
-
-    console.log("📋 Selected categories and subcategories:\n");
-    selections.forEach((selection, index) => {
-      const priorityLabel = selection.isLowPriority
-        ? "🔽 LOW PRIORITY"
-        : "⭐ REGULAR";
-
-      console.log(`${index + 1}. ${selection.category} ${priorityLabel}`);
-      selection.subcategories.forEach((subcat) => {
-        console.log(`   - ${subcat}`);
-      });
-
-      console.log();
-    });
-
-    // Mark as completed
-    this.markAsCompleted(selections);
-
-    console.log("✅ History updated successfully!\n");
-
-    return selections;
   }
 }
 
 // Usage example
 const manager = new CatalogRotationManager(
   "./src/catalogInfo/catalog-config.json",
-  "./src/catalogInfo/catalog-history.json"
+  "./src/catalogInfo/catalog-history.json",
 );
 
 export default manager;

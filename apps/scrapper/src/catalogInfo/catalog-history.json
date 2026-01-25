@@ -6,9 +6,12 @@
       "Jeans",
       "Trousers"
     ],
-    "lowPriorityCategories": [],
-    "timeStamp": 1768222782194,
-    "lastLowPriorityRun": 1768222782194
+    "lowPriorityCategories": [
+      "Watches",
+      "Smart Watch"
+    ],
+    "timeStamp": 1769326978716,
+    "lastLowPriorityRun": 1768633213044
   },
   "footWear": {
     "subCategories": [
@@ -16,19 +19,17 @@
       "Formal Shoes"
     ],
     "lowPriorityCategories": [],
-    "timeStamp": 1767702750959,
-    "lastLowPriorityRun": 1760337065761
+    "timeStamp": 1769326836675,
+    "lastLowPriorityRun": 1768633213044
   },
   "laptopAndDesktop": {
     "subCategories": [
       "Laptops",
-      "Monitor",
-      "Mouse",
-      "Keyboard"
+      "Monitor"
     ],
     "lowPriorityCategories": [],
-    "timeStamp": 1768050514609,
-    "lastLowPriorityRun": 1760337065761
+    "timeStamp": 1769326837390,
+    "lastLowPriorityRun": 1768633213044
   },
   "healthAndPersonalCare": {
     "subCategories": [
@@ -36,20 +37,24 @@
       "Hair Dryer"
     ],
     "lowPriorityCategories": [],
-    "timeStamp": 1767883708339,
-    "lastLowPriorityRun": 1760337065761
+    "timeStamp": 1769326837390,
+    "lastLowPriorityRun": 1768633213044
   },
   "nutritionAndSupplements": {
     "subCategories": [],
-    "lowPriorityCategories": [],
-    "timeStamp": 1768222706039,
-    "lastLowPriorityRun": 1768222706039
+    "lowPriorityCategories": [
+      "Protein Powder"
+    ],
+    "timeStamp": 1769326978716,
+    "lastLowPriorityRun": 1769326978716
   },
   "sportsAndFitness": {
     "subCategories": [],
-    "lowPriorityCategories": [],
-    "timeStamp": 1768222782194,
-    "lastLowPriorityRun": 1768222782194
+    "lowPriorityCategories": [
+      "Home Gym Combos"
+    ],
+    "timeStamp": 1769326978716,
+    "lastLowPriorityRun": 1768633213044
   },
   "homeAppliances": {
     "subCategories": [
@@ -58,44 +63,47 @@
       "Water Geyser",
       "Washing Machine",
       "Refrigerator",
-      "Television",
-      "Air Cooler",
-      "Air Conditioner",
-      "Fans"
+      "Television"
     ],
     "lowPriorityCategories": [],
-    "timeStamp": 1768222784363,
-    "lastLowPriorityRun": 1760337065761
+    "timeStamp": 1769326951865,
+    "lastLowPriorityRun": 1768633213044
   },
   "kitchenAppliances": {
     "subCategories": [
       "MicrowaveOven",
       "Mixer Juicer Grinder",
       "Coffee Maker",
-      "PopUpToaster",
-      "Cookware"
+      "PopUpToaster"
     ],
     "lowPriorityCategories": [],
-    "timeStamp": 1768222784363,
-    "lastLowPriorityRun": 1760337065761
+    "timeStamp": 1769326842626,
+    "lastLowPriorityRun": 1768633213044
   },
   "homeFurnishing": {
     "subCategories": [],
-    "lowPriorityCategories": [],
-    "timeStamp": 1768222782194,
-    "lastLowPriorityRun": 1768222782194
+    "lowPriorityCategories": [
+      "Curtains",
+      "Cushion Covers"
+    ],
+    "timeStamp": 1769328420478,
+    "lastLowPriorityRun": 1768633213044
   },
   "homeDecor": {
     "subCategories": [],
-    "lowPriorityCategories": [],
-    "timeStamp": 1768222708255,
-    "lastLowPriorityRun": 1768222708255
+    "lowPriorityCategories": [
+      "Clocks"
+    ],
+    "timeStamp": 1769328420478,
+    "lastLowPriorityRun": 1769328420478
   },
   "smartProducts": {
     "subCategories": [],
-    "lowPriorityCategories": [],
-    "timeStamp": 1768222708255,
-    "lastLowPriorityRun": 1768222708255
+    "lowPriorityCategories": [
+      "SmartLight"
+    ],
+    "timeStamp": 1769328420478,
+    "lastLowPriorityRun": 1769328420478
   },
   "audio": {
     "subCategories": [
@@ -103,24 +111,23 @@
       "TrueWirelessEarbuds"
     ],
     "lowPriorityCategories": [],
-    "timeStamp": 1767885028641,
-    "lastLowPriorityRun": 1760337065761
+    "timeStamp": 1769326841941,
+    "lastLowPriorityRun": 1768633213044
   },
   "smartPhone": {
     "subCategories": [
       "SmartPhone"
     ],
     "lowPriorityCategories": [],
-    "timeStamp": 1767885028641,
-    "lastLowPriorityRun": 1763542102846
+    "timeStamp": 1769326841941,
+    "lastLowPriorityRun": 1768633213044
   },
   "bathAndPersonalCare": {
     "subCategories": [
-      "Soap",
-      "Washing Powder"
+      "Soap"
     ],
     "lowPriorityCategories": [],
-    "timeStamp": 1768050514609,
-    "lastLowPriorityRun": 1763542102846
+    "timeStamp": 1769326841941,
+    "lastLowPriorityRun": 1768633213044
   }
 }

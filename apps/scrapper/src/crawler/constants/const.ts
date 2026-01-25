@@ -8,7 +8,7 @@ const MAX_PRODUCTS_BY_BRAND = 4;
 const MAX_PRODUCTS_BY_BRAND_COUNT = 4;
 
 // The maximum number of products to send per category
-const MAX_PRODUCT_PER_CATEGORY = 20;
+const MAX_PRODUCT_PER_CATEGORY = 14;
 
 // The maximum number of empty pages allowed before stopping the scraper
 const MAX_EMPTY_PAGES_ALLOWED = 5;

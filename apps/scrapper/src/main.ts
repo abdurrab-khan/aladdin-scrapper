@@ -3,7 +3,7 @@ import { rm } from "fs/promises";
 
 import RedisDB from "./db/redis.js";
 import SupabaseClient from "./db/supabase.js";
-import manager from "./utils/catalogManager.js";
+import manager from "./utils/catalogManager/manager.js";
 import { scrapeProducts } from "./crawler/scrapper.js";
 import { randomDelay } from "./crawler/utils/utils.js";
 import type { SubCategory } from "./types/index.js";
@@ -20,27 +20,25 @@ async function main() {
 
       if (!selectionDetails) {
         console.warn(
-          `⚠️ There is no selection details available ${selectionDetails}`
+          `⚠️ There is no selection details available ${selectionDetails}`,
         );
         continue;
       }
 
       // extracting details
-      const category = selectionDetails.category;
-      const subCategories = selectionDetails.subcategories;
-      const subCategoryDetails = selectionDetails.subcategoriesDetails;
+      const { subcategories, subcategoriesDetails } = selectionDetails;
 
       // throw an error if there is not subCategories
-      if (subCategories.length === 0) {
+      if (subcategories.length === 0) {
         throw new Error(
-          `❌ Failed there is no subcategories found ${subCategories}`
+          `❌ Failed there is no subcategories found ${subcategories}`,
         );
       }
 
       // looping sub subCategories
-      for (let j = 0; j < subCategories.length; j++) {
-        const categoryName = subCategories[j] as string;
-        const subCategory = subCategoryDetails[categoryName] as SubCategory;
+      for (let j = 0; j < subcategories.length; j++) {
+        const categoryName = subcategories[j] as string;
+        const subCategory = subcategoriesDetails[categoryName] as SubCategory;
 
         console.log(`🚀  Starting ${categoryName} product scraping...`);
 
@@ -48,7 +46,7 @@ async function main() {
         const scrappedProducts = await scrapeProducts(
           redisClient,
           categoryName,
-          subCategory
+          subCategory,
         );
 
         // insert products
