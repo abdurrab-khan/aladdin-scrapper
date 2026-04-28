@@ -5,7 +5,7 @@ export type FlatProduct = Omit<Product, "details"> & SingleProductDetails;
 
 export type ProductSelector = Exclude<
   keyof FlatProduct,
-  "isGrouped" | "id" | "discountPercent" | "category"
+  "isGrouped" | "id" | "discountPercent" | "category" | "screenshotInfo"
 >;
 
 export type ProductSelectorValue = {

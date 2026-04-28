@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 
 import type { Product } from "../types/product.js";
@@ -12,8 +11,6 @@ import type { Product } from "../types/product.js";
 
 class SupabaseClient {
   private supabaseClient;
-  private uploadedImageUrls: Record<string, string> = {};
-
   constructor() {
     if (!process.env["SUPABASE_URL"] || !process.env["SUPABASE_KEY"]) {
       throw new Error(
@@ -32,95 +29,165 @@ class SupabaseClient {
     );
   }
 
-  public async saveProducts(products: Product[] | null): Promise<void> {
+  public async saveProducts(products: Product[] | null): Promise<Product[]> {
     if (!products || products.length === 0) {
       throw new Error("👎 There is not product is insert into the database");
     }
 
     try {
-      const imagePaths = this.getProductsImages(products);
-      await this.uploadImages(imagePaths);
-
-      const productsWithImages = this.getProductsWithImages(products);
-      if (productsWithImages.length > 0) {
-        await this.insertProducts(productsWithImages);
-        console.log(
-          `✅  Successfully saved ${productsWithImages.length} products with images.`
-        );
-      } else {
-        console.log(
-          "⚠️  No products with all images uploaded successfully. Skipping database insertion."
-        );
-      }
+      const productsForInsert = this.stripScreenshotInfo(products);
+      const insertedProducts = await this.insertProducts(
+        productsForInsert,
+        products
+      );
+      console.log(
+        `✅  Successfully saved ${insertedProducts.length} products.`
+      );
+      return insertedProducts;
     } catch (error) {
       console.error("⚠️ Error inserting products:", error);
+      return [];
     } finally {
-      this.uploadedImageUrls = {}; // Clear the uploaded image URLs after processing
+      // no-op
     }
   }
 
-  private async uploadImage(imagePath: string): Promise<void> {
-    try {
-      const imageBuffer = readFileSync(imagePath, {
-        flag: "r",
-      });
+  private buildScreenshotInfoMap(
+    products: Product[]
+  ): Map<string, Product["screenshotInfo"]> {
+    const map = new Map<string, Product["screenshotInfo"]>();
+    products.forEach((product) => {
+      if (!product.screenshotInfo) return;
+      const key = this.getProductMatchKey(product);
+      if (!key) return;
+      map.set(key, product.screenshotInfo);
+    });
+    return map;
+  }
 
-      const response = await this.supabaseClient.storage
-        .from("aladdin")
-        .upload(imagePath, imageBuffer, {
-          upsert: false,
-          contentType: "image/png",
-        });
+  private getProductMatchKey(product: Product): string {
+    const record = product as unknown as Record<string, unknown>;
+    const url =
+      (product.url as string) ||
+      (record["product_url"] as string) ||
+      (record["url"] as string) ||
+      "";
 
-      if (response.error || !response.data?.fullPath) {
-        console.error("⚠️ Error uploading image:", imagePath, response.error);
-      } else {
-        this.uploadedImageUrls[imagePath] = response.data.fullPath;
+    return url;
+  }
+
+  private mergeScreenshotInfo(
+    insertedProducts: Product[],
+    originalProducts: Product[]
+  ): Product[] {
+    const screenshotInfoMap = this.buildScreenshotInfoMap(originalProducts);
+    const originalMatchMap = new Map<string, Product>();
+
+    originalProducts.forEach((product) => {
+      originalMatchMap.set(this.getProductMatchKey(product), product);
+    });
+
+    return insertedProducts.map((product) => {
+      const record = product as unknown as Record<string, unknown>;
+      const normalizedProduct =
+        product.id || !record["product_id"]
+          ? product
+          : {
+              ...product,
+              id: record["product_id"] as string,
+            };
+
+      const screenshotInfo = screenshotInfoMap.get(
+        this.getProductMatchKey(normalizedProduct)
+      );
+      const originalProduct = originalMatchMap.get(
+        this.getProductMatchKey(normalizedProduct)
+      );
+
+      if (screenshotInfo) {
+        return {
+          ...normalizedProduct,
+          url: originalProduct?.url || normalizedProduct.url,
+          category: originalProduct?.category || normalizedProduct.category,
+          platformId: originalProduct?.platformId || normalizedProduct.platformId,
+          screenshotInfo,
+        };
       }
+
+      return normalizedProduct;
+    });
+  }
+
+  private async insertProducts(
+    products: Product[],
+    originalProducts: Product[]
+  ): Promise<Product[]> {
+    try {
+      const { data, error } = await this.supabaseClient.rpc(
+        "insert_products_v2",
+        {
+          products: products,
+        }
+      );
+
+      if (error) {
+        throw error;
+      }
+
+      if (Array.isArray(data)) {
+        return this.mergeScreenshotInfo(data as Product[], originalProducts);
+      }
+
+      console.warn(
+        "⚠️ insert_products_v2 did not return inserted rows. Screenshot jobs were skipped because product ids are missing."
+      );
+      return [];
     } catch (error) {
-      console.error("⚠️ Error uploading image:", imagePath, error);
+      console.error("⚠️  Error inserting products:", error);
+      return [];
     }
   }
 
-  private async uploadImages(imagePaths: string[]): Promise<void> {
-    const uploadPromises = imagePaths.map((path) => this.uploadImage(path));
-    await Promise.all(uploadPromises);
-  }
+  public async ensureProductImageRows(products: Product[]): Promise<void> {
+    const rows = products
+      .map((product) => {
+        const record = product as unknown as Record<string, unknown>;
+        const id = product.id || (record["product_id"] as string | undefined);
+        if (!id) return null;
+        return {
+          product_id: id,
+          image_url: null,
+        };
+      })
+      .filter((row): row is { product_id: string; image_url: null } =>
+        Boolean(row)
+      );
 
-  private async insertProducts(products: Product[]): Promise<void> {
+    if (rows.length === 0) return;
+
     try {
-      const { error } = await this.supabaseClient.rpc("insert_products_v2", {
-        products: products,
-      });
+      const { error } = await this.supabaseClient
+        .from("product_images")
+        .upsert(rows, {
+          onConflict: "product_id",
+        });
 
       if (error) {
         throw error;
       }
     } catch (error) {
-      console.error("⚠️  Error inserting products:", error);
+      console.error("⚠️  Error creating product_images rows:", error);
     }
-  }
-
-  private getProductsImages(products: Product[]): string[] {
-    return products.reduce((acc: string[], p: Product) => {
-      if (p.images.card) acc.push(p.images.card);
-      if (p.images.fullPage) acc.push(p.images.fullPage);
-      return acc;
-    }, []);
-  }
-
-  private getProductsWithImages(products: Product[]): Product[] {
-    return products.filter((p) => {
-      const hasCardImage = this.uploadedImageUrls[p.images.card] !== undefined;
-      const hasFullPageImage =
-        !p.images.fullPage ||
-        this.uploadedImageUrls[p.images.fullPage] !== undefined;
-
-      return hasCardImage && hasFullPageImage;
-    });
   }
 }
 
 const SupabaseClientInstance = new SupabaseClient();
 
 export default SupabaseClientInstance;
+  private stripScreenshotInfo(products: Product[]): Product[] {
+    return products.map((product) => {
+      if (!product.screenshotInfo) return product;
+      const { screenshotInfo: _, ...rest } = product;
+      return rest;
+    });
+  }

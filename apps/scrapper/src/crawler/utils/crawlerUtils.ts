@@ -1,17 +1,8 @@
-import { ulid } from "ulid";
-import BrowserUtils from "../utils/browserUtils.js";
 import { cleanData, hasRequiredDetails } from "./helper.js";
-import {
-  randomDelay,
-  isValidProductDeal,
-  getClippingForScreenshot,
-  getClippingForGroupedScreenshot,
-  getContextOptionsForScreenShot,
-} from "./utils.js";
+import { randomDelay, isValidProductDeal } from "./utils.js";
 
 import {
   PRODUCT_DETAILS,
-  FULL_PAGE_SELECTOR,
   PRODUCT_CARD_SELECTOR,
   AMAZON_FETCH_BRAND_PRODUCTS,
   FLIPKART_FETCH_BRAND_PRODUCTS,
@@ -219,78 +210,6 @@ class CrawlerUtils {
     }
   }
 
-  // Method to take screenshot of the product
-  public async takeScreenshot(
-    fileName: string,
-    screenShotElement?: Page | ElementHandle<SVGElement | HTMLElement>,
-    productUrl?: string,
-    screenShotConfig:
-      | Parameters<ElementHandle["screenshot"]>[0]
-      | NonNullable<Parameters<Page["screenshot"]>[0]> = {}
-  ): Promise<string | null> {
-    const fullFilePath = `products/${fileName}.png`;
-    const { context, page } = await BrowserUtils.getContext(this.browser);
-
-    try {
-      // If full page screenshot is required
-      if (productUrl) {
-        // Navigate to the product URL
-        await this.navigateToUrl(
-          page,
-          productUrl,
-          false,
-          FULL_PAGE_SELECTOR[this.website]
-        );
-
-        // Get the bounding box of the main product element
-        const elementBoundingBox = await (
-          await page.$(FULL_PAGE_SELECTOR[this.website])
-        )?.boundingBox();
-
-        // Adding the config for clipping
-        (screenShotConfig as NonNullable<Parameters<Page["screenshot"]>[0]>)[
-          "clip"
-        ] = getClippingForScreenshot(this.website, elementBoundingBox?.y);
-        (screenShotConfig as NonNullable<Parameters<Page["screenshot"]>[0]>)[
-          "fullPage"
-        ] = false;
-      }
-
-      // If product element is not provided, use the one from the new context
-      if (!screenShotElement && !page) {
-        console.error(
-          `⚠️  No product or context available for screenshot: ${fileName}`
-        );
-        return null;
-      }
-
-      // Take screenshot of the product or the full page
-      const buffer = await (screenShotElement ?? page)?.screenshot({
-        path: fullFilePath,
-        type: "png",
-        caret: "hide",
-        animations: "disabled",
-        timeout: 60000,
-        ...screenShotConfig,
-      });
-
-      // If screenshot fails, return null
-      if (!buffer) return null;
-
-      return fullFilePath;
-    } catch (error) {
-      console.error(
-        `⚠️  Error taking screenshot for ${fileName}:`,
-        (error as Error).message ?? " error);"
-      );
-      return null;
-    } finally {
-      // Ensure context and page are closed if they were opened
-      if (page) await page.close();
-      if (context) await context.close();
-    }
-  }
-
   // Wait until the page is fully loaded
   public async waitForPageLoad(
     page?: Page,
@@ -348,22 +267,22 @@ class CrawlerUtils {
     if (!products || products.length === 0) return null;
 
     // Extract product details concurrently
-    const productDetails = await Promise.all(
-      products.map(async (product, i) => {
-        const details = await this.extractProductData(product);
+      const productDetails = await Promise.all(
+        products.map(async (product, i) => {
+          const details = await this.extractProductData(product);
 
-        if (details) {
-          return details; // Return valid product details
-        } else {
+          if (details) {
+            return details; // Return valid product details
+          }
+
           // If no valid products found after checking a few, log a warning
           if (i < 3) {
             throw new Error(`No valid products found for this brand`);
           }
 
           return null; // Skip invalid product
-        }
-      })
-    )
+        })
+      )
       .then((results) =>
         results.reduce((acc, val) => {
           if (val != null) acc.push(val);
@@ -386,70 +305,46 @@ class CrawlerUtils {
         return priceA - priceB;
       });
 
-      const fileName = `group_${this.website}_${
-        productDetails[0]?.brand ?? "brand"
-      }_${ulid()}`;
-
-      // Get bounding box of the first product to determine screenshot area
-      let boundingBox = await products[0]?.boundingBox();
-
-      if (boundingBox) {
-        // Let's adjust the width of the viewport and screen size based on the layout
-        if (boundingBox.height < boundingBox.width) {
-          await page.setViewportSize({
-            height: 1750,
-            width: 1500,
-          });
-
-          // Re-fetch the bounding box after viewport change
-          boundingBox = (await products[0]?.boundingBox()) ?? boundingBox;
-        }
-
-        const clip = getClippingForGroupedScreenshot(
-          boundingBox,
-          productDetails.length
-        );
-
-        const screenShotPath = await this.takeScreenshot(fileName, page, "", {
-          clip,
-        });
-
-        // Let's take a screen shot
-        if (screenShotPath) {
-          return {
-            name: "Grouped " + productDetails[0]?.brand + " Products",
-            category: this.subCategory,
-            url: "",
-            details: {
-              brand: productDetails[0]?.brand || "Various",
-              startPrice: productDetails[0]?.price || 0,
-              discountStartPrice: productDetails[0]?.discountPrice || 0,
-              productCount: productDetails.length,
-              avgRating:
-                parseFloat(
-                  (
-                    productDetails.reduce(
-                      (sum, p) => sum + (p.rating || 0),
-                      0
-                    ) / productDetails.filter((p) => p.rating).length
-                  ).toFixed(2)
-                ) || undefined,
-              totalReviews:
-                productDetails.reduce((sum, p) => sum + (p.reviews || 0), 0) ||
-                undefined,
-            } as GroupProductDetails,
-            images: {
-              card: screenShotPath,
-              image: productDetails.map((p) => p.images as string),
-              fullPage: null,
-            },
-            isGrouped: true,
-            userId: this.ProductPrivateInfo.userId,
-            platformId: this.ProductPrivateInfo.platformId,
-            associatedAppId: this.ProductPrivateInfo.associatedAppId,
-          };
-        }
-      }
+      return {
+        name: "Grouped " + productDetails[0]?.brand + " Products",
+        category: this.subCategory,
+        url: "",
+        details: {
+          brand: productDetails[0]?.brand || "Various",
+          startPrice: productDetails[0]?.price || 0,
+          discountStartPrice: productDetails[0]?.discountPrice || 0,
+          productCount: productDetails.length,
+          avgRating:
+            parseFloat(
+              (
+                productDetails.reduce((sum, p) => sum + (p.rating || 0), 0) /
+                productDetails.filter((p) => p.rating).length
+              ).toFixed(2)
+            ) || undefined,
+          totalReviews:
+            productDetails.reduce((sum, p) => sum + (p.reviews || 0), 0) ||
+            undefined,
+        } as GroupProductDetails,
+        images: {
+          card: productDetails[0]?.images || "",
+          image: productDetails.map((p) => p.images as string),
+          fullPage: null,
+        },
+        screenshotInfo: {
+          fullPageRequired: false,
+          grouped: true,
+          website: this.website,
+          priceDetails: {
+            minPrice: this.subCategoryDetails.minPrice,
+            maxPrice: this.subCategoryDetails.maxPrice,
+            discount: this.subCategoryDetails.maxBrandDiscount,
+          },
+        },
+        isGrouped: true,
+        userId: this.ProductPrivateInfo.userId,
+        platformId: this.ProductPrivateInfo.platformId,
+        associatedAppId: this.ProductPrivateInfo.associatedAppId,
+      };
     }
 
     return null;
@@ -468,54 +363,6 @@ class CrawlerUtils {
     )} Safari/537.36`;
   };
 
-  /**
-   * Get the clipping for screenshot based on the website
-   * @param website - E_COMMERCE
-   * @returns - clipping for screenshot
-   */
-  static getClippingForScreenshot(website: E_COMMERCE, yAxis?: number) {
-    switch (website) {
-      case "amazon":
-        return { x: 0, y: yAxis ?? 177, width: 1400, height: 820 };
-      case "flipkart":
-        return { x: 0, y: yAxis ?? 85, width: 1400, height: 715 };
-      default:
-        return { x: 0, y: yAxis ?? 0, width: 1400, height: 700 };
-    }
-  }
-
-  /**
-   * Get the clipping for grouped screenshot based on the layout
-   * @param bounding - bounding box of the product element
-   * @param totalProducts - total number of products in the group
-   * @returns
-   */
-  static getClippingForGroupedScreenshot(
-    bounding: {
-      x: number;
-      y: number;
-      height: number;
-      width: number;
-    },
-    totalProducts: number
-  ) {
-    // Check Vertical or Horizontal Layout
-    if (bounding.height > bounding.width) {
-      return {
-        x: bounding.x,
-        y: bounding.y,
-        height: bounding.height,
-        width: bounding.width * totalProducts,
-      };
-    } else {
-      return {
-        x: bounding.x,
-        y: bounding.y,
-        height: bounding.height * totalProducts,
-        width: bounding.width,
-      };
-    }
-  }
 }
 
 export default CrawlerUtils;

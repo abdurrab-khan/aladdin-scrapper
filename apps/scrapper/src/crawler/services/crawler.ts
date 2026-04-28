@@ -1,14 +1,11 @@
-import { ulid } from "ulid";
 import type { Browser, ElementHandle, Page } from "playwright";
 
 import { randomDelay } from "../utils/utils.js";
 import CrawlerUtils from "../utils/crawlerUtils.js";
 import BrowserUtils from "../utils/browserUtils.js";
-import DataProcessor from "../utils/data-processor/dataProcessor.js";
 
 import type { E_COMMERCE, SubCategory } from "../../types/index.ts";
 import type { Product, SingleProductDetails } from "../../types/product.ts";
-import { generateRandomUserAgent } from "../utils/helper.js";
 
 import {
   NEXT_BUTTON_SELECTOR,
@@ -35,7 +32,6 @@ export class Crawler {
   private redis: RedisDB;
 
   private crawlerUtils: CrawlerUtils;
-  private tabsOpened: number = 0;
   private productsCount: number = 0;
   private emptyPageThreshold: number = 3;
   private productsByBrand = new Map();
@@ -204,41 +200,6 @@ export class Crawler {
           ((price - discountPrice) / price) * 100
         );
 
-        // Taking screen shot
-        const fileName = `${this.website}_${ulid()}`;
-        const takeFullPageScreenShot =
-          discountPercent >=
-          this.subCategoryDetails.maxDiscountForFullPageScreenshot;
-
-        const cardScreenShot = await this.crawlerUtils.takeScreenshot(
-          fileName,
-          product
-        );
-        let fullPageScreenShot: string | null = null;
-
-        // Limit to 5 tabs at a time to avoid memory issues
-        if (this.tabsOpened < 3 && takeFullPageScreenShot) {
-          // Increase tabs opened count
-          this.tabsOpened += 1;
-
-          // Take full page screenshot
-          fullPageScreenShot = await this.crawlerUtils.takeScreenshot(
-            "full-page_" + fileName,
-            undefined,
-            productData.url
-          );
-
-          // Decrease tabs opened count
-          this.tabsOpened -= 1;
-        }
-
-        if (!cardScreenShot) {
-          console.warn(
-            `⚠️  Failed to take screenshot for product: ${productData.name} (${productData.url})`
-          );
-          return null;
-        }
-
         console.log(
           `✅ Extracted - ${this.website.toUpperCase()} : ${
             productData.name
@@ -262,9 +223,16 @@ export class Crawler {
             discountType: productData.discountType,
           } as SingleProductDetails,
           images: {
-            card: cardScreenShot,
+            card: productData.images ?? "",
             image: productData.images,
-            fullPage: fullPageScreenShot,
+            fullPage: null,
+          },
+          screenshotInfo: {
+            fullPageRequired:
+              discountPercent >=
+              this.subCategoryDetails.maxDiscountForFullPageScreenshot,
+            grouped: false,
+            website: this.website,
           },
           isGrouped: false,
           userId: this.productPrivateInfo.userId,

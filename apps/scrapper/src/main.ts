@@ -3,6 +3,11 @@ import { rm } from "fs/promises";
 
 import RedisDB from "./db/redis.js";
 import SupabaseClient from "./db/supabase.js";
+import {
+  enqueueFullScreenshot,
+  enqueueGroupedScreenshot,
+  toScreenshotWebsite,
+} from "./services/screenshot/client.js";
 import manager from "./utils/catalogManager/manager.js";
 import { scrapeProducts } from "./crawler/scrapper.js";
 import { randomDelay } from "./crawler/utils/utils.js";
@@ -50,7 +55,52 @@ async function main() {
         );
 
         // insert products
-        await SupabaseClient.saveProducts(scrappedProducts);
+        const insertedProducts = await SupabaseClient.saveProducts(
+          scrappedProducts
+        );
+
+        await SupabaseClient.ensureProductImageRows(
+          insertedProducts.filter((product) => product.screenshotInfo)
+        );
+
+        // enqueue screenshots for products that need it
+        await Promise.all(
+          insertedProducts.map(async (product) => {
+            try {
+              const record = product as unknown as Record<string, unknown>;
+              const productId =
+                product.id || (record["product_id"] as string | undefined);
+
+              if (!productId || !product.screenshotInfo) return;
+
+              if (product.screenshotInfo.grouped) {
+                if (!product.url || !product.screenshotInfo.priceDetails) return;
+
+                await enqueueGroupedScreenshot({
+                  id: productId,
+                  url: product.url,
+                  website: toScreenshotWebsite(product.screenshotInfo.website),
+                  priceDetails: product.screenshotInfo.priceDetails,
+                });
+
+                return;
+              }
+
+              if (product.screenshotInfo.fullPageRequired) {
+                await enqueueFullScreenshot({
+                  id: productId,
+                  url: product.url,
+                  website: toScreenshotWebsite(product.screenshotInfo.website),
+                });
+              }
+            } catch (error) {
+              console.warn(
+                "⚠️  Failed to enqueue screenshot:",
+                error instanceof Error ? error.message : error
+              );
+            }
+          })
+        );
 
         console.log(`\n🎉 Finished scraping for selection: ${categoryName}\n`);
 
@@ -69,11 +119,18 @@ async function main() {
   } finally {
     await redisClient.disconnect();
 
-    // Clean up the products directory after processing
-    await rm("products", {
-      recursive: true,
-      force: true,
-    });
+    // Clean up the products directory after processing (legacy)
+    try {
+      await rm("products", {
+        recursive: true,
+        force: true,
+      });
+    } catch (error) {
+      console.warn(
+        "⚠️  Failed to clean products directory:",
+        error instanceof Error ? error.message : error
+      );
+    }
   }
 }
 

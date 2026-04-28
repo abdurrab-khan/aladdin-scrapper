@@ -18,6 +18,7 @@ export type GroupProductDetails = {
 };
 
 export interface Product {
+  id?: string;
   name: string;
   category: string;
   url: string;
@@ -27,6 +28,16 @@ export interface Product {
     image: string | string[];
     card: string;
     fullPage: string | null;
+  };
+  screenshotInfo?: {
+    fullPageRequired: boolean;
+    grouped: boolean;
+    website: "amazon" | "flipkart";
+    priceDetails?: {
+      minPrice: number;
+      maxPrice: number;
+      discount: number;
+    };
   };
   userId: string;
   platformId: string;
