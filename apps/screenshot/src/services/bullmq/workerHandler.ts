@@ -14,6 +14,8 @@ const workerHandler = async (
 ) => {
   const { queueName, name, data } = job;
 
+  let imageType: "FULL" | "GROUPED" = "FULL";
+
   try {
     const screenshotHelper = new ScreenShot(
       data.id,
@@ -25,9 +27,11 @@ const workerHandler = async (
     if (name.startsWith("full")) {
       // setting varient as "FULL" >> for full screenshot
       screenshotHelper.setVarient("FULL");
+      imageType = "FULL";
     } else {
       // setting varient as "GROUPED" >> for grouped screenshot
       screenshotHelper.setVarient("GROUPED");
+      imageType = "GROUPED";
 
       // setting price details
       screenshotHelper.setPriceDetails(
@@ -36,7 +40,7 @@ const workerHandler = async (
     }
 
     const path = await screenshotHelper.takeScreenShot(browser, page);
-    await supabase.save_image(data.id, path);
+    await supabase.save_image(data.id, path, imageType);
   } catch (err) {
     // if job is from main-queue, add it to failed-queue
     if (queueName === "main-queue") {

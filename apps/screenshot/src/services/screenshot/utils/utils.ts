@@ -1,14 +1,15 @@
 import { ElementHandle } from "puppeteer";
 import AmazonSelector from "../css-selectors/amazon";
 import FlipkartSelector from "../css-selectors/flipkart";
-import { IGroupedScreenShotRequest, Website } from "@/types/index";
+import { Website } from "@/types";
+// import { IGroupedScreenShotRequest, Website } from "@/types/index";
 
 // =================== GROUPED UTILS FUNCTION ===================
 function isValidProduct(
   price: ElementHandle<Element> | null,
   discountPrice: ElementHandle<Element> | null,
   website: Website,
-  priceDetails: IGroupedScreenShotRequest["priceDetails"],
+  // _priceDetails: IGroupedScreenShotRequest["priceDetails"],
 ): boolean {
   return true;
   // extracting inner text from it.

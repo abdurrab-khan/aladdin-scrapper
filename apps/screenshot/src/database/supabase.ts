@@ -51,7 +51,11 @@ class SupabaseClient {
     }
   }
 
-  public async save_image(productId: string, imagePath: string): Promise<void> {
+  public async save_image(
+    productId: string,
+    imagePath: string,
+    imageType: "FULL" | "GROUPED"
+  ): Promise<void> {
     try {
       const uploadImageUrl = await this.uploadImage(productId, imagePath);
 
@@ -59,8 +63,10 @@ class SupabaseClient {
         .from("product_images")
         .update({
           image_url: uploadImageUrl,
+          image_status: "Completed",
         })
-        .eq("product_id", productId);
+        .eq("product_id", productId)
+        .eq("image_type", imageType);
 
       if (updateDb.error) {
         throw new Error(

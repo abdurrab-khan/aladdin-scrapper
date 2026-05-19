@@ -1,12 +1,7 @@
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response } from "express";
 import type CustomError from "../utils/ErrorHandler";
 
-const errorMiddleware = (
-  err: CustomError,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const errorMiddleware = (err: CustomError, _req: Request, res: Response) => {
   const statusCode = err.statusCode || 500;
   const message = err.message;
 
