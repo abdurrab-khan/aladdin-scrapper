@@ -8,10 +8,12 @@
     ],
     "lowPriorityCategories": [
       "Watches",
-      "Smart Watch"
+      "Smart Watch",
+      "Sunglasses",
+      "Perfume"
     ],
-    "timeStamp": 1769326978716,
-    "lastLowPriorityRun": 1768633213044
+    "timeStamp": 1779213048088,
+    "lastLowPriorityRun": 1779213048088
   },
   "footWear": {
     "subCategories": [
@@ -51,10 +53,11 @@
   "sportsAndFitness": {
     "subCategories": [],
     "lowPriorityCategories": [
-      "Home Gym Combos"
+      "Home Gym Combos",
+      "Dumbbells"
     ],
-    "timeStamp": 1769326978716,
-    "lastLowPriorityRun": 1768633213044
+    "timeStamp": 1779213048088,
+    "lastLowPriorityRun": 1779213048088
   },
   "homeAppliances": {
     "subCategories": [
@@ -84,10 +87,11 @@
     "subCategories": [],
     "lowPriorityCategories": [
       "Curtains",
-      "Cushion Covers"
+      "Cushion Covers",
+      "BedSheets"
     ],
-    "timeStamp": 1769328420478,
-    "lastLowPriorityRun": 1768633213044
+    "timeStamp": 1779213048088,
+    "lastLowPriorityRun": 1779213048088
   },
   "homeDecor": {
     "subCategories": [],

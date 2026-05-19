@@ -5,7 +5,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "tsx src/main.ts",
+    "start": "tsx src/index.ts",
+    "server": "tsx src/index.ts",
+    "cron": "tsx src/cron.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -15,12 +17,15 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.86.0",
     "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "node-cron": "^4.0.7",
     "playwright": "^1.57.0",
     "redis": "^5.10.0",
     "ulid": "^3.0.2"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "@types/express": "^5.0.6",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"

@@ -348,4 +348,6 @@ const manager = new CatalogRotationManager(
   "./src/catalogInfo/catalog-history.json",
 );
 
+console.log(manager.run());
+
 export default manager;
