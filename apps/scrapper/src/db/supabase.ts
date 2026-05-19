@@ -1,6 +1,22 @@
 import { createClient } from "@supabase/supabase-js";
 
-import type { Product } from "../types/product.js";
+import type { GroupProductDetails, Product, SingleProductDetails } from "../types/product.js";
+
+type ProductImageType = "FULL" | "GROUPED";
+
+type DbProductInsert = {
+  product_id?: string;
+  product_name: string;
+  product_url: string;
+  product_price: number;
+  product_discount_price: number;
+  product_brand: string;
+  product_category: string | null;
+  is_grouped: boolean;
+  app_id: string;
+  user_id: string;
+  website_id: string;
+};
 
 // cspell:ignore supabase
 /**
@@ -35,7 +51,7 @@ class SupabaseClient {
     }
 
     try {
-      const productsForInsert = this.stripScreenshotInfo(products);
+      const productsForInsert = this.toDbProducts(products);
       const insertedProducts = await this.insertProducts(
         productsForInsert,
         products
@@ -89,13 +105,31 @@ class SupabaseClient {
 
     return insertedProducts.map((product) => {
       const record = product as unknown as Record<string, unknown>;
-      const normalizedProduct =
-        product.id || !record["product_id"]
-          ? product
-          : {
+      const normalizedProduct: Product =
+        record["product_id"]
+          ? {
               ...product,
               id: record["product_id"] as string,
-            };
+            }
+          : product;
+
+      if (!normalizedProduct.url && typeof record["product_url"] === "string") {
+        normalizedProduct.url = record["product_url"] as string;
+      }
+
+      if (
+        !normalizedProduct.category &&
+        typeof record["product_category"] === "string"
+      ) {
+        normalizedProduct.category = record["product_category"] as string;
+      }
+
+      if (
+        !normalizedProduct.platformId &&
+        typeof record["website_id"] === "string"
+      ) {
+        normalizedProduct.platformId = record["website_id"] as string;
+      }
 
       const screenshotInfo = screenshotInfoMap.get(
         this.getProductMatchKey(normalizedProduct)
@@ -119,7 +153,7 @@ class SupabaseClient {
   }
 
   private async insertProducts(
-    products: Product[],
+    products: DbProductInsert[],
     originalProducts: Product[]
   ): Promise<Product[]> {
     try {
@@ -148,28 +182,78 @@ class SupabaseClient {
     }
   }
 
-  public async ensureProductImageRows(products: Product[]): Promise<void> {
-    const rows = products
-      .map((product) => {
-        const record = product as unknown as Record<string, unknown>;
-        const id = product.id || (record["product_id"] as string | undefined);
-        if (!id) return null;
-        return {
-          product_id: id,
-          image_url: null,
-        };
-      })
-      .filter((row): row is { product_id: string; image_url: null } =>
-        Boolean(row)
-      );
+  private toDbProducts(products: Product[]): DbProductInsert[] {
+    return products.map((product) => {
+      const details = product.details as SingleProductDetails | GroupProductDetails;
+      const productPrice =
+        "price" in details ? details.price : details.startPrice;
+      const productDiscountPrice =
+        "discountPrice" in details
+          ? details.discountPrice
+          : details.discountStartPrice;
 
-    if (rows.length === 0) return;
+      return {
+        product_id: product.id,
+        product_name: product.name,
+        product_url: product.url,
+        product_price: productPrice,
+        product_discount_price: productDiscountPrice,
+        product_brand: details.brand,
+        product_category: product.category || null,
+        is_grouped: product.isGrouped,
+        app_id: product.associatedAppId,
+        user_id: product.userId,
+        website_id: product.platformId,
+      };
+    });
+  }
+
+  public async ensureProductImageRows(products: Product[]): Promise<void> {
+    const rows: Array<{
+      product_id: string;
+      image_type: ProductImageType;
+      image_url: null;
+      image_status: "Pending";
+    }> = [];
+
+    products.forEach((product) => {
+      if (!product.screenshotInfo) return;
+      const record = product as unknown as Record<string, unknown>;
+      const id = product.id || (record["product_id"] as string | undefined);
+      if (!id) return;
+
+      if (product.screenshotInfo.grouped) {
+        rows.push({
+          product_id: id,
+          image_type: "GROUPED",
+          image_url: null,
+          image_status: "Pending",
+        });
+      }
+
+      if (product.screenshotInfo.fullPageRequired) {
+        rows.push({
+          product_id: id,
+          image_type: "FULL",
+          image_url: null,
+          image_status: "Pending",
+        });
+      }
+    });
+
+    const uniqueRows = Array.from(
+      new Map(
+        rows.map((row) => [`${row.product_id}:${row.image_type}`, row])
+      ).values()
+    );
+
+    if (uniqueRows.length === 0) return;
 
     try {
       const { error } = await this.supabaseClient
         .from("product_images")
-        .upsert(rows, {
-          onConflict: "product_id",
+        .upsert(uniqueRows, {
+          onConflict: "product_id,image_type",
         });
 
       if (error) {
@@ -184,10 +268,3 @@ class SupabaseClient {
 const SupabaseClientInstance = new SupabaseClient();
 
 export default SupabaseClientInstance;
-  private stripScreenshotInfo(products: Product[]): Product[] {
-    return products.map((product) => {
-      if (!product.screenshotInfo) return product;
-      const { screenshotInfo: _, ...rest } = product;
-      return rest;
-    });
-  }
