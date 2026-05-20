@@ -4,16 +4,12 @@ class RedisDB {
   private host: string;
   private port: number;
   private password: string;
-  private username: string;
-  private db: number;
   private client: any | null;
 
   constructor() {
     this.host = process.env["REDIS_HOST"] || "localhost";
     this.port = parseInt(process.env["REDIS_PORT"] || "6379");
     this.password = process.env["REDIS_PASSWORD"] || "";
-    this.username = "default";
-    this.db = 0;
     this.client = null;
   }
 
@@ -32,8 +28,6 @@ class RedisDB {
           },
         },
         password: this.password,
-        username: this.username,
-        database: this.db,
       });
 
       this.client.on("error", (err) => {
@@ -45,14 +39,7 @@ class RedisDB {
       console.log("🔗 Redis connected successfully.");
       return true;
     } catch (error: any) {
-      if (error.code === "ECONNREFUSED") {
-        console.error("⛔ Redis connection error:", error.message);
-      } else if (error.message?.includes("max")) {
-        console.warn("⚠️ Max connection hit error:", error.message);
-      } else {
-        console.error("⛔ Unexpected error:", error.message);
-      }
-      return false;
+      throw error;
     }
   }
 
@@ -73,7 +60,7 @@ class RedisDB {
 
   async isUrlCached(
     url: string,
-    pattern: string = "url_cache_*"
+    pattern: string = "url_cache_*",
   ): Promise<boolean> {
     if (!this.client) {
       console.warn("⚠️ Redis client is not connected.");
@@ -115,4 +102,6 @@ class RedisDB {
   }
 }
 
-export default RedisDB;
+const redis = new RedisDB();
+
+export default redis;

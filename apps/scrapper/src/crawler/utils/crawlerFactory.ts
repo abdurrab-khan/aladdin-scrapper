@@ -1,6 +1,6 @@
-import type { Browser, Page } from "playwright";
 import type { E_COMMERCE, SubCategory } from "../../types/index.js";
-import type RedisDB from "../../db/redis.js";
+import redis from "../../db/redis.js";
+import BrowserUtils from "./browserUtils.js";
 
 /**
  * Factory class to create scraper instances based on the platform.
@@ -8,39 +8,38 @@ import type RedisDB from "../../db/redis.js";
  */
 export default class CrawlerFactory {
   static async create(
-    browser: Browser,
-    page: Page,
-    website: E_COMMERCE,
     url: string,
-    redis: RedisDB,
+    website: E_COMMERCE,
     subCategory: string,
-    subCategoryInfo: SubCategory
+    subCategoryInfo: SubCategory,
   ) {
+    const { browser, page } = await BrowserUtils.launchBrowser({
+      headless: false,
+    });
+
     switch (website) {
       case "amazon": {
-        const { AmazonService } = await import(
-          "../services/websites/amazon.js"
-        );
+        const { AmazonService } =
+          await import("../services/websites/amazon.js");
         return new AmazonService(
           browser,
           page,
           url,
           redis,
           subCategory,
-          subCategoryInfo
+          subCategoryInfo,
         );
       }
       case "flipkart": {
-        const { FlipkartService } = await import(
-          "../services/websites/flipkart.js"
-        );
+        const { FlipkartService } =
+          await import("../services/websites/flipkart.js");
         return new FlipkartService(
           browser,
           page,
           url,
           redis,
           subCategory,
-          subCategoryInfo
+          subCategoryInfo,
         );
       }
       default:

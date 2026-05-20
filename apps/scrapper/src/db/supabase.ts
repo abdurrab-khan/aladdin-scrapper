@@ -1,6 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 
-import type { GroupProductDetails, Product, SingleProductDetails } from "../types/product.js";
+import type {
+  GroupProductDetails,
+  Product,
+  SingleProductDetails,
+} from "../types/product.js";
 
 type ProductImageType = "FULL" | "GROUPED";
 
@@ -30,7 +34,7 @@ class SupabaseClient {
   constructor() {
     if (!process.env["SUPABASE_URL"] || !process.env["SUPABASE_KEY"]) {
       throw new Error(
-        "Supabase URL or Key is not defined in environment variables."
+        "Supabase URL or Key is not defined in environment variables.",
       );
     }
 
@@ -41,23 +45,24 @@ class SupabaseClient {
         db: {
           schema: "public",
         },
-      }
+      },
     );
   }
 
   public async saveProducts(products: Product[] | null): Promise<Product[]> {
     if (!products || products.length === 0) {
-      throw new Error("👎 There is not product is insert into the database");
+      console.warn("⚠️ No products available to insert into the database");
+      return [];
     }
 
     try {
       const productsForInsert = this.toDbProducts(products);
       const insertedProducts = await this.insertProducts(
         productsForInsert,
-        products
+        products,
       );
       console.log(
-        `✅  Successfully saved ${insertedProducts.length} products.`
+        `✅  Successfully saved ${insertedProducts.length} products.`,
       );
       return insertedProducts;
     } catch (error) {
@@ -69,7 +74,7 @@ class SupabaseClient {
   }
 
   private buildScreenshotInfoMap(
-    products: Product[]
+    products: Product[],
   ): Map<string, Product["screenshotInfo"]> {
     const map = new Map<string, Product["screenshotInfo"]>();
     products.forEach((product) => {
@@ -94,7 +99,7 @@ class SupabaseClient {
 
   private mergeScreenshotInfo(
     insertedProducts: Product[],
-    originalProducts: Product[]
+    originalProducts: Product[],
   ): Product[] {
     const screenshotInfoMap = this.buildScreenshotInfoMap(originalProducts);
     const originalMatchMap = new Map<string, Product>();
@@ -105,13 +110,12 @@ class SupabaseClient {
 
     return insertedProducts.map((product) => {
       const record = product as unknown as Record<string, unknown>;
-      const normalizedProduct: Product =
-        record["product_id"]
-          ? {
-              ...product,
-              id: record["product_id"] as string,
-            }
-          : product;
+      const normalizedProduct: Product = record["product_id"]
+        ? {
+            ...product,
+            id: record["product_id"] as string,
+          }
+        : product;
 
       if (!normalizedProduct.url && typeof record["product_url"] === "string") {
         normalizedProduct.url = record["product_url"] as string;
@@ -132,10 +136,10 @@ class SupabaseClient {
       }
 
       const screenshotInfo = screenshotInfoMap.get(
-        this.getProductMatchKey(normalizedProduct)
+        this.getProductMatchKey(normalizedProduct),
       );
       const originalProduct = originalMatchMap.get(
-        this.getProductMatchKey(normalizedProduct)
+        this.getProductMatchKey(normalizedProduct),
       );
 
       if (screenshotInfo) {
@@ -143,7 +147,8 @@ class SupabaseClient {
           ...normalizedProduct,
           url: originalProduct?.url || normalizedProduct.url,
           category: originalProduct?.category || normalizedProduct.category,
-          platformId: originalProduct?.platformId || normalizedProduct.platformId,
+          platformId:
+            originalProduct?.platformId || normalizedProduct.platformId,
           screenshotInfo,
         };
       }
@@ -154,14 +159,14 @@ class SupabaseClient {
 
   private async insertProducts(
     products: DbProductInsert[],
-    originalProducts: Product[]
+    originalProducts: Product[],
   ): Promise<Product[]> {
     try {
       const { data, error } = await this.supabaseClient.rpc(
         "insert_products_v2",
         {
           products: products,
-        }
+        },
       );
 
       if (error) {
@@ -173,7 +178,7 @@ class SupabaseClient {
       }
 
       console.warn(
-        "⚠️ insert_products_v2 did not return inserted rows. Screenshot jobs were skipped because product ids are missing."
+        "⚠️ insert_products_v2 did not return inserted rows. Screenshot jobs were skipped because product ids are missing.",
       );
       return [];
     } catch (error) {
@@ -184,7 +189,9 @@ class SupabaseClient {
 
   private toDbProducts(products: Product[]): DbProductInsert[] {
     return products.map((product) => {
-      const details = product.details as SingleProductDetails | GroupProductDetails;
+      const details = product.details as
+        | SingleProductDetails
+        | GroupProductDetails;
       const productPrice =
         "price" in details ? details.price : details.startPrice;
       const productDiscountPrice =
@@ -243,8 +250,8 @@ class SupabaseClient {
 
     const uniqueRows = Array.from(
       new Map(
-        rows.map((row) => [`${row.product_id}:${row.image_type}`, row])
-      ).values()
+        rows.map((row) => [`${row.product_id}:${row.image_type}`, row]),
+      ).values(),
     );
 
     if (uniqueRows.length === 0) return;

@@ -18,18 +18,18 @@ import {
   MAX_PRODUCTS_PER_WEBSITE,
   MIN_PRODUCTS_PER_PAGE,
 } from "../constants/const.js";
-import type RedisDB from "../../db/redis.js";
+import RedisDB from "../../db/redis.js";
 
 export class Crawler {
   public products: Product[] = [];
   public isDone: boolean = false;
 
   protected pageNumber: number = 0;
+  protected page: Page;
+  protected browser: Browser;
 
-  private page: Page;
-  private browser: Browser;
   private website: E_COMMERCE;
-  private redis: RedisDB;
+  private redis: typeof RedisDB;
 
   private crawlerUtils: CrawlerUtils;
   private productsCount: number = 0;
@@ -49,9 +49,9 @@ export class Crawler {
     browser: Browser,
     page: Page,
     website: E_COMMERCE,
-    redis: RedisDB,
+    redis: typeof RedisDB,
     subCategory: string,
-    subCategoryDetails: SubCategory
+    subCategoryDetails: SubCategory,
   ) {
     this.page = page;
     this.website = website;
@@ -73,7 +73,7 @@ export class Crawler {
       website,
       subCategory,
       subCategoryDetails,
-      this.productPrivateInfo
+      this.productPrivateInfo,
     );
   }
 
@@ -116,12 +116,12 @@ export class Crawler {
 
       // Extract details from each product card
       const productDetails = await Promise.all(
-        products.map(async (product) => await this.getProductData(product))
+        products.map(async (product) => await this.getProductData(product)),
       ).then((results) =>
         results.reduce((acc, val) => {
           if (val != null) acc.push(val);
           return acc;
-        }, [] as Product[])
+        }, [] as Product[]),
       );
 
       // Insert only if there are valid products
@@ -129,7 +129,7 @@ export class Crawler {
     } catch (error) {
       console.error(
         `⚠️  Error extracting product details from ${this.website}:`,
-        error
+        error,
       );
     }
   }
@@ -147,7 +147,7 @@ export class Crawler {
       // If no "Next" button found, throw an error
       if ((await nextButton.count()) === 0) {
         throw new Error(
-          `\nℹ️ No 'Next' button found on page ${this.pageNumber} for ${this.website}.`
+          `\nℹ️ No 'Next' button found on page ${this.pageNumber} for ${this.website}.`,
         );
       }
 
@@ -158,7 +158,7 @@ export class Crawler {
       await this.crawlerUtils.waitForPageLoad(
         this.page,
         nextButtonSelector,
-        true
+        true,
       );
 
       // Increase the page number after successful navigation
@@ -169,13 +169,13 @@ export class Crawler {
 
       // Log the progress
       console.log(
-        `\n<=====================> ${this.website}: Page ${this.pageNumber} processed - ${this.products.length}/${MAX_PRODUCTS_PER_WEBSITE} products found so far. <=====================>\n`
+        `\n<=====================> ${this.website}: Page ${this.pageNumber} processed - ${this.products.length}/${MAX_PRODUCTS_PER_WEBSITE} products found so far. <=====================>\n`,
       );
     } catch (error) {
       console.info(
         error instanceof Error
           ? error.message
-          : `⚠️  Error finding 'Next' button on ${this.website}: ${error}`
+          : `⚠️  Error finding 'Next' button on ${this.website}: ${error}`,
       );
 
       this.isDone = true; // Mark as done if error occurs
@@ -184,7 +184,7 @@ export class Crawler {
 
   // @Private method to extract the product all details
   private async getProductData(
-    product: ElementHandle<SVGElement | HTMLElement>
+    product: ElementHandle<SVGElement | HTMLElement>,
   ): Promise<Product | null> {
     try {
       // If product details extraction failed, return null
@@ -197,13 +197,13 @@ export class Crawler {
       ) {
         const { brand, price, discountPrice } = productData;
         const discountPercent = Math.round(
-          ((price - discountPrice) / price) * 100
+          ((price - discountPrice) / price) * 100,
         );
 
         console.log(
           `✅ Extracted - ${this.website.toUpperCase()} : ${
             productData.name
-          } | Price: ${price} | Discount Price: ${discountPrice} | ${discountPercent}%off`
+          } | Price: ${price} | Discount Price: ${discountPrice} | ${discountPercent}%off`,
         );
 
         // Post process the product
@@ -272,7 +272,7 @@ export class Crawler {
   private async postProcessProduct(
     brand: string,
     url: string,
-    discountPercentage: number
+    discountPercentage: number,
   ): Promise<void> {
     const brandKey = brand.toLowerCase();
     const conditionToAddBrand =
@@ -284,7 +284,7 @@ export class Crawler {
     if (conditionToAddBrand) {
       this.productsByBrand.set(
         brandKey,
-        (this.productsByBrand.get(brandKey) || 0) + 1
+        (this.productsByBrand.get(brandKey) || 0) + 1,
       );
     }
 
@@ -294,7 +294,7 @@ export class Crawler {
       this.productsByBrand.get(brandKey) !== -1
     ) {
       console.log(
-        `\n🔍 Fetching more products for brand ${brand} from ${this.website}...\n`
+        `\n🔍 Fetching more products for brand ${brand} from ${this.website}...\n`,
       );
       this.productsByBrand.set(brandKey, -1);
       await this.fetchBrandProducts(brandKey);
@@ -317,7 +317,7 @@ export class Crawler {
       // If empty page threshold exceeded max allowed, mark as done
       if (this.emptyPageThreshold > MAX_EMPTY_PAGES_ALLOWED) {
         console.info(
-          `\n🚫 Crawler terminated for ${this.website}: Maximum empty page threshold exceeded (${this.emptyPageThreshold}). Page: ${this.pageNumber}, Products collected: ${this.productsCount}\n`
+          `\n🚫 Crawler terminated for ${this.website}: Maximum empty page threshold exceeded (${this.emptyPageThreshold}). Page: ${this.pageNumber}, Products collected: ${this.productsCount}\n`,
         );
         this.isDone = true;
       }
@@ -327,7 +327,7 @@ export class Crawler {
   // @Private method to check deep validation for brand and URL
   private async checkDeepValidation(
     brand: string,
-    url: string
+    url: string,
   ): Promise<boolean> {
     const isValid =
       this.alreadyProcessedProducts.has(url) === false &&
@@ -360,7 +360,7 @@ export class Crawler {
       // Extract brand selector
       const brandSelector = await this.crawlerUtils.getBrandSelector(
         page,
-        brand
+        brand,
       );
 
       // If brand selector found, click and fetch products
@@ -373,7 +373,7 @@ export class Crawler {
           page,
           PRODUCT_CARD_SELECTOR[this.website],
           false,
-          5000
+          5000,
         );
 
         // Wait for a random time between 1.5 to 2.5 seconds
@@ -385,7 +385,7 @@ export class Crawler {
         // Final extraction of product details
         const products = await this.crawlerUtils.getBrandProducts(
           page,
-          rawProducts.slice(0, MAX_PRODUCTS_BY_BRAND_COUNT)
+          rawProducts.slice(0, MAX_PRODUCTS_BY_BRAND_COUNT),
         );
 
         // Insert the products if found
@@ -393,18 +393,18 @@ export class Crawler {
           products["url"] = page.url();
           this.insertProduct([products]);
           console.log(
-            `\n🛍️  Fetched products for brand ${brand} from ${this.website}\n`
+            `\n🛍️  Fetched products for brand ${brand} from ${this.website}\n`,
           );
         }
       } else {
         console.warn(
-          `⚠️  No selector found for brand ${brand} on ${this.website}`
+          `⚠️  No selector found for brand ${brand} on ${this.website}`,
         );
       }
     } catch (error) {
       console.error(
         `⚠️  Error fetching products for brand ${brand}: `,
-        (error as Error).message
+        (error as Error).message,
       );
     } finally {
       if (page) page.close();

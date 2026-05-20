@@ -1,6 +1,6 @@
 import { Crawler } from "../crawler.js";
 
-import type RedisDB from "../../../db/redis.js";
+import RedisDB from "../../../db/redis.js";
 import type { Browser, Page } from "playwright";
 import type { SubCategory } from "../../../types/index.js";
 
@@ -11,9 +11,9 @@ export class FlipkartService extends Crawler {
     browser: Browser,
     page: Page,
     url: string,
-    redis: RedisDB,
+    redis: typeof RedisDB,
     subCategory: string,
-    subCategoryDetails: SubCategory
+    subCategoryDetails: SubCategory,
   ) {
     super(browser, page, "flipkart", redis, subCategory, subCategoryDetails);
     this.url = url;

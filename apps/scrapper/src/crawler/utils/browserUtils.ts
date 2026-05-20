@@ -54,7 +54,6 @@ class BrowserUtils {
     try {
       // launching browser
       const browser = await chromium.launch({
-        headless: true,
         timeout: 60000,
         ...browserOptions,
       });

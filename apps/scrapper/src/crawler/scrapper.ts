@@ -1,7 +1,5 @@
-import BrowserUtils from "./utils/browserUtils.js";
 import CrawlerFactory from "./utils/crawlerFactory.js";
 
-import type RedisDB from "../db/redis.js";
 import type { E_COMMERCE, SubCategory } from "../types/index.js";
 import type { Product, SingleProductDetails } from "../types/product.js";
 import { MAX_PRODUCT_PER_CATEGORY } from "./constants/const.js";
@@ -12,9 +10,8 @@ type SingleProducts = Product & { details: SingleProductDetails };
  * Scrape products from the given URL and e-commerce website.
  */
 export async function scrapeProducts(
-  redis: RedisDB,
   categoryName: string,
-  categoryDetails: SubCategory
+  categoryDetails: SubCategory,
 ): Promise<Product[] | null> {
   // checking whether or not subcategory there
   if (!categoryDetails) {
@@ -33,22 +30,15 @@ export async function scrapeProducts(
           return Promise.resolve([] as Product[]);
         }
 
-        // launching browser
-        const { browser, context, page } = await BrowserUtils.launchBrowser();
-
         // initializing crawler to scrape product
         const crawler = await CrawlerFactory.create(
-          browser,
-          page,
-          website,
           url,
-          redis,
+          website,
           categoryName,
-          categoryDetails
+          categoryDetails,
         );
 
         try {
-          // scrapping till done
           do {
             await crawler.fetchProducts();
           } while (!crawler.isDone);
@@ -59,12 +49,9 @@ export async function scrapeProducts(
               : "An unknown error occured during fetching products";
           console.error(msg);
         } finally {
-          if (context) await context.close(); // closing context after finishing fetching
-          if (browser) await browser.close(); //closing the browser
-
           return crawler?.products.length > 0 ? crawler.products : []; // return fetched products
         }
-      })
+      }),
     ).then((products) => {
       // flattening the products array
       const fetchedProducts: Product[] = [];
@@ -83,7 +70,7 @@ export async function scrapeProducts(
 
     // filtering single products
     const uniqueProducts = products.filter(
-      (p) => !p.isGrouped
+      (p) => !p.isGrouped,
     ) as SingleProducts[];
 
     // perform operations on fetched products;
