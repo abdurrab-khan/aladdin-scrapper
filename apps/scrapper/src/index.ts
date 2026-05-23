@@ -3,8 +3,8 @@ import { configDotenv } from "dotenv";
 configDotenv();
 
 import { exit } from "process";
-import App from "./server.js";
-import redis from "./db/redis.js";
+import App from "./api/app.js";
+import redis from "./providers/cache/redis.js";
 
 const PORT = Number(process.env["PORT"] || 8080);
 

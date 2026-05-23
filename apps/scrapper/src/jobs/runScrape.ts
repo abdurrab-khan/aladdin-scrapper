@@ -1,150 +1,145 @@
 import { rm } from "fs/promises";
-
-import SupabaseClient from "../db/supabase.js";
+import type { BaseDatabase } from "../providers/database/interfaces.js";
+import type { BaseCache } from "../providers/cache/interfaces.js";
 import {
   enqueueFullScreenshot,
   enqueueGroupedScreenshot,
   toScreenshotWebsite,
-} from "../services/screenshot/client.js";
-import { scrapeProducts } from "../crawler/scrapper.js";
-import { randomDelay } from "../crawler/utils/utils.js";
-import type { SelectionResult, SubCategory } from "../types/index.js";
+} from "../providers/screenshot/client.js";
+import { scrapeProducts } from "../core/crawler/scrapper.js";
+import { randomDelay } from "../core/crawler/utils/utils.js";
+import type { SelectionResult, ScrapeTask } from "../types/common.js";
+import type { Product } from "../types/product.js";
 
-export async function runScrape(selections: SelectionResult[]): Promise<void> {
+/**
+ * Orchestrates the scraping process for a list of selections.
+ */
+export async function runScrape(
+  input: SelectionResult | SelectionResult[],
+  db: BaseDatabase,
+  cache: BaseCache,
+): Promise<void> {
+  const selections = Array.isArray(input) ? input : [input];
+  
   try {
     for (let i = 0; i < selections.length; i++) {
-      const selectionDetails = selections[i];
+      const selection = selections[i]!;
+      await processSelection(selection, db, cache);
 
-      if (!selectionDetails) {
-        console.warn(
-          `⚠️ There is no selection details available ${selectionDetails}`,
-        );
-        continue;
-      }
-
-      // extracting details
-      const { category, subcategories, subcategoriesDetails } =
-        selectionDetails;
-
-      // throw an error if there is not subCategories
-      if (subcategories.length === 0) {
-        throw new Error(
-          `❌ Failed there is no subcategories found ${subcategories}`,
-        );
-      }
-
-      // looping sub subCategories
-      for (let j = 0; j < subcategories.length; j++) {
-        const subCategoryName = subcategories[j] as string;
-        const subCategory = subcategoriesDetails[
-          subCategoryName
-        ] as SubCategory;
-
-        if (!subCategory) {
-          console.warn(
-            `⚠️ There is no subcategory details available ${subCategoryName}`,
-          );
-          continue;
-        }
-
-        console.log(
-          `🚀  Starting ${category}:${subCategoryName} product scraping...`,
-        );
-
-        // scrapping products
-        const scrappedProducts = await scrapeProducts(
-          subCategoryName,
-          subCategory,
-        );
-
-        const scrapedCount = scrappedProducts?.length ?? 0;
-        if (scrapedCount === 0) {
-          console.warn(
-            `⚠️ No products scraped for ${category}:${subCategoryName}. Check filters or site availability.`,
-          );
-        }
-
-        // insert products
-        const insertedProducts =
-          await SupabaseClient.saveProducts(scrappedProducts);
-
-        if (insertedProducts.length === 0) {
-          console.warn(
-            `⚠️ No products inserted for ${category}:${subCategoryName}.`,
-          );
-          continue;
-        }
-
-        await SupabaseClient.ensureProductImageRows(
-          insertedProducts.filter((product) => product.screenshotInfo),
-        );
-
-        // enqueue screenshots for products that need it
-        await Promise.all(
-          insertedProducts.map(async (product) => {
-            try {
-              const record = product as unknown as Record<string, unknown>;
-              const productId =
-                product.id || (record["product_id"] as string | undefined);
-
-              if (!productId || !product.screenshotInfo) return;
-
-              if (product.screenshotInfo.grouped) {
-                if (!product.url || !product.screenshotInfo.priceDetails)
-                  return;
-
-                await enqueueGroupedScreenshot({
-                  id: productId,
-                  url: product.url,
-                  website: toScreenshotWebsite(product.screenshotInfo.website),
-                  priceDetails: product.screenshotInfo.priceDetails,
-                });
-
-                return;
-              }
-
-              if (product.screenshotInfo.fullPageRequired) {
-                await enqueueFullScreenshot({
-                  id: productId,
-                  url: product.url,
-                  website: toScreenshotWebsite(product.screenshotInfo.website),
-                });
-              }
-            } catch (error) {
-              console.warn(
-                "⚠️  Failed to enqueue screenshot:",
-                error instanceof Error ? error.message : error,
-              );
-            }
-          }),
-        );
-
-        console.log(
-          `\n🎉 Finished scraping for selection: ${category}:${subCategoryName}\n`,
-        );
-      }
-
-      // adding some delays
       if (i < selections.length - 1) {
         await new Promise((res) => setTimeout(res, randomDelay(120, 300)));
       }
     }
   } catch (err) {
-    const msg =
-      err instanceof Error
-        ? err.message
-        : "An error unknown error occured during scrapping products";
-    console.error(msg);
+    handleError(err);
   } finally {
-    // Removing all temp images
-    rm("products", {
-      recursive: true,
-      force: true,
-    }).catch((error) => {
-      console.warn(
-        "⚠️  Failed to clean products directory:",
-        error instanceof Error ? error.message : error,
-      );
+    await cleanupTempFiles();
+  }
+}
+
+/**
+ * Processes all tasks within a single category selection.
+ */
+async function processSelection(
+  selection: SelectionResult,
+  db: BaseDatabase,
+  cache: BaseCache,
+) {
+  const { category, tasks } = selection;
+
+  if (tasks.length === 0) {
+    console.warn(`⚠️ No tasks found for category: ${category}`);
+    return;
+  }
+
+  for (const task of tasks) {
+    await processTask(category, task, db, cache);
+  }
+}
+
+/**
+ * Performs the scrape, database save, and screenshot enqueuing for a single task.
+ */
+async function processTask(
+  category: string,
+  task: ScrapeTask,
+  db: BaseDatabase,
+  cache: BaseCache,
+) {
+  console.log(`🚀 Starting ${category}:${task.name} product scraping...`);
+
+  const scrappedProducts = await scrapeProducts(task.name, task.details, cache);
+  
+  if (!scrappedProducts || scrappedProducts.length === 0) {
+    console.warn(`⚠️ No products scraped for ${category}:${task.name}.`);
+    return;
+  }
+
+  console.log(`📦 Scraped ${scrappedProducts.length} products.`);
+
+  const insertedProducts = await db.saveProducts(scrappedProducts);
+
+  if (insertedProducts.length === 0) {
+    console.warn(`⚠️ No products inserted for ${category}:${task.name}.`);
+    return;
+  }
+
+  // Ensure image rows exist before enqueuing screenshots
+  await db.ensureProductImageRows(
+    insertedProducts.filter((p) => p.screenshotInfo),
+  );
+
+  await enqueueScreenshotsForProducts(insertedProducts);
+
+  console.log(`🎉 Finished scraping for: ${category}:${task.name}\n`);
+}
+
+/**
+ * Enqueues screenshots for all eligible products in parallel.
+ */
+async function enqueueScreenshotsForProducts(products: Product[]) {
+  const screenshotTasks = products
+    .filter((p) => p.id && p.screenshotInfo)
+    .map(async (product) => {
+      try {
+        const { id, url, screenshotInfo } = product;
+        if (!id || !url || !screenshotInfo) return;
+
+        const website = toScreenshotWebsite(screenshotInfo.website);
+
+        if (screenshotInfo.grouped && screenshotInfo.priceDetails) {
+          await enqueueGroupedScreenshot({
+            id,
+            url,
+            website,
+            priceDetails: screenshotInfo.priceDetails,
+          });
+        } else if (screenshotInfo.fullPageRequired) {
+          await enqueueFullScreenshot({ id, url, website });
+        }
+      } catch (error) {
+        console.warn(
+          `⚠️ Failed to enqueue screenshot for product ${product.id}:`,
+          error instanceof Error ? error.message : error,
+        );
+      }
     });
+
+  await Promise.all(screenshotTasks);
+}
+
+function handleError(err: unknown) {
+  const msg = err instanceof Error ? err.message : "An unknown error occurred during scraping";
+  console.error(`❌ ${msg}`);
+}
+
+async function cleanupTempFiles() {
+  try {
+    await rm("products", { recursive: true, force: true });
+  } catch (error) {
+    console.warn(
+      "⚠️ Failed to clean products directory:",
+      error instanceof Error ? error.message : error,
+    );
   }
 }

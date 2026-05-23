@@ -54,7 +54,7 @@ class SupabaseClient {
   public async save_image(
     productId: string,
     imagePath: string,
-    imageType: "FULL" | "GROUPED"
+    imageType: "Full" | "Group"
   ): Promise<void> {
     try {
       const uploadImageUrl = await this.uploadImage(productId, imagePath);

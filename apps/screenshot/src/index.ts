@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import App from "./server";
 import "./services/bullmq/worker/worker";
 import "./services/bullmq/worker/failed-worker";

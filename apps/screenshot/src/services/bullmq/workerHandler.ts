@@ -14,7 +14,7 @@ const workerHandler = async (
 ) => {
   const { queueName, name, data } = job;
 
-  let imageType: "FULL" | "GROUPED" = "FULL";
+  let imageType: "Full" | "Group" = "Full";
 
   try {
     const screenshotHelper = new ScreenShot(
@@ -27,11 +27,11 @@ const workerHandler = async (
     if (name.startsWith("full")) {
       // setting varient as "FULL" >> for full screenshot
       screenshotHelper.setVarient("FULL");
-      imageType = "FULL";
+      imageType = "Full";
     } else {
       // setting varient as "GROUPED" >> for grouped screenshot
       screenshotHelper.setVarient("GROUPED");
-      imageType = "GROUPED";
+      imageType = "Group";
 
       // setting price details
       screenshotHelper.setPriceDetails(

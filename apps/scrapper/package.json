@@ -7,7 +7,7 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "server": "tsx src/index.ts",
-    "cron": "tsx src/cron.ts",
+    "cron": "tsx src/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
