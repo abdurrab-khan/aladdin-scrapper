@@ -27,7 +27,7 @@ export class SupabaseDatabase extends BaseDatabase {
 
   public async saveProducts(products: Product[]): Promise<Product[]> {
     if (products.length === 0) {
-      console.warn("⚠️ No products available to insert into the database");
+      console.warn("No products provided for database insertion.");
       return [];
     }
 
@@ -50,11 +50,11 @@ export class SupabaseDatabase extends BaseDatabase {
       }
 
       console.warn(
-        "⚠️ insert_products_v2 did not return inserted rows. Screenshot jobs were skipped because product ids are missing.",
+        "Stored procedure 'insert_products_v2' did not return data. Screenshot jobs were skipped.",
       );
       return [];
     } catch (error) {
-      console.error("⚠️ Error inserting products into Supabase:", error);
+      console.error("Database insertion failed:", error);
       return [];
     }
   }
@@ -81,7 +81,7 @@ export class SupabaseDatabase extends BaseDatabase {
         throw error;
       }
     } catch (error) {
-      console.error("⚠️ Error creating product_images rows in Supabase:", error);
+      console.error("Failed to ensure product image rows:", error);
     }
   }
 }

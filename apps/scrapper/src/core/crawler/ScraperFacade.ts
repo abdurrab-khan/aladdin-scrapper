@@ -16,7 +16,7 @@ export class ScraperFacade {
     cache: BaseCache,
   ): Promise<Product[]> {
     if (!categoryDetails) {
-      console.warn(`⚠️ There is no subCategory available`);
+      console.warn("Subcategory details are missing.");
       return [];
     }
 

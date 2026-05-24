@@ -48,7 +48,7 @@ async function processSelection(
   const { category, tasks } = selection;
 
   if (tasks.length === 0) {
-    console.warn(`⚠️ No tasks found for category: ${category}`);
+    console.warn(`No tasks found for category: ${category}`);
     return;
   }
 
@@ -66,21 +66,21 @@ async function processTask(
   db: BaseDatabase,
   cache: BaseCache,
 ) {
-  console.log(`🚀 Starting ${category}:${task.name} product scraping...`);
+  console.log(`Starting ${category}:${task.name} product scraping...`);
 
   const scrappedProducts = await scrapeProducts(task.name, task.details, cache);
   
   if (!scrappedProducts || scrappedProducts.length === 0) {
-    console.warn(`⚠️ No products scraped for ${category}:${task.name}.`);
+    console.warn(`No products scraped for ${category}:${task.name}.`);
     return;
   }
 
-  console.log(`📦 Scraped ${scrappedProducts.length} products.`);
+  console.log(`Scraped ${scrappedProducts.length} products.`);
 
   const insertedProducts = await db.saveProducts(scrappedProducts);
 
   if (insertedProducts.length === 0) {
-    console.warn(`⚠️ No products inserted for ${category}:${task.name}.`);
+    console.warn(`No products inserted for ${category}:${task.name}.`);
     return;
   }
 
@@ -91,7 +91,7 @@ async function processTask(
 
   await enqueueScreenshotsForProducts(insertedProducts);
 
-  console.log(`🎉 Finished scraping for: ${category}:${task.name}\n`);
+  console.log(`Finished scraping for: ${category}:${task.name}\n`);
 }
 
 /**
@@ -119,7 +119,7 @@ async function enqueueScreenshotsForProducts(products: Product[]) {
         }
       } catch (error) {
         console.warn(
-          `⚠️ Failed to enqueue screenshot for product ${product.id}:`,
+          `Failed to enqueue screenshot for product ${product.id}:`,
           error instanceof Error ? error.message : error,
         );
       }
@@ -130,7 +130,7 @@ async function enqueueScreenshotsForProducts(products: Product[]) {
 
 function handleError(err: unknown) {
   const msg = err instanceof Error ? err.message : "An unknown error occurred during scraping";
-  console.error(`❌ ${msg}`);
+  console.error(msg);
 }
 
 async function cleanupTempFiles() {
@@ -138,7 +138,7 @@ async function cleanupTempFiles() {
     await rm("products", { recursive: true, force: true });
   } catch (error) {
     console.warn(
-      "⚠️ Failed to clean products directory:",
+      "Failed to clean products directory:",
       error instanceof Error ? error.message : error,
     );
   }

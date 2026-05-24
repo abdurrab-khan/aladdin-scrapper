@@ -63,7 +63,7 @@ export class AmazonScraper extends BaseScraper {
       }
       await this.manager.extractProducts();
     } catch (error) {
-      console.error(`⚠️ Error fetching products on Amazon:`, error);
+      console.error(`Error fetching products on Amazon:`, error);
       this.isDone = true;
     }
   }
@@ -75,7 +75,7 @@ export class AmazonScraper extends BaseScraper {
       const nextButton = this.page.locator(nextButtonSelector);
 
       if ((await nextButton.count()) === 0) {
-        throw new Error(`ℹ️ No 'Next' button found on Amazon.`);
+        throw new Error(`No 'Next' button found on Amazon.`);
       }
 
       await nextButton.first().click();
@@ -84,7 +84,7 @@ export class AmazonScraper extends BaseScraper {
       this.pageNumber += 1;
       if (this.pageNumber >= 30) this.isDone = true;
     } catch (error) {
-      console.info(`⚠️ Amazon pagination reached the end or failed.`);
+      console.info(`Amazon pagination reached the end or failed.`);
       this.isDone = true;
     }
   }
@@ -109,7 +109,7 @@ export class AmazonScraper extends BaseScraper {
       }
       return null;
     } catch (error) {
-      console.error("⚠️ Error fetching Amazon brand selector:", error);
+      console.error("Error fetching Amazon brand selector:", error);
       return null;
     }
   }

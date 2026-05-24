@@ -63,7 +63,7 @@ export class FlipkartScraper extends BaseScraper {
       }
       await this.manager.extractProducts();
     } catch (error) {
-      console.error(`⚠️ Error fetching products on Flipkart:`, error);
+      console.error(`Error fetching products on Flipkart:`, error);
       this.isDone = true;
     }
   }
@@ -73,7 +73,7 @@ export class FlipkartScraper extends BaseScraper {
     try {
       const nextButton = this.page.locator(nextButtonSelector, { hasText: "Next" });
       if ((await nextButton.count()) === 0) {
-        throw new Error(`ℹ️ No 'Next' button found on Flipkart.`);
+        throw new Error(`No 'Next' button found on Flipkart.`);
       }
 
       await nextButton.first().click();
@@ -82,7 +82,7 @@ export class FlipkartScraper extends BaseScraper {
       this.pageNumber += 1;
       if (this.pageNumber >= 30) this.isDone = true;
     } catch (error) {
-      console.info(`⚠️ Flipkart pagination reached the end or failed.`);
+      console.info(`Flipkart pagination reached the end or failed.`);
       this.isDone = true;
     }
   }
@@ -110,7 +110,7 @@ export class FlipkartScraper extends BaseScraper {
       }
       return null;
     } catch (error) {
-      console.error("⚠️ Error fetching Flipkart brand selector:", error);
+      console.error("Error fetching Flipkart brand selector:", error);
       return null;
     }
   }

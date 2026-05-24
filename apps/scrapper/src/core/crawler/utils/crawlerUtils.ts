@@ -55,13 +55,13 @@ class CrawlerUtils {
       });
 
       if (nRes === null || !nRes.ok()) {
-        throw new Error(`🧭 Navigation to ${url} failed with status ${nRes?.status()}`);
+        throw new Error(`Navigation to ${url} failed with status ${nRes?.status()}`);
       }
 
       await this.waitForPageLoad(page, waitSelector, showRandomDelay);
     } catch (error) {
-      const errMsg = (error as Error).message ?? "⚠️ An error occurred during navigation";
-      throw new Error("⚠️ Navigation error: " + errMsg);
+      const errMsg = (error as Error).message ?? "An error occurred during navigation";
+      throw new Error("Navigation error: " + errMsg);
     }
   }
 
@@ -77,13 +77,13 @@ class CrawlerUtils {
         await Promise.all(
           Object.entries(productCSSSelector).map(async ([key, selector]) => {
             const typedKey = key as ProductSelector;
-            if (!selector.trim()) throw new Error("⚠️ Invalid selector");
+            if (!selector.trim()) throw new Error("Invalid selector");
 
             const element = await product.$(selector);
             const value = await cleanData(typedKey, element, this.website);
 
             if (!value && !hasRequiredDetails(typedKey, value)) {
-              throw new Error(`⚠️  Missing required detail for key: ${typedKey}`);
+              throw new Error(`Missing required detail for key: ${typedKey}`);
             }
 
             return [typedKey, value];
@@ -104,7 +104,7 @@ class CrawlerUtils {
 
       return hasValidDetails ? productDetails : null;
     } catch (error) {
-      console.log(`⚠️ Error extracting product data:`, (error as Error).message ?? " error");
+      console.log(`Error extracting product data:`, (error as Error).message ?? " error");
       return null;
     }
   }
@@ -149,7 +149,7 @@ class CrawlerUtils {
     )
     .then((results) => results.filter((val): val is ProductSelectorValue => val !== null))
     .catch((error) => {
-      console.error("⚠️ Error extracting product details for brand:", (error as Error).message ?? " error");
+      console.error("Error extracting product details for brand:", (error as Error).message ?? " error");
       return [];
     });
 

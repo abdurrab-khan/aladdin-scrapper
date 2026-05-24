@@ -12,12 +12,12 @@ redis
   .connect()
   .then(() => {
     App.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server is running successfully on http://localhost:${PORT}`);
+      console.log(`Server started on http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
     console.error(
-      `⚠️ Existing the app -- ${err instanceof Error ? err.message : err} `,
+      `Application startup failed: ${err instanceof Error ? err.message : err}`,
     );
     exit(1);
   });

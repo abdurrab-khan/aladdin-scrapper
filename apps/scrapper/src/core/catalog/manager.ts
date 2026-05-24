@@ -20,17 +20,17 @@ class CatalogRotationManager {
   }
 
   run(): SelectionResult[] {
-    console.log("🚀 Starting catalog rotation...\n");
+    console.log("Beginning catalog rotation...\n");
 
     const selections = this.selectCategories();
 
-    console.log("📋 Selected categories and subcategories:\n");
+    console.log("Selected categories and subcategories:\n");
     selections.forEach((selection, index) => {
       const priorityLabel = selection.isLowPriority
-        ? "🔽 LOW PRIORITY"
-        : "⭐ REGULAR";
+        ? "LOW PRIORITY"
+        : "REGULAR";
 
-      console.log(`${index + 1}. ${selection.category} ${priorityLabel}`);
+      console.log(`${index + 1}. ${selection.category} (${priorityLabel})`);
       selection.tasks.forEach((task) => {
         console.log(`   - ${task.name}`);
       });
@@ -41,7 +41,7 @@ class CatalogRotationManager {
     // Mark as completed
     this.markAsCompleted(selections);
 
-    console.log("✅ History updated successfully!\n");
+    console.log("History updated.\n");
 
     return selections;
   }
@@ -240,7 +240,7 @@ class CatalogRotationManager {
   }
 
   private resetCategoryHistory(): void {
-    console.log("🔄 All categories completed! Resetting history...\n");
+    console.log("All categories completed. Resetting history...\n");
 
     this.history = Object.fromEntries(
       Object.entries(this.history).map(([key, value]) => {
@@ -261,7 +261,7 @@ class CatalogRotationManager {
 
   private resetLowPriorityHistory(): void {
     console.log(
-      "🔄 All low priority categories completed! Resetting low priority history...\n",
+      "All low priority categories completed. Resetting low priority history...\n",
     );
 
     this.history = Object.fromEntries(

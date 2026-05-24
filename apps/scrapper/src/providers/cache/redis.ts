@@ -33,12 +33,12 @@ export class RedisDB extends BaseCache {
       });
 
       this.client.on("error", (err: any) => {
-        console.error("⛔ Redis error:", err);
+        console.error("Redis error:", err);
       });
 
       await this.client.connect();
       await this.client.ping();
-      console.log("🔗 Redis connected successfully.");
+      console.log("Redis connected.");
       return true;
     } catch (error: any) {
       throw error;
@@ -50,12 +50,12 @@ export class RedisDB extends BaseCache {
       if (this.client) {
         await this.client.quit();
         this.client = null;
-        console.log("🔒 Redis disconnected successfully.");
+        console.log("Redis disconnected.");
         return true;
       }
       return false;
     } catch (error: any) {
-      console.error("⛔ Error during Redis disconnect:", error.message);
+      console.error("Error during Redis disconnect:", error.message);
       return false;
     }
   }
@@ -65,7 +65,7 @@ export class RedisDB extends BaseCache {
     pattern: string = "url_cache_*",
   ): Promise<boolean> {
     if (!this.client) {
-      console.warn("⚠️ Redis client is not connected.");
+      console.warn("Redis client not connected.");
       return false;
     }
 
@@ -98,7 +98,7 @@ export class RedisDB extends BaseCache {
 
       return false;
     } catch (error: any) {
-      console.error("⛔ Error checking URL cache:", error.message);
+      console.error("Error checking URL cache:", error.message);
       return false;
     }
   }

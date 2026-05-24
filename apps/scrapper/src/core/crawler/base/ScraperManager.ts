@@ -73,7 +73,7 @@ export class ScraperManager {
       await this.crawlerUtils.navigateToUrl(this.page, url);
     } catch (error) {
       const errMsg = error instanceof Error ? error.message : "Unknown error during navigation";
-      console.error(`⚠️  Error navigating to ${this.website}:`, errMsg);
+      console.error(`Error navigating to ${this.website}:`, errMsg);
       this.isDone = true;
     }
   }
@@ -87,7 +87,7 @@ export class ScraperManager {
       const products = await this.page.$$(cardSelector);
 
       if (products.length === 0) {
-        console.warn(`⚠️  No products found on ${this.website}`);
+        console.warn(`No products found on ${this.website}`);
         return this.increaseEmptyPageThreshold(null);
       }
 
@@ -102,7 +102,7 @@ export class ScraperManager {
 
       this.insertProduct(productDetails);
     } catch (error) {
-      console.error(`⚠️  Error extracting product details from ${this.website}:`, error);
+      console.error(`Error extracting product details from ${this.website}:`, error);
     }
   }
 
@@ -120,9 +120,9 @@ export class ScraperManager {
         const discountPercent = Math.round(((price - discountPrice) / price) * 100);
 
         console.log(
-          `✅ Extracted - ${this.website.toUpperCase()} : ${
+          `Extracted - ${this.website.toUpperCase()} : ${
             productData.name
-          } | Price: ${price} | Discount Price: ${discountPrice} | ${discountPercent}%off`,
+          } | Price: ${price} | Discount Price: ${discountPrice} | ${discountPercent}% off`,
         );
 
         await this.postProcessProduct(productData.brand, productData.url, discountPercent);
@@ -181,7 +181,7 @@ export class ScraperManager {
       this.productsByBrand.get(brandKey)! >= MAX_PRODUCTS_BY_BRAND &&
       this.productsByBrand.get(brandKey) !== -1
     ) {
-      console.log(`\n🔍 Fetching more products for brand ${brand} from ${this.website}...\n`);
+      console.log(`\nFetching more products for brand ${brand} from ${this.website}...\n`);
       this.productsByBrand.set(brandKey, -1);
       await this.fetchBrandProducts(brandKey);
     }
@@ -199,7 +199,7 @@ export class ScraperManager {
 
       if (this.emptyPageThreshold > MAX_EMPTY_PAGES_ALLOWED) {
         console.info(
-          `\n🚫 Crawler terminated for ${this.website}: Maximum empty page threshold exceeded (${this.emptyPageThreshold}). Page: Collected: ${this.productsCount}\n`,
+          `\nCrawler terminated for ${this.website}: Maximum empty page threshold exceeded (${this.emptyPageThreshold}). Collected: ${this.productsCount}\n`,
         );
         this.isDone = true;
       }
@@ -248,14 +248,14 @@ export class ScraperManager {
         if (products) {
           products["url"] = page.url();
           this.insertProduct([products]);
-          console.log(`\n🛍️  Fetched products for brand ${brand} from ${this.website}\n`);
+          console.log(`\nFetched products for brand ${brand} from ${this.website}\n`);
         }
       } else {
-        console.warn(`⚠️  No selector found for brand ${brand} on ${this.website}`);
+        console.warn(`No selector found for brand ${brand} on ${this.website}`);
       }
     } catch (error) {
       console.error(
-        `⚠️  Error fetching products for brand ${brand}: `,
+        `Error fetching products for brand ${brand}: `,
         (error as Error).message,
       );
     } finally {
