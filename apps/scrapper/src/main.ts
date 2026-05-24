@@ -1,80 +1,13 @@
 import "dotenv/config";
-import { rm } from "fs/promises";
 
-import RedisDB from "./db/redis.js";
-import SupabaseClient from "./db/supabase.js";
-import manager from "./utils/catalogManager/manager.js";
-import { scrapeProducts } from "./crawler/scrapper.js";
-import { randomDelay } from "./crawler/utils/utils.js";
-import type { SubCategory } from "./types/index.js";
+import { runScrape } from "./jobs/runScrape.js";
+import manager from "./core/catalog/manager.js";
+import SupabaseDatabaseInstance from "./providers/database/supabase.js";
+import redis from "./providers/cache/redis.js";
 
 async function main() {
-  const redisClient = new RedisDB();
-
-  try {
-    await redisClient.connect(); // Connect to Redis
-    const selection = manager.run();
-
-    for (let i = 0; i < selection.length; i++) {
-      const selectionDetails = selection[i];
-
-      if (!selectionDetails) {
-        console.warn(
-          `⚠️ There is no selection details available ${selectionDetails}`,
-        );
-        continue;
-      }
-
-      // extracting details
-      const { subcategories, subcategoriesDetails } = selectionDetails;
-
-      // throw an error if there is not subCategories
-      if (subcategories.length === 0) {
-        throw new Error(
-          `❌ Failed there is no subcategories found ${subcategories}`,
-        );
-      }
-
-      // looping sub subCategories
-      for (let j = 0; j < subcategories.length; j++) {
-        const categoryName = subcategories[j] as string;
-        const subCategory = subcategoriesDetails[categoryName] as SubCategory;
-
-        console.log(`🚀  Starting ${categoryName} product scraping...`);
-
-        // scrapping products
-        const scrappedProducts = await scrapeProducts(
-          redisClient,
-          categoryName,
-          subCategory,
-        );
-
-        // insert products
-        await SupabaseClient.saveProducts(scrappedProducts);
-
-        console.log(`\n🎉 Finished scraping for selection: ${categoryName}\n`);
-
-        // adding some delays
-        if (i < selection.length - 1) {
-          await new Promise((res) => setTimeout(res, randomDelay(120, 300)));
-        }
-      }
-    }
-  } catch (err) {
-    const msg =
-      err instanceof Error
-        ? err.message
-        : "An error unknown error occured during scrapping products";
-    console.error(msg);
-  } finally {
-    await redisClient.disconnect();
-
-    // Clean up the products directory after processing
-    await rm("products", {
-      recursive: true,
-      force: true,
-    });
-  }
+  const selection = manager.run();
+  await runScrape(selection, SupabaseDatabaseInstance, redis);
 }
 
-main();
+void main();

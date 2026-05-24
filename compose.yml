@@ -4,6 +4,7 @@ services:
     image: redis:8.0
     ports:
       - "6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis-data:/data
     healthcheck:
@@ -13,6 +14,44 @@ services:
       retries: 3
       start_period: 5s
 
+  scrapper:
+    container_name: aladdin-scrapper
+    build:
+      context: ./apps/scrapper
+      dockerfile: Dockerfile
+      args:
+        - PORT=${PORT:-8080}
+        - USER_ID=${USER_ID:? USER_ID is Required}
+        - AMAZON_PLATFORM_ID=${AMAZON_PLATFORM_ID:? AMAZON_PLATFORM_ID is Required}
+        - FLIPKART_PLATFORM_ID=${FLIPKART_PLATFORM_ID:? FLIPKART_PLATFORM_ID is Required}
+        - REDIS_HOST=${REDIS_HOST:? REDIS_HOST is Required}
+        - REDIS_PORT=${REDIS_PORT:? REDIS_PORT is Required}
+        - REDIS_PASSWORD=${REDIS_PASSWORD:? REDIS_PASSWORD is Required}
+        - SUPABASE_URL=${SUPABASE_URL:? SUPABASE_URL is Required}
+        - SUPABASE_KEY=${SUPABASE_KEY:? SUPABASE_KEY is Required}
+        - SCREENSHOT_SERVICE_URL=${SCREENSHOT_SERVICE_URL:? SCREENSHOT_SERVICE_URL is Required}
+    ports:
+      - "8080:8080"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  screenshot-service:
+    container_name: aladdin-screenshot
+    build:
+      context: ./apps/screenshot
+      dockerfile: Dockerfile
+      args:
+        - PORT=${PORT:-3000}
+        - SUPABASE_URL=${SUPABASE_URL:? SUPABASE_URL is Required}
+        - SUPABASE_KEY=${SUPABASE_KEY:? SUPABASE_KEY is Required}
+    ports:
+      - "3000:3000"
+    depends_on:
+      redis:
+        condition: service_healthy
+
 volumes:
   redis-data:
-    driver: local
+  screenshot-data:
+  scrapper-data:

@@ -1,0 +1,137 @@
+{
+  "menClothings": {
+    "subCategories": [
+      "T-Shirts",
+      "Shirts",
+      "Jeans",
+      "Trousers"
+    ],
+    "lowPriorityCategories": [
+      "Watches",
+      "Smart Watch",
+      "Sunglasses",
+      "Perfume"
+    ],
+    "timeStamp": 1779213048088,
+    "lastLowPriorityRun": 1779213048088
+  },
+  "footWear": {
+    "subCategories": [
+      "Sneakers",
+      "Formal Shoes"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1769326836675,
+    "lastLowPriorityRun": 1768633213044
+  },
+  "laptopAndDesktop": {
+    "subCategories": [
+      "Laptops",
+      "Monitor"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1769326837390,
+    "lastLowPriorityRun": 1768633213044
+  },
+  "healthAndPersonalCare": {
+    "subCategories": [
+      "Trimmer",
+      "Hair Dryer"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1769326837390,
+    "lastLowPriorityRun": 1768633213044
+  },
+  "nutritionAndSupplements": {
+    "subCategories": [],
+    "lowPriorityCategories": [
+      "Protein Powder"
+    ],
+    "timeStamp": 1769326978716,
+    "lastLowPriorityRun": 1769326978716
+  },
+  "sportsAndFitness": {
+    "subCategories": [],
+    "lowPriorityCategories": [
+      "Home Gym Combos",
+      "Dumbbells"
+    ],
+    "timeStamp": 1779213048088,
+    "lastLowPriorityRun": 1779213048088
+  },
+  "homeAppliances": {
+    "subCategories": [
+      "Iron",
+      "Water Purifier",
+      "Water Geyser",
+      "Washing Machine",
+      "Refrigerator",
+      "Television"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1769326951865,
+    "lastLowPriorityRun": 1768633213044
+  },
+  "kitchenAppliances": {
+    "subCategories": [
+      "MicrowaveOven",
+      "Mixer Juicer Grinder",
+      "Coffee Maker",
+      "PopUpToaster"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1769326842626,
+    "lastLowPriorityRun": 1768633213044
+  },
+  "homeFurnishing": {
+    "subCategories": [],
+    "lowPriorityCategories": [
+      "Curtains",
+      "Cushion Covers",
+      "BedSheets"
+    ],
+    "timeStamp": 1779213048088,
+    "lastLowPriorityRun": 1779213048088
+  },
+  "homeDecor": {
+    "subCategories": [],
+    "lowPriorityCategories": [
+      "Clocks"
+    ],
+    "timeStamp": 1769328420478,
+    "lastLowPriorityRun": 1769328420478
+  },
+  "smartProducts": {
+    "subCategories": [],
+    "lowPriorityCategories": [
+      "SmartLight"
+    ],
+    "timeStamp": 1769328420478,
+    "lastLowPriorityRun": 1769328420478
+  },
+  "audio": {
+    "subCategories": [
+      "Headphones",
+      "TrueWirelessEarbuds"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1769326841941,
+    "lastLowPriorityRun": 1768633213044
+  },
+  "smartPhone": {
+    "subCategories": [
+      "SmartPhone"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1769326841941,
+    "lastLowPriorityRun": 1768633213044
+  },
+  "bathAndPersonalCare": {
+    "subCategories": [
+      "Soap"
+    ],
+    "lowPriorityCategories": [],
+    "timeStamp": 1769326841941,
+    "lastLowPriorityRun": 1768633213044
+  }
+}
