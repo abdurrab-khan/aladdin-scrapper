@@ -11,12 +11,14 @@ import failedQueue from "./queue/failed-queue";
 import supabase from "@/providers/database/supabase";
 
 const workerHandler = async (
-  job: Job<IGroupedScreenShotRequest | IFullScreenShotRequest>
+  job: Job<IGroupedScreenShotRequest | IFullScreenShotRequest>,
 ) => {
   const { queueName, name, data } = job;
 
   let imageType: "Full" | "Group" = "Full";
-  console.log(`[Worker] Starting job ${job.id} - Type: ${name}, Product ID: ${data.id}`);
+  console.log(
+    `[Worker] Starting job ${job.id} - Type: ${name}, Product ID: ${data.id}`,
+  );
 
   try {
     let path: string;
@@ -32,17 +34,21 @@ const workerHandler = async (
         data.id,
         data.url,
         data.website as Website,
-        (data as IGroupedScreenShotRequest).priceDetails
+        (data as IGroupedScreenShotRequest).priceDetails,
       );
     }
 
     console.log(`[Worker] Screenshot captured at ${path} for ID: ${data.id}`);
     await supabase.save_image(data.id, path, imageType);
-    console.log(`[Worker] Job ${job.id} completed successfully for ID: ${data.id}`);
+    console.log(
+      `[Worker] Job ${job.id} completed successfully for ID: ${data.id}`,
+    );
   } catch (err) {
     // if job is from main-queue, add it to failed-queue
     if (queueName === "main-queue") {
-      console.log(`[Worker] Job ${job.id} failed, moving to failed-queue. Error: ${err instanceof Error ? err.message : err}`);
+      console.log(
+        `[Worker] Job ${job.id} failed, moving to failed-queue. Error: ${err instanceof Error ? err.message : err}`,
+      );
       failedQueue.add(name, data);
       return;
     }

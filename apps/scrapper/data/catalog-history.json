@@ -6,12 +6,7 @@
       "Jeans",
       "Trousers"
     ],
-    "lowPriorityCategories": [
-      "Watches",
-      "Smart Watch",
-      "Sunglasses",
-      "Perfume"
-    ],
+    "lowPriorityCategories": [],
     "timeStamp": 1779213048088,
     "lastLowPriorityRun": 1779213048088
   },
@@ -47,15 +42,12 @@
     "lowPriorityCategories": [
       "Protein Powder"
     ],
-    "timeStamp": 1769326978716,
-    "lastLowPriorityRun": 1769326978716
+    "timeStamp": 1779622580345,
+    "lastLowPriorityRun": 1779622580345
   },
   "sportsAndFitness": {
     "subCategories": [],
-    "lowPriorityCategories": [
-      "Home Gym Combos",
-      "Dumbbells"
-    ],
+    "lowPriorityCategories": [],
     "timeStamp": 1779213048088,
     "lastLowPriorityRun": 1779213048088
   },
@@ -85,11 +77,7 @@
   },
   "homeFurnishing": {
     "subCategories": [],
-    "lowPriorityCategories": [
-      "Curtains",
-      "Cushion Covers",
-      "BedSheets"
-    ],
+    "lowPriorityCategories": [],
     "timeStamp": 1779213048088,
     "lastLowPriorityRun": 1779213048088
   },
@@ -98,16 +86,16 @@
     "lowPriorityCategories": [
       "Clocks"
     ],
-    "timeStamp": 1769328420478,
-    "lastLowPriorityRun": 1769328420478
+    "timeStamp": 1779622580345,
+    "lastLowPriorityRun": 1779622580345
   },
   "smartProducts": {
     "subCategories": [],
     "lowPriorityCategories": [
       "SmartLight"
     ],
-    "timeStamp": 1769328420478,
-    "lastLowPriorityRun": 1769328420478
+    "timeStamp": 1779622580345,
+    "lastLowPriorityRun": 1779622580345
   },
   "audio": {
     "subCategories": [

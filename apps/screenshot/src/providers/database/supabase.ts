@@ -8,7 +8,7 @@ class SupabaseClient {
   constructor() {
     if (!process.env["SUPABASE_URL"] || !process.env["SUPABASE_KEY"]) {
       throw new Error(
-        "Supabase URL or Key is not defined in environment variables."
+        "Supabase URL or Key is not defined in environment variables.",
       );
     }
 
@@ -19,13 +19,13 @@ class SupabaseClient {
         db: {
           schema: "public",
         },
-      }
+      },
     );
   }
 
   private async uploadImage(
     productId: string,
-    imagePath: string
+    imagePath: string,
   ): Promise<string> {
     try {
       const imageBuffer = readFileSync(imagePath, {
@@ -43,11 +43,13 @@ class SupabaseClient {
 
       if (response.error || !response?.data?.fullPath) {
         throw new Error(
-          `Failed to upload image to Supabase Storage: ${response.error?.message}`
+          `Failed to upload image to Supabase Storage: ${response.error?.message}`,
         );
       }
 
-      console.log(`[Supabase] Image uploaded successfully for ID: ${productId}`);
+      console.log(
+        `[Supabase] Image uploaded successfully for ID: ${productId}`,
+      );
       return response.data.fullPath;
     } catch (error) {
       console.error(`[Supabase] Upload error for ID: ${productId}:`, error);
@@ -58,7 +60,7 @@ class SupabaseClient {
   public async save_image(
     productId: string,
     imagePath: string,
-    imageType: "Full" | "Group"
+    imageType: "Full" | "Group",
   ): Promise<void> {
     try {
       const uploadImageUrl = await this.uploadImage(productId, imagePath);
@@ -66,7 +68,10 @@ class SupabaseClient {
       const updateDb = await this.supabaseClient
         .from("product_images")
         .update({
-          image_url: uploadImageUrl,
+          image_url: new URL(
+            uploadImageUrl,
+            `${process.env["SUPABASE_URL"]}/storage/v1/object/public/`,
+          ).href,
           image_status: "Completed",
         })
         .eq("product_id", productId)
@@ -74,10 +79,12 @@ class SupabaseClient {
 
       if (updateDb.error) {
         throw new Error(
-          `Failed to update database with image URL: ${updateDb.error.message}`
+          `Failed to update database with image URL: ${updateDb.error.message}`,
         );
       }
-      console.log(`[Supabase] Database updated for ID: ${productId}, Type: ${imageType}`);
+      console.log(
+        `[Supabase] Database updated for ID: ${productId}, Type: ${imageType}`,
+      );
 
       // Deleting local image after successful upload and DB update
       try {
