@@ -1,6 +1,6 @@
 import { Router } from "express";
-import takeGroupScreenShot from "../controller/group-screenshot.controller.js";
-import takeFullScreenShot from "../controller/full-screenshot.controller.js";
+import takeGroupScreenShot from "../controllers/group-screenshot.controller.js";
+import takeFullScreenShot from "../controllers/full-screenshot.controller.js";
 
 const router = Router();
 

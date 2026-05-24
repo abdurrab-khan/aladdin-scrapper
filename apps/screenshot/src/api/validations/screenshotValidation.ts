@@ -1,8 +1,8 @@
-import CustomError from "./ErrorHandler";
+import CustomError from "../../utils/ErrorHandler";
 import {
   IFullScreenShotRequest,
   IGroupedScreenShotRequest,
-} from "../types/index";
+} from "../../types/index";
 
 const FULL_SCREENSHOT_REGEX = /^https:\/\/www\.(amazon\.in|flipkart\.com)\/.*/;
 const GROUPED_SCREENSHOT_REGEX =

@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
-import { ApiResponse, AsyncHandler } from "../utils/index";
-import { validateGroupedScreenshotRequest } from "../utils/requestValidator";
-import { IGroupedScreenShotRequest } from "../types/index";
-import queue from "@/services/bullmq/queue/queue";
+import { ApiResponse, AsyncHandler } from "../../utils/index";
+import { validateGroupedScreenshotRequest } from "../validations/screenshotValidation";
+import { IGroupedScreenShotRequest } from "../../types/index";
+import queue from "@/jobs/bullmq/queue/queue";
 
 const takeGroupScreenShot = AsyncHandler(
   async (req: Request, res: Response) => {
@@ -10,12 +10,16 @@ const takeGroupScreenShot = AsyncHandler(
       req.body as IGroupedScreenShotRequest,
     );
 
+    console.log(`[API] Received group-screenshot request for ID: ${id}, URL: ${url}`);
+
     await queue.add("group-screenshot", {
       id,
       url,
       website,
       priceDetails,
     });
+
+    console.log(`[API] Successfully queued group-screenshot for ID: ${id}`);
 
     res.status(200).json(
       new ApiResponse({

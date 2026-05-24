@@ -6,8 +6,8 @@ app.use(express.json());
 app.use(express.static("../photos/"));
 
 // ALL ROUTES
-import ScreenShotRoute from "./route/screenshot.route.js";
-import ErrorMiddleware from "./middleware/error.middleware.js";
+import ScreenShotRoute from "./routes/screenshot.route.js";
+import ErrorMiddleware from "./middlewares/error.middleware.js";
 
 const COMMON_PATH = "/v1";
 

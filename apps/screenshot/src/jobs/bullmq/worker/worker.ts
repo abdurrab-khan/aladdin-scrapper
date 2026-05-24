@@ -1,5 +1,5 @@
 import { Worker } from "bullmq";
-import redis from "@/database/redis";
+import redis from "@/providers/cache/redis";
 import workerHandler from "../workerHandler";
 
 const worker = new Worker("main-queue", workerHandler, {

@@ -1,8 +1,8 @@
 import "dotenv/config";
 
-import App from "./server";
-import "./services/bullmq/worker/worker";
-import "./services/bullmq/worker/failed-worker";
+import App from "./api/app";
+import "./jobs/bullmq/worker/worker";
+import "./jobs/bullmq/worker/failed-worker";
 
 const PORT = (process.env["PORT"] || 4000) as number;
 

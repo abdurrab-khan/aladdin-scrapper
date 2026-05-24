@@ -1,4 +1,4 @@
-import redis from "@/database/redis";
+import redis from "@/providers/cache/redis";
 import { Worker } from "bullmq";
 import workerHandler from "../workerHandler";
 

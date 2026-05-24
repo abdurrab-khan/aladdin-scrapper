@@ -1,4 +1,4 @@
-import redis from "@/database/redis";
+import redis from "@/providers/cache/redis";
 import { Queue } from "bullmq";
 
 const failedQueue = new Queue("failed-queue", {

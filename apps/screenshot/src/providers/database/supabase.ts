@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { unlink } from "node:fs/promises";
 import { createClient } from "@supabase/supabase-js";
 
 class SupabaseClient {
@@ -31,9 +32,10 @@ class SupabaseClient {
         flag: "r",
       });
 
+      const bucketName = process.env["SUPABASE_BUCKET"] || "aladdin-deals";
       const uniqueImageKey = `product_images/${productId}-${Date.now()}.png`;
       const response = await this.supabaseClient.storage
-        .from("aladdin")
+        .from(bucketName)
         .upload(uniqueImageKey, imageBuffer, {
           upsert: false,
           contentType: "image/png",
@@ -45,8 +47,10 @@ class SupabaseClient {
         );
       }
 
+      console.log(`[Supabase] Image uploaded successfully for ID: ${productId}`);
       return response.data.fullPath;
     } catch (error) {
+      console.error(`[Supabase] Upload error for ID: ${productId}:`, error);
       throw new Error(`An error occurred during image upload: ${error}`);
     }
   }
@@ -73,7 +77,17 @@ class SupabaseClient {
           `Failed to update database with image URL: ${updateDb.error.message}`
         );
       }
+      console.log(`[Supabase] Database updated for ID: ${productId}, Type: ${imageType}`);
+
+      // Deleting local image after successful upload and DB update
+      try {
+        await unlink(imagePath);
+        console.log(`[Supabase] Local image deleted: ${imagePath}`);
+      } catch (unlinkErr) {
+        console.warn(`[Supabase] Failed to delete local image: ${unlinkErr}`);
+      }
     } catch (err) {
+      console.error(`[Supabase] Save error for ID: ${productId}:`, err);
       throw new Error(`An error occurred while saving the image: ${err}`);
     }
   }
