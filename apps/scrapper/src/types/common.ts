@@ -19,6 +19,16 @@ export type ProductSelectorValue = {
   [T in ProductSelector]: T extends "images" ? string : FlatProduct[T];
 };
 
+export interface ScrapeFilters {
+  available?: boolean | undefined;
+  rating?: number | undefined;
+  minPrice?: number | undefined;
+  maxPrice?: number | undefined;
+  maxDiscount?: number | undefined;
+  maxBrandDiscount?: number | undefined;
+  maxDiscountForFullPageScreenshot?: number | undefined;
+}
+
 export interface SubCategory {
   maxPrice: number;
   minPrice: number;
@@ -27,6 +37,16 @@ export interface SubCategory {
   maxDiscountForFullPageScreenshot: number;
   urls: {
     [k in E_COMMERCE]: string;
+  };
+  baseConfig?: {
+    amazon?: {
+      keyword: string;
+      nodeId: string;
+    };
+    flipkart?: {
+      path: string;
+      sid: string;
+    };
   };
 }
 

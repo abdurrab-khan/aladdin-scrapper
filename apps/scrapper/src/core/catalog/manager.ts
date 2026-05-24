@@ -1,4 +1,5 @@
 import ManagerUtils from "./utils.js";
+import { CATALOG_CONFIG } from "../../config/catalog.js";
 import type {
   Category,
   SelectionResult,
@@ -11,11 +12,11 @@ class CatalogRotationManager {
   private history: History;
   private managerUtils: ManagerUtils;
 
-  constructor(configPath: string, historyPath: string) {
-    this.managerUtils = new ManagerUtils(configPath, historyPath);
+  constructor(historyPath: string) {
+    this.managerUtils = new ManagerUtils(historyPath);
 
-    // Loading product config and history path
-    this.config = this.managerUtils.loadConfig();
+    // Using product config from registry and loading history path
+    this.config = Object.values(CATALOG_CONFIG);
     this.history = this.managerUtils.loadHistory();
   }
 
@@ -338,7 +339,6 @@ class CatalogRotationManager {
 
 // Usage example
 const manager = new CatalogRotationManager(
-  "./data/catalog-config.json",
   "./data/catalog-history.json",
 );
 

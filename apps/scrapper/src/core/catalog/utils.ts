@@ -1,18 +1,11 @@
 import * as fs from "fs";
-import type { Category, History } from "../../types/common.js";
+import type { History } from "../../types/common.js";
 
 class ManagerUtils {
-  configPath: string;
   historyPath: string;
 
-  constructor(configPath: string, historyPath: string) {
-    this.configPath = configPath;
+  constructor(historyPath: string) {
     this.historyPath = historyPath;
-  }
-
-  loadConfig(): Category[] {
-    const data = fs.readFileSync(this.configPath, "utf-8");
-    return JSON.parse(data);
   }
 
   loadHistory(): History {

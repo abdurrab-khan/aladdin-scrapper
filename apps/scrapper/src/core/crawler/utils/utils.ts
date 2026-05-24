@@ -106,12 +106,13 @@ export function isValidProductDeal(
   const discountPercentage = ((price - discountPrice) / price) * 100;
 
   // Validate price, discount price, and discount percentage
+  // We check if the discounted price is within our target range
   const isValid =
-    price > minPrice &&
-    price < maxPrice &&
+    discountPrice >= minPrice &&
+    discountPrice <= maxPrice &&
     discountPrice > 0 &&
-    discountPrice < price &&
-    discountPercentage > maxDiscountPercentage;
+    discountPrice <= price &&
+    discountPercentage >= maxDiscountPercentage;
 
   return isValid;
 }

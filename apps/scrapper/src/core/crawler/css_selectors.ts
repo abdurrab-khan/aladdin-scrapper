@@ -7,7 +7,7 @@ type ProductDetailsType = Record<E_COMMERCE, Record<ProductSelector, string>>;
  * CSS Selectors for selecting product cards.
  */
 export const PRODUCT_CARD_SELECTOR: CardSelectorType = {
-  amazon: "div.s-result-item.s-asin[id][data-uuid]",
+  amazon: "div[data-asin]:not([data-asin=''])",
   flipkart: "div.QSCKDh .nZIRY7 div[data-id]",
 };
 
@@ -16,16 +16,15 @@ export const PRODUCT_CARD_SELECTOR: CardSelectorType = {
  */
 export const PRODUCT_DETAILS: ProductDetailsType = {
   amazon: {
-    name: "h2.a-color-base.a-text-normal span",
-    price: "span.a-price.a-text-price[data-a-strike='true'] span.a-offscreen",
-    discountPrice: "span.a-price span.a-price-whole",
-    rating: "i.a-icon-star-mini[data-cy='reviews-ratings-slot']",
-    reviews: "div[data-cy='reviews-block'] a.a-link-normal",
-    brand: "h2.a-size-mini.s-line-clamp-1 span.a-size-base-plus.a-color-base",
-    discountType:
-      "span.a-badge-label span.a-badge-text[data-a-badge-color=sx-cloud]",
-    images: "div.s-product-image-container img",
-    url: "div.s-product-image-container a.a-link-normal",
+    name: "h2 a.a-link-normal span.a-text-normal, h2.a-size-mini span.a-text-normal",
+    price: "span.a-price.a-text-price span.a-offscreen",
+    discountPrice: "span.a-price span.a-offscreen",
+    rating: "i.a-icon-star-small span, i.a-icon-star span, span.a-icon-alt",
+    reviews: "span.a-size-base.s-underline-text, div[data-cy='reviews-block'] a.a-link-normal",
+    brand: "h2.a-size-mini.s-line-clamp-1 span, .s-line-clamp-1",
+    discountType: "span.a-badge-text",
+    images: "img.s-image",
+    url: "a.a-link-normal.s-no-outline",
   },
   flipkart: {
     name: "a.atJtCj, div.RG5Slk, a.pIpigb",

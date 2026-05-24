@@ -11,6 +11,10 @@
         "urls": {
           "amazon": "https://www.amazon.in/s?k=t-shirt&i=apparel&rh=n%3A1968123031%2Cp_36%3A-370000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&s=popularity-rank&dc&ds=v1%3AnB7umLF5YPgLn1tj3qbDjQrSI1EIObvqymHFt404XRk&qid=1761453264&rnid=26921223031&ref=sr_nr_p_n_deal_type_1",
           "flipkart": "https://www.flipkart.com/clothing-and-accessories/topwear/tshirt/men-tshirt/pr?sid=clo%2Cash%2Cank%2Cedy&otracker=categorytree&p%5B%5D=facets.ideal_for%255B%255D%3DMen&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.offer_type%255B%255D%3DBuy%2BMore%252C%2BSave%2BMore&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
+        },
+        "baseConfig": {
+          "amazon": { "keyword": "t-shirt", "nodeId": "1968123031" },
+          "flipkart": { "path": "/clothing-and-accessories/topwear/tshirt/men-tshirt/pr", "sid": "clo,ash,ank,edy" }
         }
       },
       "Shirts": {
@@ -22,6 +26,10 @@
         "urls": {
           "amazon": "https://www.amazon.in/s?k=shirts&i=apparel&rh=n%3A1571271031%2Cn%3A1968024031%2Cn%3A1968120031%2Cn%3A94998646031%2Cp_36%3A15000-510000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&s=popularity-rank&dc&ds=v1%3Akb3Vh8JMMCWqqHpn2Yqe78wCJ8nK04gwgdIODeA6geE&qid=1761454031&rnid=1968120031&ref=sr_nr_n_2",
           "flipkart": "https://www.flipkart.com/mens-shirts/pr?sid=clo%2Cash%2Caxc%2Cmmk&otracker=categorytree&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.ideal_for%255B%255D%3DMen"
+        },
+        "baseConfig": {
+          "amazon": { "keyword": "shirts", "nodeId": "1968120031" },
+          "flipkart": { "path": "/mens-shirts/pr", "sid": "clo,ash,axc,mmk" }
         }
       },
       "Jeans": {
@@ -33,6 +41,10 @@
         "urls": {
           "amazon": "https://www.amazon.in/s?k=jeans&i=apparel&rh=n%3A1968076031%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&s=popularity-rank&dc=&qid=1761454542&rnid=4595083031&ref=sr_nr_p_36_0_0&low-price=&high-price=2650",
           "flipkart": "https://www.flipkart.com/clothing-and-accessories/bottomwear/jeans/men-jeans/pr?sid=clo%2Cvua%2Ck58%2Ci51&otracker=categorytree&p%5B%5D=facets.ideal_for%255B%255D%3DMen&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&page=1"
+        },
+        "baseConfig": {
+          "amazon": { "keyword": "jeans", "nodeId": "1968076031" },
+          "flipkart": { "path": "/clothing-and-accessories/bottomwear/jeans/men-jeans/pr", "sid": "clo,vua,k58,i51" }
         }
       },
       "Trousers": {
@@ -44,6 +56,10 @@
         "urls": {
           "amazon": "https://www.amazon.in/s?k=pants&i=apparel&rh=n%3A1968125031%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc=&qid=1761455572&rnid=4595083031&ref=sr_nr_p_36_0_0&low-price=&high-price=2800",
           "flipkart": "https://www.flipkart.com/mens-trousers/pr?sid=clo%2Cvua%2Cmle%2Clhk&otracker=categorytree&p%5B%5D=facets.ideal_for%255B%255D%3DMen&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
+        },
+        "baseConfig": {
+          "amazon": { "keyword": "pants", "nodeId": "1968125031" },
+          "flipkart": { "path": "/mens-trousers/pr", "sid": "clo,vua,mle,lhk" }
         }
       }
     },
@@ -417,9 +433,59 @@
         "maxBrandDiscount": 75,
         "maxDiscountForFullPageScreenshot": 80,
         "urls": {
-          "amazon": "https://www.amazon.in/s?k=curtains&i=kitchen&rh=n%3A1380480031%2Cp_36%3A-205000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc&crid=5TFU447KA4YL&qid=1761468468&rnid=26921223031&sprefix=curtains%2Caps%2C233&ref=sr_nr_p_n_deal_type_1&ds=v1%3AqYfXq5MMULYlx3wuJMgh%2Fq3yhinfqqLHdqNVAGB4hlw",
-          "flipkart": "https://www.flipkart.com/home-furnishing/curtains-accessories/curtains/pr?sid=jra%2Csl5%2C2va&q=curtains&otracker=categorytree&p%5B%5D=facets.price_range.from%3DMin&p%5B%5D=facets.price_range.to%3D2000&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
+          "amazon": "https://www.amazon.in/s?k=t-shirt&i=apparel&rh=n%3A1968123031%2Cp_36%3A-370000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&s=popularity-rank&dc&ds=v1%3AnB7umLF5YPgLn1tj3qbDjQrSI1EIObvqymHFt404XRk&qid=1761453264&rnid=26921223031&ref=sr_nr_p_n_deal_type_1",
+          "flipkart": "https://www.flipkart.com/clothing-and-accessories/topwear/tshirt/men-tshirt/pr?sid=clo%2Cash%2Cank%2Cedy&otracker=categorytree&p%5B%5D=facets.ideal_for%255B%255D%3DMen&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.offer_type%255B%255D%3DBuy%2BMore%252C%2BSave%2BMore&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
+        },
+        "baseConfig": {
+          "amazon": { "keyword": "t-shirt", "nodeId": "1968123031" },
+          "flipkart": { "path": "/clothing-and-accessories/topwear/tshirt/men-tshirt/pr", "sid": "clo,ash,ank,edy" }
         }
+      },
+      "Shirts": {
+        "maxPrice": 2300,
+        "minPrice": 150,
+        "maxDiscount": 75,
+        "maxBrandDiscount": 78,
+        "maxDiscountForFullPageScreenshot": 85,
+        "urls": {
+          "amazon": "https://www.amazon.in/s?k=shirts&i=apparel&rh=n%3A1571271031%2Cn%3A1968024031%2Cn%3A1968120031%2Cn%3A94998646031%2Cp_36%3A15000-510000%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&s=popularity-rank&dc&ds=v1%3Akb3Vh8JMMCWqqHpn2Yqe78wCJ8nK04gwgdIODeA6geE&qid=1761454031&rnid=1968120031&ref=sr_nr_n_2",
+          "flipkart": "https://www.flipkart.com/mens-shirts/pr?sid=clo%2Cash%2Caxc%2Cmmk&otracker=categorytree&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.ideal_for%255B%255D%3DMen"
+        },
+        "baseConfig": {
+          "amazon": { "keyword": "shirts", "nodeId": "1968120031" },
+          "flipkart": { "path": "/mens-shirts/pr", "sid": "clo,ash,axc,mmk" }
+        }
+      },
+      "Jeans": {
+        "maxPrice": 2400,
+        "minPrice": 180,
+        "maxDiscount": 75,
+        "maxBrandDiscount": 75,
+        "maxDiscountForFullPageScreenshot": 80,
+        "urls": {
+          "amazon": "https://www.amazon.in/s?k=jeans&i=apparel&rh=n%3A1968076031%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&s=popularity-rank&dc=&qid=1761454542&rnid=4595083031&ref=sr_nr_p_36_0_0&low-price=&high-price=2650",
+          "flipkart": "https://www.flipkart.com/clothing-and-accessories/bottomwear/jeans/men-jeans/pr?sid=clo%2Cvua%2Ck58%2Ci51&otracker=categorytree&p%5B%5D=facets.ideal_for%255B%255D%3DMen&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock&page=1"
+        },
+        "baseConfig": {
+          "amazon": { "keyword": "jeans", "nodeId": "1968076031" },
+          "flipkart": { "path": "/clothing-and-accessories/bottomwear/jeans/men-jeans/pr", "sid": "clo,vua,k58,i51" }
+        }
+      },
+      "Trousers": {
+        "maxPrice": 1800,
+        "minPrice": 135,
+        "maxDiscount": 75,
+        "maxBrandDiscount": 78,
+        "maxDiscountForFullPageScreenshot": 85,
+        "urls": {
+          "amazon": "https://www.amazon.in/s?k=pants&i=apparel&rh=n%3A1968125031%2Cp_n_availability%3A1318485031%2Cp_n_deal_type%3A26921226031&dc=&qid=1761455572&rnid=4595083031&ref=sr_nr_p_36_0_0&low-price=&high-price=2800",
+          "flipkart": "https://www.flipkart.com/mens-trousers/pr?sid=clo%2Cvua%2Cmle%2Clhk&otracker=categorytree&p%5B%5D=facets.ideal_for%255B%255D%3DMen&p%5B%5D=facets.offer_type%255B%255D%3DSpecial%2BPrice&p%5B%5D=facets.availability%255B%255D%3DInclude%2BOut%2Bof%2BStock"
+        },
+        "baseConfig": {
+          "amazon": { "keyword": "pants", "nodeId": "1968125031" },
+          "flipkart": { "path": "/mens-trousers/pr", "sid": "clo,vua,mle,lhk" }
+        }
+      }
       },
       "Cushion Covers": {
         "maxPrice": 2000,

@@ -83,6 +83,11 @@ class CrawlerUtils {
             const value = await cleanData(typedKey, element, this.website);
 
             if (!value && !hasRequiredDetails(typedKey, value)) {
+              // For Amazon, if price is missing but discountPrice is present, 
+              // we can treat it as no discount (price = discountPrice)
+              if (this.website === "amazon" && typedKey === "price") {
+                 return [typedKey, null];
+              }
               throw new Error(`Missing required detail for key: ${typedKey}`);
             }
 
@@ -90,6 +95,11 @@ class CrawlerUtils {
           })
         )
       ) as ProductSelectorValue;
+
+      // Handle missing original price
+      if (productDetails.price === null && productDetails.discountPrice !== null) {
+        productDetails.price = productDetails.discountPrice;
+      }
 
       if (!productDetails.brand)
         productDetails.brand = productDetails.name.split(" ")[0] ?? "Unknown";
@@ -101,6 +111,14 @@ class CrawlerUtils {
         this.subCategoryDetails.maxPrice,
         this.subCategoryDetails.maxDiscount
       );
+
+      if (!hasValidDetails) {
+        // Log why it's invalid for debugging
+        // const price = productDetails.price;
+        // const discountPrice = productDetails.discountPrice;
+        // const discountPercent = price && discountPrice ? Math.round(((price - discountPrice) / price) * 100) : 0;
+        // console.log(`Invalid deal: ${productDetails.name} | P: ${price} | DP: ${discountPrice} | %: ${discountPercent} | Target %: ${this.subCategoryDetails.maxDiscount}`);
+      }
 
       return hasValidDetails ? productDetails : null;
     } catch (error) {
@@ -116,13 +134,21 @@ class CrawlerUtils {
     timeout = 60000
   ): Promise<void> {
     try {
+      await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
       await page.waitForLoadState("load", { timeout });
 
       if (selector) {
+        // Wait for at least one product card to be visible
         await page.waitForSelector(selector, {
           state: "visible",
           timeout,
         });
+      }
+
+      // If there's a spinner, wait for it to disappear
+      const spinnerSelector = "div.s-spinner, .s-loading-spinner"; 
+      if (await page.$(spinnerSelector)) {
+        await page.waitForSelector(spinnerSelector, { state: "hidden", timeout: 10000 }).catch(() => {});
       }
 
       if (showAdditionalDelay) {
