@@ -13,6 +13,7 @@ export type ProductSelector = Exclude<
   | "userId"
   | "platformId"
   | "associatedAppId"
+  | "cardScreenshotPath"
 >;
 
 export type ProductSelectorValue = {
@@ -35,6 +36,7 @@ export interface SubCategory {
   maxDiscount: number;
   maxBrandDiscount: number;
   maxDiscountForFullPageScreenshot: number;
+  maxProducts?: number;
   urls: {
     [k in E_COMMERCE]: string;
   };

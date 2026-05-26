@@ -11,4 +11,9 @@ export abstract class BaseDatabase {
    * Ensures that image tracking rows exist for the given products.
    */
   abstract ensureProductImageRows(products: Product[]): Promise<void>;
+
+  /**
+   * Uploads the card screenshot for a product to storage and updates the database.
+   */
+  abstract uploadCardScreenshot(product: Product): Promise<void>;
 }

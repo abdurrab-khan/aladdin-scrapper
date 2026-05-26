@@ -16,7 +16,10 @@ const scrapeFiltersSchema = z.object({
 const scrapeRequestSchema = z.object({
   category: z.string().trim().min(1, "category is required"),
   subCategoryName: z.string().trim().min(1, "subCategoryName is required"),
-  websites: z.array(z.enum(["amazon", "flipkart"])).min(1, "at least one website is required"),
+  websites: z
+    .array(z.string().transform((val) => val.toLowerCase() as "amazon" | "flipkart"))
+    .min(1, "at least one website is required"),
+  maxProducts: z.number().min(1).optional().default(10),
   filters: scrapeFiltersSchema.optional(),
 });
 
@@ -25,16 +28,32 @@ export type ScrapeRequestBody = z.infer<typeof scrapeRequestSchema>;
 export function buildSelectionFromRequest(
   request: ScrapeRequestBody
 ): SelectionResult {
-  const { category: categoryName, subCategoryName, websites, filters = {} } = request;
+  const { category: categoryName, subCategoryName, websites, maxProducts, filters = {} } = request;
 
-  const categoryConfig = CATALOG_CONFIG[categoryName];
+  // Case-insensitive category lookup
+  const categoryKey = Object.keys(CATALOG_CONFIG).find(
+    (k) => k.toLowerCase() === categoryName.toLowerCase()
+  );
+  
+  const categoryConfig = categoryKey ? CATALOG_CONFIG[categoryKey] : undefined;
 
   if (!categoryConfig) {
     throw new Error(`Category ${categoryName} not found in config`);
   }
 
-  let subCatDetails = categoryConfig.subCategories[subCategoryName] || 
-                      (categoryConfig.lowPriorityCategories ? categoryConfig.lowPriorityCategories[subCategoryName] : undefined);
+  // Case-insensitive subcategory lookup
+  const subCategoryKey = Object.keys(categoryConfig.subCategories).find(
+    (k) => k.toLowerCase() === subCategoryName.toLowerCase()
+  );
+  
+  let subCatDetails = subCategoryKey ? categoryConfig.subCategories[subCategoryKey] : undefined;
+
+  if (!subCatDetails && categoryConfig.lowPriorityCategories) {
+    const lowPriorityKey = Object.keys(categoryConfig.lowPriorityCategories).find(
+      (k) => k.toLowerCase() === subCategoryName.toLowerCase()
+    );
+    subCatDetails = lowPriorityKey ? categoryConfig.lowPriorityCategories[lowPriorityKey] : undefined;
+  }
 
   if (!subCatDetails) {
     throw new Error(`Subcategory ${subCategoryName} not found in category ${categoryName}`);
@@ -70,14 +89,17 @@ export function buildSelectionFromRequest(
     maxDiscount: mergedFilters.maxDiscount!,
     maxBrandDiscount: mergedFilters.maxBrandDiscount!,
     maxDiscountForFullPageScreenshot: mergedFilters.maxDiscountForFullPageScreenshot!,
+    maxProducts: maxProducts,
     urls: generatedUrls as any,
   };
 
+  console.log("Generated URLs:", generatedUrls);
+
   return {
-    category: categoryName,
+    category: categoryKey || categoryName,
     tasks: [
       {
-        name: subCategoryName,
+        name: subCategoryKey || subCategoryName,
         details: finalDetails,
       },
     ],
@@ -87,7 +109,7 @@ export function buildSelectionFromRequest(
 
 export function validateScrapeRequest(
   request: any
-): string | null {
+): ScrapeRequestBody | string {
   const result = scrapeRequestSchema.safeParse(request);
   
   if (!result.success) {
@@ -99,5 +121,5 @@ export function validateScrapeRequest(
     return "Invalid request";
   }
 
-  return null;
+  return result.data;
 }
