@@ -1,4 +1,7 @@
 import { randomUUID } from "node:crypto";
+import nodePath from "node:path";
+import { fileURLToPath } from "node:url";
+import { mkdir } from "node:fs/promises";
 import { cleanData, hasRequiredDetails } from "./helper.js";
 import { randomDelay, isValidProductDeal } from "./utils.js";
 
@@ -165,6 +168,8 @@ class CrawlerUtils {
   ): Promise<Product | null> {
     if (!products || products.length === 0) return null;
 
+    const productId = randomUUID();
+
     const productDetails = await Promise.all(
       products.map(async (product, i) => {
         const details = await this.extractProductData(product);
@@ -182,8 +187,11 @@ class CrawlerUtils {
     if (productDetails.length >= 3) {
       productDetails.sort((a, b) => (a.discountPrice || a.price || Infinity) - (b.discountPrice || b.price || Infinity));
 
+      // Take screenshot of the first product card as the "group" representation
+      const cardScreenshotPath = await this.takeCardScreenshot(products[0]!, productId);
+
       return {
-        id: randomUUID(),
+        id: productId,
         name: "Grouped " + productDetails[0]?.brand + " Products",
         category: this.subCategory,
         url: "",
@@ -214,9 +222,31 @@ class CrawlerUtils {
         userId: this.ProductPrivateInfo.userId,
         platformId: this.ProductPrivateInfo.platformId,
         associatedAppId: this.ProductPrivateInfo.associatedAppId,
+        cardScreenshotPath: cardScreenshotPath || undefined,
       };
     }
     return null;
+  }
+
+  public async takeCardScreenshot(
+    element: ElementHandle<SVGElement | HTMLElement>,
+    productId: string
+  ): Promise<string | null> {
+    try {
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = nodePath.dirname(__filename);
+      const productImagesDir = nodePath.resolve(__dirname, "../../../../../product_images");
+      
+      await mkdir(productImagesDir, { recursive: true });
+      
+      const path = nodePath.join(productImagesDir, `card_${productId}_image.png`);
+      
+      await element.screenshot({ path, type: "png" });
+      return path;
+    } catch (error) {
+      console.warn(`Failed to take card screenshot for product ${productId}:`, error);
+      return null;
+    }
   }
 
   static generateRandomUserAgent = (): string => {

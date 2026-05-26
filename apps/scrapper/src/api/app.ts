@@ -29,15 +29,15 @@ app.post("/v1/scrape", async (req, res) => {
     });
   }
 
-  const body = req.body as ScrapeRequestBody;
-  const error = validateScrapeRequest(body);
+  const body = req.body;
+  const validationResult = validateScrapeRequest(body);
 
-  if (error) {
-    return res.status(400).json({ status: "invalid_request", error });
+  if (typeof validationResult === "string") {
+    return res.status(400).json({ status: "invalid_request", error: validationResult });
   }
 
   try {
-    const selection = buildSelectionFromRequest(body);
+    const selection = buildSelectionFromRequest(validationResult);
     console.log(
       "Successfully built selection, starting scrape job...: ",
       selection.tasks[0]?.details,

@@ -1,4 +1,6 @@
 import { rm } from "fs/promises";
+import nodePath from "node:path";
+import { fileURLToPath } from "node:url";
 import type { BaseDatabase } from "../providers/database/interfaces.js";
 import type { BaseCache } from "../providers/cache/interfaces.js";
 import {
@@ -85,9 +87,10 @@ async function processTask(
   }
 
   // Ensure image rows exist before enqueuing screenshots
-  await db.ensureProductImageRows(
-    insertedProducts.filter((p) => p.screenshotInfo),
-  );
+  await db.ensureProductImageRows(insertedProducts);
+
+  // Upload card screenshots immediately
+  await uploadCardScreenshots(insertedProducts, db);
 
   await enqueueScreenshotsForProducts(insertedProducts);
 
@@ -128,6 +131,26 @@ async function enqueueScreenshotsForProducts(products: Product[]) {
   await Promise.all(screenshotTasks);
 }
 
+/**
+ * Uploads card screenshots for products that have them.
+ */
+async function uploadCardScreenshots(products: Product[], db: BaseDatabase) {
+  const uploadTasks = products
+    .filter((p) => p.cardScreenshotPath)
+    .map(async (product) => {
+      try {
+        await db.uploadCardScreenshot(product);
+      } catch (error) {
+        console.warn(
+          `Failed to upload card screenshot for product ${product.id}:`,
+          error instanceof Error ? error.message : error,
+        );
+      }
+    });
+
+  await Promise.all(uploadTasks);
+}
+
 function handleError(err: unknown) {
   const msg = err instanceof Error ? err.message : "An unknown error occurred during scraping";
   console.error(msg);
@@ -135,10 +158,19 @@ function handleError(err: unknown) {
 
 async function cleanupTempFiles() {
   try {
-    await rm("products", { recursive: true, force: true });
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = nodePath.dirname(__filename);
+    
+    // products directory is in apps/scrapper/products
+    const productsDir = nodePath.resolve(__dirname, "../../products");
+    // product_images directory is in apps/product_images
+    const productImagesDir = nodePath.resolve(__dirname, "../../../product_images");
+
+    await rm(productsDir, { recursive: true, force: true });
+    await rm(productImagesDir, { recursive: true, force: true });
   } catch (error) {
     console.warn(
-      "Failed to clean products directory:",
+      "Failed to clean temporary directories:",
       error instanceof Error ? error.message : error,
     );
   }

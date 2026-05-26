@@ -3,6 +3,7 @@ import type { Product, SingleProductDetails } from "../../types/product.js";
 import { MAX_PRODUCT_PER_CATEGORY } from "./constants.js";
 import CrawlerFactory from "./utils/crawlerFactory.js";
 import type { BaseCache } from "../../providers/cache/interfaces.js";
+import { URLBuilder } from "./utils/URLBuilder.js";
 
 type SingleProducts = Product & { details: SingleProductDetails };
 
@@ -21,11 +22,16 @@ export class ScraperFacade {
     }
 
     const urls = Object.entries(categoryDetails.urls) as [E_COMMERCE, string][];
+    console.log(`Starting scrapers for ${urls.length} websites...`);
 
     const results = await Promise.allSettled(
       urls.map(async ([website, url]) => {
-        if (!url) return [];
+        if (!url) {
+          console.warn(`No URL for ${website}, skipping...`);
+          return [];
+        }
 
+        console.log(`Launching scraper for ${website} at ${url}`);
         const scraper = await CrawlerFactory.create(
           url,
           website,
@@ -56,19 +62,21 @@ export class ScraperFacade {
       }
     });
 
-    return this.postProcess(allProducts);
+    return this.postProcess(allProducts, categoryDetails.maxProducts);
   }
 
   /**
    * Sorts, filters, and slices the final product list.
    */
-  private postProcess(products: Product[]): Product[] {
+  private postProcess(products: Product[], limit?: number): Product[] {
     const groupedProducts = products.filter((p) => p.isGrouped);
     const uniqueProducts = products.filter((p) => !p.isGrouped) as SingleProducts[];
 
+    const finalLimit = limit ?? MAX_PRODUCT_PER_CATEGORY;
+
     const finalProducts = uniqueProducts
       .sort((a, b) => a.details.discountPrice - b.details.discountPrice)
-      .slice(0, MAX_PRODUCT_PER_CATEGORY);
+      .slice(0, finalLimit);
 
     return [...finalProducts, ...groupedProducts];
   }

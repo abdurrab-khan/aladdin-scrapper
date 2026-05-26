@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { Browser, ElementHandle, Page } from "playwright";
 import { randomDelay } from "../utils/utils.js";
 import CrawlerUtils from "../utils/crawlerUtils.js";
@@ -10,7 +11,6 @@ import {
   MAX_EMPTY_PAGES_ALLOWED,
   MAX_PRODUCTS_BY_BRAND,
   MAX_PRODUCTS_BY_BRAND_COUNT,
-  MAX_PRODUCTS_PER_WEBSITE,
   MIN_PRODUCTS_PER_PAGE,
 } from "../constants.js";
 import type { BaseCache } from "../../../providers/cache/interfaces.js";
@@ -27,6 +27,7 @@ export class ScraperManager {
   private subCategory: string;
   private subCategoryDetails: SubCategory;
   private crawlerUtils: CrawlerUtils;
+  private maxProductsToFetch: number;
   
   private emptyPageThreshold: number = 0;
   private productsByBrand = new Map<string, number>();
@@ -51,6 +52,10 @@ export class ScraperManager {
     this.subCategory = subCategory;
     this.subCategoryDetails = subCategoryDetails;
     this.getBrandSelector = getBrandSelector;
+
+    // Set fetching limit to double the requested maxProducts (defaulting to 10 if not provided)
+    const targetLimit = subCategoryDetails.maxProducts || 10;
+    this.maxProductsToFetch = targetLimit * 2;
 
     this.productPrivateInfo = {
       userId: process.env["USER_ID"] || "",
@@ -127,7 +132,10 @@ export class ScraperManager {
 
         await this.postProcessProduct(productData.brand, productData.url, discountPercent);
 
-        return ProductMapper.fromScraped(productData, {
+        const productId = randomUUID();
+        const cardScreenshotPath = await this.crawlerUtils.takeCardScreenshot(product, productId);
+
+        const mappedProduct = ProductMapper.fromScraped(productData, {
           category: this.subCategory,
           website: this.website,
           userId: this.productPrivateInfo.userId,
@@ -135,6 +143,11 @@ export class ScraperManager {
           platformId: this.productPrivateInfo.platformId,
           maxDiscountForFullPage: this.subCategoryDetails.maxDiscountForFullPageScreenshot,
         });
+
+        mappedProduct.id = productId;
+        mappedProduct.cardScreenshotPath = cardScreenshotPath || undefined;
+
+        return mappedProduct;
       }
 
       return null;
@@ -145,7 +158,7 @@ export class ScraperManager {
 
   public insertProduct(product: Product[] | null) {
     if (product && product.length > 0) {
-      const availableSlots = MAX_PRODUCTS_PER_WEBSITE - this.productsCount;
+      const availableSlots = this.maxProductsToFetch - this.productsCount;
 
       if (product.length > availableSlots)
         product = product.slice(0, availableSlots);
@@ -156,7 +169,7 @@ export class ScraperManager {
       this.increaseEmptyPageThreshold(product);
     }
 
-    if (this.productsCount >= MAX_PRODUCTS_PER_WEBSITE) this.isDone = true;
+    if (this.productsCount >= this.maxProductsToFetch) this.isDone = true;
   }
 
   private async postProcessProduct(
@@ -213,7 +226,7 @@ export class ScraperManager {
     const isValid =
       this.alreadyProcessedProducts.has(url) === false &&
       this.productsByBrand.get(brand.toLowerCase()) !== -1 &&
-      this.productsCount < MAX_PRODUCTS_PER_WEBSITE;
+      this.productsCount < this.maxProductsToFetch;
 
     if (isValid) {
       return !(await this.cache.isUrlCached(url));

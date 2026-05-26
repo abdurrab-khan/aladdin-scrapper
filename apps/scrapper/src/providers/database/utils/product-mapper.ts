@@ -82,9 +82,9 @@ export class ProductMapper {
         price: scraped.price,
         discountPrice: scraped.discountPrice,
         discountPercent: discountPercent,
-        rating: scraped.rating,
-        reviews: scraped.reviews,
-        discountType: scraped.discountType,
+        rating: scraped.rating || undefined,
+        reviews: scraped.reviews || undefined,
+        discountType: scraped.discountType || undefined,
       } as SingleProductDetails,
       images: {
         card: scraped.images,
@@ -126,6 +126,10 @@ export class ProductMapper {
       normalized.screenshotInfo = originalProduct.screenshotInfo;
     }
 
+    if (originalProduct?.cardScreenshotPath) {
+      normalized.cardScreenshotPath = originalProduct.cardScreenshotPath;
+    }
+
     return normalized;
   }
 
@@ -135,24 +139,34 @@ export class ProductMapper {
   public static toImageRows(product: Product): DbProductImageRow[] {
     const rows: DbProductImageRow[] = [];
     const productId = product.id;
-    if (!productId || !product.screenshotInfo) return rows;
+    if (!productId) return rows;
 
-    if (product.screenshotInfo.grouped) {
-      rows.push({
-        product_id: productId,
-        image_type: "Group",
-        image_url: null,
-        image_status: "Pending",
-      });
-    }
+    // Always include a Card image row
+    rows.push({
+      product_id: productId,
+      image_type: "Card",
+      image_url: null,
+      image_status: "Pending",
+    });
 
-    if (product.screenshotInfo.fullPageRequired) {
-      rows.push({
-        product_id: productId,
-        image_type: "Full",
-        image_url: null,
-        image_status: "Pending",
-      });
+    if (product.screenshotInfo) {
+      if (product.screenshotInfo.grouped) {
+        rows.push({
+          product_id: productId,
+          image_type: "Group",
+          image_url: null,
+          image_status: "Pending",
+        });
+      }
+
+      if (product.screenshotInfo.fullPageRequired) {
+        rows.push({
+          product_id: productId,
+          image_type: "Full",
+          image_url: null,
+          image_status: "Pending",
+        });
+      }
     }
 
     return rows;
