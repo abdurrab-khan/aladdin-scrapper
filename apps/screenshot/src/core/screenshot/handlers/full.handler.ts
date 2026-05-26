@@ -1,9 +1,13 @@
 import nodePath from "path";
+import { fileURLToPath } from "url";
 import { BaseScreenshotHandler } from "./base.handler";
 import { Website } from "@/types";
 import { ProviderFactory } from "../engines/factory";
 import CustomError from "@/utils/ErrorHandler";
 import { Browser, Page } from "puppeteer";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = nodePath.dirname(__filename);
 
 export class FullScreenshotHandler extends BaseScreenshotHandler {
   async execute(id: string, url: string, website: Website): Promise<string> {
@@ -37,10 +41,9 @@ export class FullScreenshotHandler extends BaseScreenshotHandler {
       if (!mainBounding)
         throw new Error(`Could not get bounding box for ${website}`);
 
-      // const path = `./src/product_images/full_${id}_image.png`;
       const path = nodePath.resolve(
         __dirname,
-        `product_images/full_${id}_image.png`,
+        `../../../../product_images/full_${id}_image.png`,
       );
 
       await page.screenshot({
@@ -67,15 +70,3 @@ export class FullScreenshotHandler extends BaseScreenshotHandler {
     }
   }
 }
-
-const x = new FullScreenshotHandler();
-
-x.execute(
-  "123",
-  "https://www.flipkart.com/lzard-slim-men-dark-blue-jeans/p/itma2a503b661259?pid=JEAFMHTSADHYYQEZ&lid=LSTJEAFMHTSADHYYQEZHCVSJJ&marketplace=FLIPKART&q=jeans&store=clo%2Fvua%2Fk58&srno=s_1_1&otracker=search&otracker1=search&fm=Search&iid=en_Iy7yK488fM90dLRMk9UC5aMTJqW4R50FE_qFV7yZwAEmkNkgbFnBYFKNuqIagr6BhLA0i4b9NyjSnmVzrDMFmw%3D%3D&ppt=sp&ppn=sp&ssid=oho9grvjow0000001779732584468&qH=a0f2589b1ced4dec&ov_redirect=true",
-  "FLIPKART",
-)
-  .then((path) => {})
-  .catch((err) => {
-    console.error("Error executing full screenshot handler: ", err);
-  });

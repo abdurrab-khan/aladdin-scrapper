@@ -49,7 +49,41 @@ export class FlipkartProvider extends BaseProvider {
     discountPrice: ElementHandle<Element> | null,
     priceDetails: IGroupedScreenShotRequest["priceDetails"],
   ): Promise<boolean> {
-    // Current logic returns true, following existing implementation in utils.ts
+    if (!priceDetails) return true;
+
+    // Both price elements missing -> invalid
+    if (!price && !discountPrice) return false;
+
+    const getNumeric = async (
+      el: ElementHandle<Element> | null,
+    ): Promise<number | null> => {
+      if (!el) return null;
+      try {
+        const txt = (await (el as any).evaluate(
+          (n: Element) => n.textContent,
+        )) as string | null;
+        if (!txt) return null;
+        const num = txt.replace(/[^0-9.]/g, "");
+        const parsed = parseFloat(num);
+        return Number.isFinite(parsed) ? parsed : null;
+      } catch {
+        return null;
+      }
+    };
+
+    const mainPrice = await getNumeric(price);
+    const discPrice = await getNumeric(discountPrice);
+
+    const finalPrice = discPrice ?? mainPrice;
+    if (finalPrice === null) return false;
+
+    // priceDetails may contain min and/or max fields
+    const min = (priceDetails as any)?.min ?? (priceDetails as any)?.minPrice;
+    const max = (priceDetails as any)?.max ?? (priceDetails as any)?.maxPrice;
+
+    if (typeof min === "number" && finalPrice < min) return false;
+    if (typeof max === "number" && finalPrice > max) return false;
+
     return true;
   }
 }
