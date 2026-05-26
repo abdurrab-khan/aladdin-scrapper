@@ -14,9 +14,10 @@ interface ISelector {
 
 const selector: ISelector = {
   FULL: {
-    main: ".QSCKDh.eRsYMo[style]",
+    main: 'div[style="max-width: 1200px; width: 100%;"].fWi7J_ div[style="width: 100%; position: static;"] div[style="flex-direction: row; background-color: rgb(255, 255, 255); margin: 0px;"]',
     content: ".QSCKDh.eRsYMo",
-    image: ".QSCKDh.dLgFEE.mfzC0s",
+    image:
+      ".QSCKDh.dLgFEE.mfzC0s, div[aspectratioinnumber]._1psv1zeb9._1psv1ze0",
   },
   GROUPED: {
     price: "div.kRYCnD",

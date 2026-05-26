@@ -15,7 +15,7 @@ export default class CrawlerFactory {
     cache: BaseCache,
   ): Promise<BaseScraper> {
     const { browser, page } = await BrowserUtils.launchBrowser({
-      headless: true,
+      headless: false,
     });
 
     switch (website) {

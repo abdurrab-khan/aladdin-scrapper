@@ -7,7 +7,9 @@ export class FlipkartProvider extends BaseProvider {
   readonly website: Website = "FLIPKART";
 
   getMainSelector(variant: "FULL" | "GROUPED"): string {
-    return variant === "FULL" ? FlipkartSelector.FULL.main : FlipkartSelector.GROUPED.card;
+    return variant === "FULL"
+      ? FlipkartSelector.FULL.main
+      : FlipkartSelector.GROUPED.card;
   }
 
   getSponsorSelector(): string {
@@ -33,7 +35,7 @@ export class FlipkartProvider extends BaseProvider {
       throw new Error(`Sorry we can't find image bounding for Flipkart`);
     }
 
-    return imageBounding.height + 28;
+    return Math.min(imageBounding.height, 938);
   }
 
   async getMaxWidth(mainElement: ElementHandle<Element>): Promise<number> {
@@ -45,7 +47,7 @@ export class FlipkartProvider extends BaseProvider {
   async isValidProduct(
     price: ElementHandle<Element> | null,
     discountPrice: ElementHandle<Element> | null,
-    priceDetails: IGroupedScreenShotRequest["priceDetails"]
+    priceDetails: IGroupedScreenShotRequest["priceDetails"],
   ): Promise<boolean> {
     // Current logic returns true, following existing implementation in utils.ts
     return true;
