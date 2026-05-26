@@ -16,11 +16,13 @@ export const PRODUCT_CARD_SELECTOR: CardSelectorType = {
  */
 export const PRODUCT_DETAILS: ProductDetailsType = {
   amazon: {
-    name: "h2 a.a-link-normal span.a-text-normal, h2.a-size-mini span.a-text-normal",
+    name: "h2 a.a-link-normal span.a-text-normal, h2.a-size-mini span.a-text-normal, h2.a-color-base.a-text-normal span",
     price: "span.a-price.a-text-price span.a-offscreen",
-    discountPrice: "span.a-price span.a-offscreen",
+    discountPrice:
+      "span.a-price span.a-offscreen, span[data-a-size='xl'].a-price span.a-offscreen",
     rating: "i.a-icon-star-small span, i.a-icon-star span, span.a-icon-alt",
-    reviews: "span.a-size-base.s-underline-text, div[data-cy='reviews-block'] a.a-link-normal",
+    reviews:
+      "span.a-size-base.s-underline-text, div[data-cy='reviews-block'] a.a-link-normal",
     brand: "h2.a-size-mini.s-line-clamp-1 span, .s-line-clamp-1",
     discountType: "span.a-badge-text",
     images: "img.s-image",
@@ -48,10 +50,10 @@ export const NEXT_BUTTON_SELECTOR: Record<E_COMMERCE, string> = {
 };
 
 export const FLIPKART_FETCH_BRAND_PRODUCTS = {
-  mainSection: "section._2OLUF3",
-  sectionTitle: ".fxf7w6.rgHxCQ",
-  selector: "div.QCKZip.hpLdC3",
-  input: "div.SDsN9S input.XPD6hh[placeholder='Search Brand']",
+  mainSection: "div.v360g_",
+  sectionTitle: "div._6odwB.UHMz4K",
+  selector: "label.BMOCJ3.StZidb",
+  input: "input[placeholder='Search Brand']",
 };
 
 export const AMAZON_FETCH_BRAND_PRODUCTS = {

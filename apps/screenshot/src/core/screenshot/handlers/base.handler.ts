@@ -1,16 +1,16 @@
 import puppeteer, { Browser, Page } from "puppeteer";
 import { Website, IGroupedScreenShotRequest } from "@/types";
-import { BaseProvider } from "../providers/base.provider";
+import { BaseProvider } from "../engines/base.provider";
 
 export abstract class BaseScreenshotHandler {
   protected provider!: BaseProvider;
 
-  protected async launchBrowser(): Promise<{ browser: Browser; page: Page }> {
+  protected async launchBrowser(
+    website: Website,
+  ): Promise<{ browser: Browser; page: Page }> {
     try {
       console.log("[Browser] Launching browser...");
       const browser = await puppeteer.launch({
-        executablePath:
-          "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe",
         headless: true,
       });
       const page = await browser.newPage();
@@ -20,11 +20,24 @@ export abstract class BaseScreenshotHandler {
       }
       console.log("[Browser] Browser launched successfully.");
 
-      await page.setViewport({
-        height: 910,
-        width: 1280,
-        deviceScaleFactor: 1,
-      });
+      if (website !== "FLIPKART") {
+        await page.setViewport({
+          height: 910,
+          width: 1280,
+          deviceScaleFactor: 1,
+        });
+      } else {
+        await page.setViewport({
+          width: 1920,
+          height: 1080,
+          deviceScaleFactor: 1,
+        });
+
+        await page.setExtraHTTPHeaders({
+          "user-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+        });
+      }
 
       return { browser, page };
     } catch (error) {
