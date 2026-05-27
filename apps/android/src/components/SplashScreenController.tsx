@@ -7,10 +7,10 @@ import { ToastAndroid } from 'react-native';
 import RootNavigator from './RootNavigator';
 
 
-SplashScreen.setOptions({
-    duration: 500,
-    fade: true,
-})
+// SplashScreen.setOptions({
+//     duration: 500,
+//     fade: true,
+// })
 
 export default function SplashScreenController() {
     const [loading, setLoading] = useState(true);

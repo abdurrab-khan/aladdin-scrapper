@@ -7,16 +7,16 @@ import React, { useCallback } from 'react';
 import { ActivityIndicator, BackHandler, FlatList, Keyboard, RefreshControl, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ProductCards from '../cards/ProductCards';
-import HomeHeader from '@/app/(tabs)/home/_components/HomeHeader';
+import HomeHeader from '@/app/(home)/_components/HomeHeader';
 import NotProductFound from '../ui/NotProductFound';
 import SelectAction from '../dialog/SelectAction';
 
 export default function ProductList() {
     const { app } = useAppContext();
-    const { 
-        searchQuery, 
-        currentCategory, 
-        productSelectionData, 
+    const {
+        searchQuery,
+        currentCategory,
+        productSelectionData,
         toggleProductSelection,
         clearSelection
     } = useProductStore();

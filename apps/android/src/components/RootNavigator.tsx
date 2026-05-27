@@ -44,7 +44,7 @@ export default function RootNavigator() {
         >
             {/* If session is there than redirect to home tab */}
             <Stack.Protected guard={session !== null}>
-                <Stack.Screen name="(tabs)" options={{
+                <Stack.Screen name="(home)" options={{
                     animation: 'fade',
                 }} />
                 <Stack.Screen name="(others)" options={{

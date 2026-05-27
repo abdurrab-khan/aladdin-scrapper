@@ -7,12 +7,10 @@ interface getAppDataProps {
   user_id: string;
 }
 
-export async function getAppData({
-  user_id,
-}: getAppDataProps): Promise<Application | null> {
+export async function getAppData(user_id: string): Promise<Application | null> {
   try {
     const appData = await supabase
-      .from("applications")
+      .from("apps")
       .select("*")
       .eq("user_id", user_id)
       .eq("is_active", true);

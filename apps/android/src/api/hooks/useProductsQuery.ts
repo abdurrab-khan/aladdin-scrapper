@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getProducts } from "@/api/services/product";
+import useAppContext from "@/context/AppContext";
 
 interface UseProductsQueryParams {
   appId?: string;
@@ -7,17 +8,20 @@ interface UseProductsQueryParams {
   query?: string | null;
 }
 
-export const useProductsQuery = ({ appId, category, query }: UseProductsQueryParams) => {
+export const useProductsQuery = ({
+  category: category = "All",
+  query: query = "",
+}: UseProductsQueryParams) => {
+  const { app } = useAppContext();
+
   return useInfiniteQuery({
-    queryKey: ["products", appId, category, query],
+    queryKey: ["products", category, query],
     queryFn: ({ pageParam = 0 }) => {
-      if (!appId) return [];
-      
       const start = pageParam * 10;
       const end = start + 9;
-      
+
       return getProducts({
-        appId,
+        appId: app?.id!,
         start,
         end,
         categoryValue: category === "All" ? null : category,
@@ -29,6 +33,6 @@ export const useProductsQuery = ({ appId, category, query }: UseProductsQueryPar
       return lastPage.length < 10 ? undefined : allPages.length;
     },
     initialPageParam: 0,
-    enabled: !!appId,
+    enabled: !!app?.id,
   });
 };

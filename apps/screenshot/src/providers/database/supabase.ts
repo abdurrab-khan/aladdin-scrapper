@@ -1,6 +1,11 @@
 import { readFileSync } from "node:fs";
 import { unlink } from "node:fs/promises";
 import { createClient } from "@supabase/supabase-js";
+import { configDotenv } from "dotenv";
+
+configDotenv({
+  path: "../../.env",
+});
 
 class SupabaseClient {
   public supabaseClient;

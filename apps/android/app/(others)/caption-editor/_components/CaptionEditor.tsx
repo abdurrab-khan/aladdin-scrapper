@@ -8,10 +8,10 @@ import * as z from 'zod';
 
 
 const platformImages: Record<SocialMedia, any> = {
-    telegram: require('../../assets/images/icons/social-media/telegram.png'),
-    instagram: require('../../assets/images/icons/social-media/instagram.png'),
-    facebook: require('../../assets/images/icons/social-media/facebook.png'),
-    x: require('../../assets/images/icons/social-media/x.png'),
+    telegram: require('../../../../assets/images/icons/social-media/telegram.png'),
+    instagram: require('../../../../assets/images/icons/social-media/instagram.png'),
+    facebook: require('../../../../assets/images/icons/social-media/facebook.png'),
+    x: require('../../../../assets/images/icons/social-media/x.png'),
 };
 
 interface CaptionDetailsControls {

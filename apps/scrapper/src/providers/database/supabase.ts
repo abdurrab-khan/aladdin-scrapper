@@ -1,9 +1,17 @@
 import { readFileSync } from "node:fs";
 import { unlink } from "node:fs/promises";
-import { createClient, SupabaseClient as SupabaseJSClient } from "@supabase/supabase-js";
+import {
+  createClient,
+  SupabaseClient as SupabaseJSClient,
+} from "@supabase/supabase-js";
 import { BaseDatabase } from "./interfaces.js";
 import { SupabaseTransformer } from "./utils/supabase-transformer.js";
 import type { Product } from "../../types/product.js";
+import { configDotenv } from "dotenv";
+
+configDotenv({
+  path: "../../.env",
+});
 
 export class SupabaseDatabase extends BaseDatabase {
   private supabaseClient: SupabaseJSClient;
@@ -48,7 +56,10 @@ export class SupabaseDatabase extends BaseDatabase {
       }
 
       if (Array.isArray(data)) {
-        return SupabaseTransformer.mergeScreenshotInfo(data as Product[], products);
+        return SupabaseTransformer.mergeScreenshotInfo(
+          data as Product[],
+          products,
+        );
       }
 
       console.warn(
@@ -67,7 +78,7 @@ export class SupabaseDatabase extends BaseDatabase {
     if (uniqueRows.length === 0) return;
 
     try {
-      // We use a simple insert here. If you want to avoid duplicates, 
+      // We use a simple insert here. If you want to avoid duplicates,
       // ensure you have a unique constraint on (product_id, image_type) in your database.
       const { error } = await this.supabaseClient
         .from("product_images")
@@ -75,7 +86,7 @@ export class SupabaseDatabase extends BaseDatabase {
 
       if (error) {
         // If the error is about a unique constraint violation, we can ignore it
-        // but if it's the 42P10 error (missing constraint for upsert), 
+        // but if it's the 42P10 error (missing constraint for upsert),
         // using .insert() avoids it entirely.
         if (error.code === "23505") {
           return;
@@ -96,15 +107,18 @@ export class SupabaseDatabase extends BaseDatabase {
       const bucketName = process.env["SUPABASE_BUCKET"] || "aladdin-deals";
       const uniqueImageKey = `product_images/${id}-${Date.now()}.png`;
 
-      const { data: uploadData, error: uploadError } = await this.supabaseClient.storage
-        .from(bucketName)
-        .upload(uniqueImageKey, imageBuffer, {
-          upsert: false,
-          contentType: "image/png",
-        });
+      const { data: uploadData, error: uploadError } =
+        await this.supabaseClient.storage
+          .from(bucketName)
+          .upload(uniqueImageKey, imageBuffer, {
+            upsert: false,
+            contentType: "image/png",
+          });
 
       if (uploadError || !uploadData?.fullPath) {
-        throw new Error(`Failed to upload card screenshot: ${uploadError?.message}`);
+        throw new Error(
+          `Failed to upload card screenshot: ${uploadError?.message}`,
+        );
       }
 
       const publicUrl = new URL(
@@ -122,17 +136,26 @@ export class SupabaseDatabase extends BaseDatabase {
         .eq("image_type", "Card");
 
       if (updateError) {
-        throw new Error(`Failed to update product_images with card URL: ${updateError.message}`);
+        throw new Error(
+          `Failed to update product_images with card URL: ${updateError.message}`,
+        );
       }
 
-      console.log(`[Supabase] Card screenshot uploaded and DB updated for product: ${id}`);
+      console.log(
+        `[Supabase] Card screenshot uploaded and DB updated for product: ${id}`,
+      );
 
       // Delete local file
-      await unlink(cardScreenshotPath).catch((err) => 
-        console.warn(`[Supabase] Failed to delete local card screenshot: ${err.message}`)
+      await unlink(cardScreenshotPath).catch((err) =>
+        console.warn(
+          `[Supabase] Failed to delete local card screenshot: ${err.message}`,
+        ),
       );
     } catch (error) {
-      console.error(`[Supabase] Error processing card screenshot for product ${id}:`, error);
+      console.error(
+        `[Supabase] Error processing card screenshot for product ${id}:`,
+        error,
+      );
     }
   }
 }
