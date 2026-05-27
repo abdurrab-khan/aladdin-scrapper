@@ -7,6 +7,7 @@ import {
 } from "./validations/scrapeValidation.js";
 import SupabaseDatabaseInstance from "../providers/database/supabase.js";
 import redis from "../providers/cache/redis.js";
+import { CATALOG_CONFIG } from "../config/catalog.js";
 
 const app: Express = express();
 
@@ -14,6 +15,21 @@ app.use(express.json());
 
 app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok" });
+});
+
+app.get("/v1/categories", (_req, res) => {
+  const categories = Object.keys(CATALOG_CONFIG).map((key) => {
+    const cat = CATALOG_CONFIG[key]!;
+    return {
+      id: key,
+      name: key,
+      subCategories: [
+        ...Object.keys(cat.subCategories),
+        ...Object.keys(cat.lowPriorityCategories || {}),
+      ],
+    };
+  });
+  res.status(200).json(categories);
 });
 
 app.post("/v1/scrape", async (req, res) => {
@@ -33,7 +49,9 @@ app.post("/v1/scrape", async (req, res) => {
   const validationResult = validateScrapeRequest(body);
 
   if (typeof validationResult === "string") {
-    return res.status(400).json({ status: "invalid_request", error: validationResult });
+    return res
+      .status(400)
+      .json({ status: "invalid_request", error: validationResult });
   }
 
   try {

@@ -1,5 +1,5 @@
-import Auth from '@/components/form/Auth';
-import { clearAuthStorage, supabase } from '@/lib/supabase';
+import Auth from './_components/Auth';
+import { clearAuthStorage, supabase } from '@/api/clients/supabase';
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, Text, ToastAndroid, View } from 'react-native';

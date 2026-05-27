@@ -16,13 +16,6 @@
       "resizeMode": "contain",
       "backgroundColor": "#011325"
     },
-    "ios": {
-      "supportsTablet": true,
-      "infoPlist": {
-        "NSPhotoLibraryUsageDescription": "This app needs access to photo library to save generated product images.",
-        "NSPhotoLibraryAddUsageDescription": "This app needs access to save images to your photo library."
-      }
-    },
     "android": {
       "versionCode": 2,
       "icon": "./assets/images/logo.png",
@@ -32,10 +25,6 @@
       "edgeToEdgeEnabled": true,
       "package": "com.abdurrab_khan.aladdinapp"
     },
-    // "web": {
-    //   "bundler": "metro",
-    //   "output": "static"
-    // },
     "plugins": [
       "expo-router",
       [
@@ -46,8 +35,7 @@
           "resizeMode": "contain",
           "backgroundColor": "#011325"
         }
-      ],
-      "expo-web-browser"
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -62,7 +50,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/a5dbf2d6-81e6-4bd3-a5b3-c152ea99861e"
+      "url": "https://u.dev/a5dbf2d6-81e6-4bd3-a5b3-c152ea99861e"
     }
   }
 }

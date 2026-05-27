@@ -1,11 +1,13 @@
 import SafeContainer from '@/components/layout/SafeContainer';
-import ListProducts from '@/components/ListProducts';
+import ProductList from '@/components/list/ProductList';
+import ScrapeFAB from './_components/ScrapeFAB';
 import React from 'react';
 
 export default function Index() {
   return (
     <SafeContainer>
-      <ListProducts />
+      <ProductList />
+      <ScrapeFAB />
     </SafeContainer>
   )
 }

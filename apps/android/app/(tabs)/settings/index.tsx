@@ -1,4 +1,4 @@
-import SignOut from '@/components/buttons/SignOut';
+import SignOut from './_components/SignOut';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 

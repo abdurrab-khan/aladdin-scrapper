@@ -1,11 +1,11 @@
-import ShareProduct from '@/components/buttons/ShareProduct';
-import CaptionEditorForm from '@/components/form/CaptionEditor';
+import ShareProduct from './_components/ShareProduct';
+import CaptionEditorForm from './_components/CaptionEditor';
 import SafeContainer from '@/components/layout/SafeContainer';
 import { LIGHT_GRADIENT_BUTTON } from '@/constants/Colors';
 import useAppContext from '@/context/AppContext';
 import useImageCompositor from '@/hooks/useImageCompositor';
 import { extractProductCaptionDetails, generateCaption, getRandomTags } from '@/lib/caption-helper';
-import { CaptionDetailsSchema } from '@/lib/zod';
+import { CaptionDetailsSchema } from '@/api/schemas/caption.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LinearGradientProps } from 'expo-linear-gradient';
 import { useLocalSearchParams } from 'expo-router';
