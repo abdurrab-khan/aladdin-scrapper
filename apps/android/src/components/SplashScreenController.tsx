@@ -7,10 +7,10 @@ import { ToastAndroid } from 'react-native';
 import RootNavigator from './RootNavigator';
 
 
-// SplashScreen.setOptions({
-//     duration: 500,
-//     fade: true,
-// })
+SplashScreen.setOptions({
+    duration: 500,
+    fade: true,
+});
 
 export default function SplashScreenController() {
     const [loading, setLoading] = useState(true);
@@ -22,10 +22,10 @@ export default function SplashScreenController() {
                 const { data: { session }, error } = await supabase.auth.getSession();
 
                 if (!error && session?.user) {
-                    addSession(session?.user);
+                    addSession(session.user);
 
                     // Let's find app data and add them into the state
-                    const appData = await getAppData({ user_id: session.user.id });
+                    const appData = await getAppData(session.user.id);
 
                     if (appData) {
                         addAppData(appData);

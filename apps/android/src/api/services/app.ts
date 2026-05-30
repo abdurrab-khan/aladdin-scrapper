@@ -28,7 +28,15 @@ export async function getAppData(user_id: string): Promise<Application | null> {
       return null;
     }
 
-    return appData.data[0] as Application;
+    const data = appData.data[0];
+
+    return {
+      id: data?.app_id,
+      name: data?.app_name,
+      logo: data?.app_logo,
+      is_active: data?.is_active,
+      created_at: data?.created_at,
+    } as Application;
   } catch (err) {
     const errMessage =
       err instanceof PostgrestError

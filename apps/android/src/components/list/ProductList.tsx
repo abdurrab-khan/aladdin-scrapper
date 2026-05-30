@@ -1,18 +1,20 @@
-import useAppContext from '@/context/AppContext';
-import { useProductsQuery } from '@/api/hooks/useProductsQuery';
-import { useProductStore } from '@/store/useProductStore';
-import { Product } from '@/types/product';
-import { useFocusEffect } from 'expo-router';
+
+
 import React, { useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { ActivityIndicator, BackHandler, FlatList, Keyboard, RefreshControl, StyleSheet } from 'react-native';
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 import ProductCards from '../cards/ProductCards';
-import HomeHeader from '@/app/(home)/_components/HomeHeader';
-import NotProductFound from '../ui/NotProductFound';
 import SelectAction from '../dialog/SelectAction';
+import NotProductFound from '../ui/NotProductFound';
+import HomeHeader from '@/app/(home)/_components/HomeHeader';
+
+import { Product } from '@/types/product';
+
+import { useProductStore } from '@/store/useProductStore';
+import { useProductsQuery } from '@/api/hooks/useProductsQuery';
 
 export default function ProductList() {
-    const { app } = useAppContext();
     const {
         searchQuery,
         currentCategory,
@@ -30,7 +32,6 @@ export default function ProductList() {
         refetch,
         isRefetching
     } = useProductsQuery({
-        appId: app?.id,
         category: currentCategory,
         query: searchQuery
     });
@@ -77,7 +78,7 @@ export default function ProductList() {
     ), [productSelectionData, toggleProductSelection]);
 
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
+        <React.Fragment>
             <FlatList
                 data={products}
                 renderItem={renderItem}
@@ -116,7 +117,7 @@ export default function ProductList() {
             {productSelectionData.size > 0 && (
                 <SelectAction />
             )}
-        </GestureHandlerRootView>
+        </React.Fragment>
     )
 }
 

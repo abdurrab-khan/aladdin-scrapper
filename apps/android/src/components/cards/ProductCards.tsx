@@ -3,9 +3,8 @@ import { convertNumberToString } from '@/utils/utils';
 import { Product, ProductImage, Website } from '@/types/product';
 import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Image, ImageSource, Linking, Pressable, StyleSheet, Text, ToastAndroid, TouchableOpacity, useWindowDimensions, Vibration, View } from 'react-native';
-import Swipeable from "react-native-gesture-handler/Swipeable";
 import ImageView from "react-native-image-viewing";
 import DeleteProduct from '../buttons/DeleteProduct';
 import AddAffiliate from '../dialog/AddAffiliate';
@@ -39,8 +38,6 @@ const Badge = ({ text, color = ["#ff5f6d", "#d7263d"], textColor = "white" }: { 
 function ProductCards({ product, hasSelecting, hasSelected, onSelect }: ProductCardsProps) {
     const [showAffiliateDialog, setShowAffiliateDialog] = useState<boolean>(false);
     const [isImageViewOpen, setIsImageViewOpen] = useState<boolean>(false);
-
-    const swipeableRef = React.useRef<Swipeable>(null);
 
     const { width } = useWindowDimensions();
 
@@ -132,163 +129,148 @@ function ProductCards({ product, hasSelecting, hasSelected, onSelect }: ProductC
         )
     }, [product.product_id, images, hasSelecting])
 
-    useEffect(() => {
-        if (hasSelecting && swipeableRef.current) {
-            swipeableRef.current.close();
-        }
-    }, [hasSelecting]);
-
     return (
-        <Swipeable
-            ref={swipeableRef}
-            friction={2}
-            rightThreshold={50}
-            leftThreshold={50}
-            renderLeftActions={renderActions}
-            renderRightActions={renderActions}
+        <TouchableOpacity
+            style={[cardStyles.cardContainer, { width: width - 24, }]}
+            activeOpacity={0.8}
         >
-            <TouchableOpacity
-                style={[cardStyles.cardContainer, { width: width - 24, }]}
-                activeOpacity={0.8}
-            >
-                {/* Image View */}
-                <ImageView
-                    imageIndex={0}
-                    images={productImages}
-                    animationType='slide'
-                    visible={isImageViewOpen}
-                    presentationStyle='formSheet'
-                    keyExtractor={(_, index) => `product-image-${product.product_id}-${index}`}
-                    onRequestClose={() => setIsImageViewOpen(false)}
-                />
+            {/* Image View */}
+            <ImageView
+                imageIndex={0}
+                images={productImages}
+                animationType='slide'
+                visible={isImageViewOpen}
+                presentationStyle='formSheet'
+                keyExtractor={(_, index) => `product-image-${product.product_id}-${index}`}
+                onRequestClose={() => setIsImageViewOpen(false)}
+            />
 
-                {/* Show overlay if selected or selecting happened */}
-                {
-                    (hasSelecting) && (
-                        <Pressable
-                            style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                backgroundColor: hasSelected ? "rgba(0, 128, 0, 0.3)" : "rgba(0, 0, 0, 0.6)",
-                                zIndex: 1,
-                                borderRadius: 8,
-                            }}
-                            onPress={() => onSelect(product.product_id)}
-                        />
-                    )
-                }
-
-                {/* Dialog to add affiliate link */}
-                {
-                    showAffiliateDialog && (
-                        <AddAffiliate
-                            productId={product.product_id}
-                            visible={showAffiliateDialog}
-                            setVisible={setShowAffiliateDialog}
-                        />
-                    )
-                }
-
-                {/* Product Image  */}
-                <Pressable
-                    style={cardStyles.imageContainer}
-                    onPress={() => setIsImageViewOpen(true)}
-                    onLongPress={handleSelectProduct}
-                >
-                    <Image
-                        source={{
-                            uri: cardImage,
-                            cache: "force-cache",
+            {/* Show overlay if selected or selecting happened */}
+            {
+                (hasSelecting) && (
+                    <Pressable
+                        style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: hasSelected ? "rgba(0, 128, 0, 0.3)" : "rgba(0, 0, 0, 0.6)",
+                            zIndex: 1,
+                            borderRadius: 8,
                         }}
-                        style={cardStyles.productImage}
-                        resizeMode='cover'
-                        progressiveRenderingEnabled
+                        onPress={() => onSelect(product.product_id)}
                     />
-                </Pressable>
+                )
+            }
 
-                {/* Product Info */}
-                <Pressable
-                    style={cardStyles.descriptionContainerMain}
-                    onPress={handleVisitToProduct}
-                    onLongPress={handleSelectProduct}
-                >
-                    {/* Product description */}
-                    <View>
-                        {/* Upper Info */}
-                        <View style={cardStyles.upperInfo}>
-                            {/* Platform Badge */}
-                            <Badge text={website.website_name} color={["#ffb347", "#ff6b00"]} />
+            {/* Dialog to add affiliate link */}
+            {
+                showAffiliateDialog && (
+                    <AddAffiliate
+                        productId={product.product_id}
+                        visible={showAffiliateDialog}
+                        setVisible={setShowAffiliateDialog}
+                    />
+                )
+            }
 
-                            {/* Grouped Badge */}
-                            <Badge text={product.is_grouped ? "Grouped" : null} color={["#a8d8ff", "#3da3ff"]} />
-                        </View>
+            {/* Product Image  */}
+            <Pressable
+                style={cardStyles.imageContainer}
+                onPress={() => setIsImageViewOpen(true)}
+                onLongPress={handleSelectProduct}
+            >
+                <Image
+                    source={{
+                        uri: cardImage,
+                        cache: "force-cache",
+                    }}
+                    style={cardStyles.productImage}
+                    resizeMode='cover'
+                    progressiveRenderingEnabled
+                />
+            </Pressable>
 
-                        {/* Brand Name */}
-                        <View style={{ marginTop: 4 }}>
-                            <Text style={[commonStyles.text, { fontSize: 12, fontWeight: "500" }]}>
-                                {product.brand}
-                            </Text>
-                        </View>
+            {/* Product Info */}
+            <Pressable
+                style={cardStyles.descriptionContainerMain}
+                onPress={handleVisitToProduct}
+                onLongPress={handleSelectProduct}
+            >
+                {/* Product description */}
+                <View>
+                    {/* Upper Info */}
+                    <View style={cardStyles.upperInfo}>
+                        {/* Platform Badge */}
+                        <Badge text={website.website_name} color={["#ffb347", "#ff6b00"]} />
 
-                        {/* Product name */}
-                        <Text style={cardStyles.productTitle}>
-                            {
-                                product.name.length > 54
-                                    ? `${product.name.slice(0, 54)}...`
-                                    : product.name
-                            }
-                        </Text>
-
-                        {/* Product rating */}
-                        <View style={[commonStyles.spaceBetween]}>
-                            <ReviewStar rating={product.rating ?? 0} size={16} />
-
-                            <Text style={[commonStyles.text]}>
-                                {convertNumberToString(product.reviews ?? 0)}
-                                {" "}
-                                reviews
-                            </Text>
-                        </View>
-
-                        {/* Product prices */}
-                        <View style={[commonStyles.spaceBetween]}>
-                            <Text style={[commonStyles.text, { fontSize: 18 }]}>
-                                ₹ {product.discount_price}
-                            </Text>
-
-                            <Text style={[commonStyles.text, commonStyles.price, { fontSize: 18 }]}>
-                                ₹ {product.price}
-                            </Text>
-                        </View>
+                        {/* Grouped Badge */}
+                        <Badge text={product.is_grouped ? "Grouped" : null} color={["#a8d8ff", "#3da3ff"]} />
                     </View>
 
-                    {/* Share Button */}
-                    <TouchableOpacity
-                        activeOpacity={0.7}
-                        delayLongPress={100}
-                        onLongPress={handleBtnLongPress}
-                        onPress={handlePageRedirect}
+                    {/* Brand Name */}
+                    <View style={{ marginTop: 4 }}>
+                        <Text style={[commonStyles.text, { fontSize: 12, fontWeight: "500" }]}>
+                            {product.brand}
+                        </Text>
+                    </View>
+
+                    {/* Product name */}
+                    <Text style={cardStyles.productTitle}>
+                        {
+                            product.name.length > 54
+                                ? `${product.name.slice(0, 54)}...`
+                                : product.name
+                        }
+                    </Text>
+
+                    {/* Product rating */}
+                    <View style={[commonStyles.spaceBetween]}>
+                        <ReviewStar rating={product.rating ?? 0} size={16} />
+
+                        <Text style={[commonStyles.text]}>
+                            {convertNumberToString(product.reviews ?? 0)}
+                            {" "}
+                            reviews
+                        </Text>
+                    </View>
+
+                    {/* Product prices */}
+                    <View style={[commonStyles.spaceBetween]}>
+                        <Text style={[commonStyles.text, { fontSize: 18 }]}>
+                            ₹ {product.discount_price}
+                        </Text>
+
+                        <Text style={[commonStyles.text, commonStyles.price, { fontSize: 18 }]}>
+                            ₹ {product.price}
+                        </Text>
+                    </View>
+                </View>
+
+                {/* Share Button */}
+                <TouchableOpacity
+                    activeOpacity={0.7}
+                    delayLongPress={100}
+                    onLongPress={handleBtnLongPress}
+                    onPress={handlePageRedirect}
+                >
+                    <LinearGradient
+                        colors={shareGradientColors}
+                        start={{ x: 1, y: 0 }}
+                        end={{ x: 0, y: 0 }}
+                        style={commonStyles.btnStyle}
                     >
-                        <LinearGradient
-                            colors={shareGradientColors}
-                            start={{ x: 1, y: 0 }}
-                            end={{ x: 0, y: 0 }}
-                            style={commonStyles.btnStyle}
-                        >
-                            {/* Button title container */}
-                            {
-                                <View style={commonStyles.btnContent}>
-                                    <IconSymbol name="share-social-outline" color={"white"} size={18} />
-                                </View>
-                            }
-                        </LinearGradient>
-                    </TouchableOpacity>
-                </Pressable>
-            </TouchableOpacity >
-        </Swipeable>
+                        {/* Button title container */}
+                        {
+                            <View style={commonStyles.btnContent}>
+                                <IconSymbol name="share-social-outline" color={"white"} size={18} />
+                            </View>
+                        }
+                    </LinearGradient>
+                </TouchableOpacity>
+            </Pressable>
+        </TouchableOpacity >
 
     )
 }

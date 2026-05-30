@@ -31,7 +31,7 @@ export const getProducts = async ({
 }: getProductsProps): Promise<Product[]> => {
   try {
     let queryBuilder = supabase
-      .from("products_info") // Changed from fetch_products_v2 to products_info based on deleteProducts
+      .from("product_info")
       .select("*")
       .eq("app_id", appId);
 
@@ -59,7 +59,7 @@ export const getProducts = async ({
       });
     }
 
-    if (products?.data?.length === 0) {
+    if (!products.data || products.data.length === 0) {
       return [];
     }
 

@@ -3,7 +3,6 @@ import { getProducts } from "@/api/services/product";
 import useAppContext from "@/context/AppContext";
 
 interface UseProductsQueryParams {
-  appId?: string;
   category?: string | null;
   query?: string | null;
 }
