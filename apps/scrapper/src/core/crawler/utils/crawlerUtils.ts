@@ -5,10 +5,7 @@ import { mkdir } from "node:fs/promises";
 import { cleanData, hasRequiredDetails } from "./helper.js";
 import { randomDelay, isValidProductDeal } from "./utils.js";
 
-import {
-  PRODUCT_DETAILS,
-  PRODUCT_CARD_SELECTOR,
-} from "../css_selectors.js";
+import { PRODUCT_DETAILS, PRODUCT_CARD_SELECTOR } from "../css_selectors.js";
 import type {
   E_COMMERCE,
   SubCategory,
@@ -36,7 +33,7 @@ class CrawlerUtils {
     productPrivateInfo: Record<
       "userId" | "platformId" | "associatedAppId",
       string
-    >
+    >,
   ) {
     this.website = website;
     this.subCategory = subCategory;
@@ -49,7 +46,7 @@ class CrawlerUtils {
     url: string,
     showRandomDelay = true,
     waitSelector: string = PRODUCT_CARD_SELECTOR[this.website],
-    timeout = 60000
+    timeout = 60000,
   ): Promise<void> {
     try {
       const nRes = await page.goto(url, {
@@ -58,18 +55,21 @@ class CrawlerUtils {
       });
 
       if (nRes === null || !nRes.ok()) {
-        throw new Error(`Navigation to ${url} failed with status ${nRes?.status()}`);
+        throw new Error(
+          `Navigation to ${url} failed with status ${nRes?.status()}`,
+        );
       }
 
       await this.waitForPageLoad(page, waitSelector, showRandomDelay);
     } catch (error) {
-      const errMsg = (error as Error).message ?? "An error occurred during navigation";
+      const errMsg =
+        (error as Error).message ?? "An error occurred during navigation";
       throw new Error("Navigation error: " + errMsg);
     }
   }
 
   public async extractProductData(
-    product: ElementHandle<SVGElement | HTMLElement>
+    product: ElementHandle<SVGElement | HTMLElement>,
   ): Promise<ProductSelectorValue | null> {
     if (!product) return null;
 
@@ -86,21 +86,24 @@ class CrawlerUtils {
             const value = await cleanData(typedKey, element, this.website);
 
             if (!value && !hasRequiredDetails(typedKey, value)) {
-              // For Amazon, if price is missing but discountPrice is present, 
+              // For Amazon, if price is missing but discountPrice is present,
               // we can treat it as no discount (price = discountPrice)
               if (this.website === "amazon" && typedKey === "price") {
-                 return [typedKey, null];
+                return [typedKey, null];
               }
               throw new Error(`Missing required detail for key: ${typedKey}`);
             }
 
             return [typedKey, value];
-          })
-        )
+          }),
+        ),
       ) as ProductSelectorValue;
 
       // Handle missing original price
-      if (productDetails.price === null && productDetails.discountPrice !== null) {
+      if (
+        productDetails.price === null &&
+        productDetails.discountPrice !== null
+      ) {
         productDetails.price = productDetails.discountPrice;
       }
 
@@ -112,7 +115,7 @@ class CrawlerUtils {
         productDetails.discountPrice,
         this.subCategoryDetails.minPrice,
         this.subCategoryDetails.maxPrice,
-        this.subCategoryDetails.maxDiscount
+        this.subCategoryDetails.maxDiscount,
       );
 
       if (!hasValidDetails) {
@@ -125,7 +128,10 @@ class CrawlerUtils {
 
       return hasValidDetails ? productDetails : null;
     } catch (error) {
-      console.log(`Error extracting product data:`, (error as Error).message ?? " error");
+      console.log(
+        `Error extracting product data:`,
+        (error as Error).message ?? " error",
+      );
       return null;
     }
   }
@@ -134,10 +140,12 @@ class CrawlerUtils {
     page: Page,
     selector?: string,
     showAdditionalDelay = true,
-    timeout = 60000
+    timeout = 60000,
   ): Promise<void> {
     try {
-      await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
+      await page
+        .waitForLoadState("networkidle", { timeout: 30000 })
+        .catch(() => {});
       await page.waitForLoadState("load", { timeout });
 
       if (selector) {
@@ -149,9 +157,11 @@ class CrawlerUtils {
       }
 
       // If there's a spinner, wait for it to disappear
-      const spinnerSelector = "div.s-spinner, .s-loading-spinner"; 
+      const spinnerSelector = "div.s-spinner, .s-loading-spinner";
       if (await page.$(spinnerSelector)) {
-        await page.waitForSelector(spinnerSelector, { state: "hidden", timeout: 10000 }).catch(() => {});
+        await page
+          .waitForSelector(spinnerSelector, { state: "hidden", timeout: 10000 })
+          .catch(() => {});
       }
 
       if (showAdditionalDelay) {
@@ -164,7 +174,7 @@ class CrawlerUtils {
 
   public async getBrandProducts(
     _page: Page,
-    products: ElementHandle<SVGElement | HTMLElement>[]
+    products: ElementHandle<SVGElement | HTMLElement>[],
   ): Promise<Product | null> {
     if (!products || products.length === 0) return null;
 
@@ -176,19 +186,31 @@ class CrawlerUtils {
         if (details) return details;
         if (i < 3) throw new Error(`No valid products found for this brand`);
         return null;
-      })
+      }),
     )
-    .then((results) => results.filter((val): val is ProductSelectorValue => val !== null))
-    .catch((error) => {
-      console.error("Error extracting product details for brand:", (error as Error).message ?? " error");
-      return [];
-    });
+      .then((results) =>
+        results.filter((val): val is ProductSelectorValue => val !== null),
+      )
+      .catch((error) => {
+        console.error(
+          "Error extracting product details for brand:",
+          (error as Error).message ?? " error",
+        );
+        return [];
+      });
 
     if (productDetails.length >= 3) {
-      productDetails.sort((a, b) => (a.discountPrice || a.price || Infinity) - (b.discountPrice || b.price || Infinity));
+      productDetails.sort(
+        (a, b) =>
+          (a.discountPrice || a.price || Infinity) -
+          (b.discountPrice || b.price || Infinity),
+      );
 
       // Take screenshot of the first product card as the "group" representation
-      const cardScreenshotPath = await this.takeCardScreenshot(products[0]!, productId);
+      const cardScreenshotPath = await this.takeCardScreenshot(
+        products[0]!,
+        productId,
+      );
 
       return {
         id: productId,
@@ -200,8 +222,16 @@ class CrawlerUtils {
           startPrice: productDetails[0]?.price || 0,
           discountStartPrice: productDetails[0]?.discountPrice || 0,
           productCount: productDetails.length,
-          avgRating: parseFloat((productDetails.reduce((sum, p) => sum + (p.rating || 0), 0) / productDetails.filter((p) => p.rating).length).toFixed(2)) || undefined,
-          totalReviews: productDetails.reduce((sum, p) => sum + (p.reviews || 0), 0) || undefined,
+          avgRating:
+            parseFloat(
+              (
+                productDetails.reduce((sum, p) => sum + (p.rating || 0), 0) /
+                productDetails.filter((p) => p.rating).length
+              ).toFixed(2),
+            ) || undefined,
+          totalReviews:
+            productDetails.reduce((sum, p) => sum + (p.reviews || 0), 0) ||
+            undefined,
         } as GroupProductDetails,
         images: {
           card: productDetails[0]?.images || "",
@@ -230,21 +260,30 @@ class CrawlerUtils {
 
   public async takeCardScreenshot(
     element: ElementHandle<SVGElement | HTMLElement>,
-    productId: string
+    productId: string,
   ): Promise<string | null> {
     try {
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = nodePath.dirname(__filename);
-      const productImagesDir = nodePath.resolve(__dirname, "../../../../../product_images");
-      
+      const productImagesDir = nodePath.resolve(
+        __dirname,
+        "../../../../../product_images",
+      );
+
       await mkdir(productImagesDir, { recursive: true });
-      
-      const path = nodePath.join(productImagesDir, `card_${productId}_image.png`);
-      
+
+      const path = nodePath.join(
+        productImagesDir,
+        `card_${productId}_image.png`,
+      );
+
       await element.screenshot({ path, type: "png" });
       return path;
     } catch (error) {
-      console.warn(`Failed to take card screenshot for product ${productId}:`, error);
+      console.warn(
+        `Failed to take card screenshot for product ${productId}:`,
+        error,
+      );
       return null;
     }
   }
