@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/Colors'
+import { Colors } from '../../constants/Colors'
 import React from 'react'
 import { Image, StyleSheet, Text, View } from 'react-native'
 
@@ -12,7 +12,7 @@ export default function NotProductFound({ message }: NotProductFoundProps) {
             {/* Icon */}
             <View style={styles.imageContainer}>
                 <Image
-                    source={require('@/assets/images/not-found.png')}
+                    source={require('../../../assets/images/not-found.png')}
                     style={styles.image}
                 />
             </View>

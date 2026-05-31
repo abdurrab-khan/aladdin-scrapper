@@ -70,7 +70,7 @@ const DeleteProduct = ({
         onPress={() => setVisible(true)}
       >
         <LinearGradient
-          colors={gradientColor}
+          colors={gradientColor && gradientColor.length > 0 ? gradientColor : ["#ff5f6d", "#d7263d"]}
           start={{ x: 1, y: 0 }}
           end={{ x: 0, y: 0 }}
           style={btnStyle}

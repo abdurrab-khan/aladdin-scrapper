@@ -118,7 +118,7 @@ export default function ScrapeDialog({ visible, setVisible }: ScrapeDialogProps)
                     disabled={isScraping || selectedWebsites.length === 0}
                 >
                     <LinearGradient
-                        colors={LIGHT_GRADIENT_BUTTON}
+                        colors={LIGHT_GRADIENT_BUTTON && LIGHT_GRADIENT_BUTTON.length > 0 ? LIGHT_GRADIENT_BUTTON : ['#1d4b88', '#2b6da0']}
                         style={styles.gradient}
                     >
                         {isScraping ? (

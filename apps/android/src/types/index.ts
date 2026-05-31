@@ -13,10 +13,13 @@ export interface Application {
 // AFFILIATE -- INTERFACE
 
 export interface Affiliate {
-  id: string;
-  url: string;
+  affiliate_id: string;
   affiliate_url: string;
+  is_default: boolean;
   created_at: string;
+  website_id: string;
+  product_id: string;
+  app_id: string;
 }
 
 // PLATFORM -- INTERFACE
@@ -29,12 +32,12 @@ export interface PlateForm {
 
 // CAPTION DETAILS -- INTERFACE
 export interface CaptionDetails {
-  id: string[];
+  ids: string[];
   caption: string;
   platforms: SocialMedia[];
-  tags: string;
-  productUrl: string | string[];
-  productImage: Uint8Array;
+  tags?: string;
+  productUrls: string[];
+  productImage: Uint8Array | string;
 }
 
 export type ProductSelectionData = Map<

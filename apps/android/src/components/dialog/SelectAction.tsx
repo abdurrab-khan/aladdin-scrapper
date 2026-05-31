@@ -92,7 +92,7 @@ const SelectAction: React.FC = () => {
             <View style={selectActionStyle.mainContainer}>
                 <View style={selectActionStyle.selectionActions}>
                     <Text style={selectActionStyle.selectionText}>
-                        ✅ {productSelectionData.size} items selected
+                        {productSelectionData.size} items selected
                     </Text>
 
                     <View style={selectActionStyle.buttonContainer}>
@@ -174,9 +174,9 @@ const selectActionStyle = StyleSheet.create({
         color: "white"
     },
     selectionText: {
-        color: "white",
-        fontSize: 18,
-        fontWeight: 500
+        fontSize: 16,
+        fontWeight: 600,
+        color: "#53859c",
     },
     buttonContainer: {
         gap: 8,

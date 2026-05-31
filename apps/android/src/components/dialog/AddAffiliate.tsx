@@ -1,18 +1,26 @@
-import { Colors } from '@/constants/Colors';
-import { affiliateProvider } from '@/constants/const';
-import useAppContext from '@/context/AppContext';
-import { addAffiliateLink } from '@/api/services/affiliate';
-import { updateProduct } from '@/api/services/product';
-import { useProductStore } from '@/store/useProductStore';
+import { Colors } from '../../constants/Colors';
+import { affiliateProvider } from '../../constants/const';
+import { addAffiliateLink, deleteAffiliateLink, getAffiliateLinks, setDefaultAffiliateLink } from '../../api/services/affiliate';
+import { updateProduct } from '../../api/services/product';
+import { useProductStore } from '../../store/useProductStore';
 import * as Clipboard from 'expo-clipboard';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Linking, Platform, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Linking, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View, FlatList, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { IconSymbol } from '../ui/IconSymbol';
 import ModalContainer from './ModalContainer';
+import toast from '../../utils/toast';
+import { getWebsiteName } from '../../utils/utils';
+import useAppContext from '../../context/AppContext';
+import { useQuery } from '@tanstack/react-query';
+import queryClient from '../../api/clients/queryClient';
+import { Affiliate } from '../../types';
 
 interface AddAffiliateProps {
     visible: boolean,
-    productId: string | string[],
+    productId: string,
+    productURL: string,
+    isGrouped: boolean,
+    platformId: string,
     setVisible: React.Dispatch<React.SetStateAction<boolean>>
 }
 
@@ -52,269 +60,399 @@ const Input: React.FC<InputProps> = ({ placeHolder, value, ...props }) => {
 export default function AddAffiliate({
     visible,
     productId,
+    productURL,
+    isGrouped,
+    platformId,
     setVisible,
 }: AddAffiliateProps) {
     const { setProductSelectionData } = useProductStore();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [affiliateUrl, setAffiliateUrl] = useState<string>("");
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { app } = useAppContext();
 
-    const { updateProduct: updateContextProduct, getProductById } = useAppContext();
+    const { data: links = [], isLoading: isLoadingLinks, refetch: refetchLinks } = useQuery({
+        queryKey: ['affiliateLinks', productId],
+        queryFn: () => getAffiliateLinks(productId),
+        enabled: visible && !!productId
+    });
 
+    const platformName = getWebsiteName(productURL);
     const affiliateInputRef = React.useRef<TextInput>(null);
-
-    const productSendDetails = useMemo(() => {
-        const id = Array.isArray(productId) ? productId[0] : productId;
-        return getProductById(id);
-    }, [getProductById, productId]);
-
-    // Cross-platform toast function
-    const showToast = (message: string) => {
-        if (Platform.OS === 'android') {
-            ToastAndroid.show(message, ToastAndroid.SHORT);
-        } else {
-            Alert.alert('Info', message);
-        }
-    };
 
     // Function to handle affiliate link submission
     const handleAffiliateLinkSubmit = async () => {
-        const pId = Array.isArray(productId) ? productId[0] : productId;
-        const product = getProductById(pId); // Get product details
-
-        if (!product) {
-            showToast('Product not found.');
-            return;
-        }
-
-        // Basic validation
-        if (!affiliateUrl.trim() || !product.url.trim()) {
-            showToast('Please enter a valid affiliate link and product URL.');
+        if (!affiliateUrl.trim()) {
+            toast('Please enter a valid affiliate link.');
             return;
         }
 
         try {
             setIsLoading(true)
 
-            if (product.isGrouped) {
-                const updateGroupRes = await updateProduct(pId, { "groupAffiliateUrl": affiliateUrl });
-
+            if (isGrouped) {
+                const updateGroupRes = await updateProduct(productId, { "groupAffiliateUrl": affiliateUrl });
                 if (!updateGroupRes) {
-                    showToast('Failed to update grouped product with affiliate link.');
+                    toast('Failed to update grouped product with affiliate link.');
                     return;
                 }
-
-                // Update the product in the context
-                updateContextProduct(pId, { "groupAffiliateUrl": affiliateUrl });
             } else {
-                // Add affiliate link into the database
-                const response = await addAffiliateLink(product.url, affiliateUrl, product.platformInfo.id);
-
-                if (response.status === 201 && response.data) {
-                    const updateProductRes = await updateProduct(pId, { "affiliateLinkId": response.data[0].id });
-
-                    if (!updateProductRes) {
-                        showToast('Failed to update product with affiliate link.');
-                        return;
-                    }
-
-                    // Update the product in the context
-                    updateContextProduct(pId, { "affiliateInfo": response.data[0] });
+                const response = await addAffiliateLink(app?.id!, productId, platformId, affiliateUrl);
+                if (!response) {
+                    toast('Failed to add affiliate link.');
+                    return;
                 }
+                setAffiliateUrl("");
+                refetchLinks();
             }
 
-            // Update store selection data hasAffiliateLink property
             setProductSelectionData(prev => {
                 const updated = new Map(prev);
-                const prevData = updated.get(pId);
-
-                // Update hasAffiliateLink to true
+                const prevData = updated.get(productId);
                 if (prevData) {
-                    updated.set(pId, { ...prevData, hasAffiliateLink: true });
+                    updated.set(productId, { ...prevData, hasAffiliateLink: true });
                 }
-
                 return updated;
             });
+
+            queryClient.setQueryData(['products'], (oldData: any) => {
+                if (!oldData) return oldData;
+                return oldData.map((p: any) => p.product_id === productId ? { ...p, has_affiliate: true } : p);
+            });
+
         } catch (e) {
-            showToast((e as Error).message);
+            toast((e as Error).message, ToastAndroid.LONG);
         } finally {
             setIsLoading(false);
-            setVisible(false);
         }
     }
 
-    // Function to get affiliate link
-    const getAffiliateLink = async () => {
-        if (!productSendDetails) return;
-        const platformName = productSendDetails.platformInfo.name;
-        const productUrl = productSendDetails.url;
+    const handleDeleteLink = async (affiliateId: string) => {
+        Alert.alert(
+            "Delete Link",
+            "Are you sure you want to delete this affiliate link?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            setIsLoading(true);
+                            await deleteAffiliateLink(affiliateId);
+                            const updatedLinks = await refetchLinks();
 
+                            if (!updatedLinks.data || updatedLinks.data.length === 0) {
+                                setProductSelectionData(prev => {
+                                    const updated = new Map(prev);
+                                    const prevData = updated.get(productId);
+                                    if (prevData) {
+                                        updated.set(productId, { ...prevData, hasAffiliateLink: false });
+                                    }
+                                    return updated;
+                                });
+
+                                queryClient.setQueryData(['products'], (oldData: any) => {
+                                    if (!oldData) return oldData;
+                                    return oldData.map((p: any) => p.product_id === productId ? { ...p, has_affiliate: false } : p);
+                                });
+                            }
+                            toast("Link deleted successfully");
+                        } catch (e) {
+                            toast((e as Error).message);
+                        } finally {
+                            setIsLoading(false);
+                        }
+                    }
+                }
+            ]
+        );
+    }
+
+    const handleSetDefault = async (affiliateId: string) => {
+        try {
+            setIsLoading(true);
+            await setDefaultAffiliateLink(affiliateId, productId);
+            await refetchLinks();
+            toast("Default link updated");
+        } catch (e) {
+            toast((e as Error).message);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    const getAffiliateLink = async () => {
         let affiliateUrl: string = "";
         if (platformName === 'Amazon') {
-            affiliateUrl = productUrl
+            affiliateUrl = productURL
         } else {
             affiliateUrl = affiliateProvider[platformName.toLowerCase()]
         }
 
-        const canOpen = await Linking.canOpenURL(affiliateUrl);
+        if (!affiliateUrl) {
+            toast(`No affiliate provider configured for ${platformName}`);
+            return;
+        }
 
+        const canOpen = await Linking.canOpenURL(affiliateUrl);
         if (canOpen) {
-            Linking.openURL(affiliateUrl)
-                .catch(() => showToast(`Failed to open ${platformName} link.`));
+            Linking.openURL(affiliateUrl).catch(() => toast(`Failed to open link.`));
         } else {
-            showToast(`Invalid ${platformName} link.`);
+            toast(`Invalid link.`);
         }
     }
 
-    // Function to copy url into the clipboard
     const handleCopyUrl = async () => {
-        if (!productSendDetails) return;
         try {
-            await Clipboard.setStringAsync(productSendDetails.url);
-            showToast('Product URL copied to clipboard!');
+            await Clipboard.setStringAsync(productURL);
+            toast('Product URL copied!');
         } catch {
-            showToast('Failed to copy URL');
+            toast('Failed to copy');
         }
     }
 
     useEffect(() => {
         if (!visible) return;
-
         if (affiliateInputRef.current) {
             affiliateInputRef.current.focus();
         }
     }, [visible]);
 
-    if (productSendDetails == null) return null;
+    const renderLinkItem = ({ item }: { item: Affiliate }) => (
+        <View style={styles.linkItem}>
+            <View style={{ flex: 1, marginRight: 8 }}>
+                <Text style={styles.linkUrl} numberOfLines={1} ellipsizeMode="middle">{item.affiliate_url}</Text>
+                <Text style={styles.linkDate}>{new Date(item.created_at).toLocaleDateString()} • {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+            </View>
+            <View style={styles.linkActions}>
+                <TouchableOpacity onPress={() => handleSetDefault(item.affiliate_id)} style={styles.actionIconButton}>
+                    <IconSymbol
+                        name={item.is_default ? 'checkmark-circle' : 'ellipse-outline'}
+                        size={20}
+                        color={item.is_default ? '#4CAF50' : Colors.dark.text}
+                    />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDeleteLink(item.affiliate_id)} style={styles.actionIconButton}>
+                    <IconSymbol name='trash-outline' size={20} color='#F44336' />
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
 
     return (
-        <ModalContainer isLoading={isLoading} visible={visible} setVisible={setVisible} animationType='slide'>
-            <View>
-                {/* Title for pop up */}
-                <Text style={styles.titleText}>
-                    Add Affiliate Link for this product.
-                </Text>
-
-                {/* Affiliate and Product Url container */}
-                <View style={styles.mainInputContainer}>
-                    {/*  */}
-                    <View style={styles.affiliateInputContainer}>
-                        {/* Input to add original url */}
-                        <View style={{ flex: 0.8 }}>
-                            <Input
-                                placeHolder='Enter product url'
-                                value={productSendDetails.url}
-                                readOnly
-                            />
+        <ModalContainer isLoading={isLoading} visible={visible} setVisible={setVisible} animationType='slide' modelStyle={[styles.modalSize, { height: 'auto', maxHeight: '98%' }]}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                style={{ width: '100%' }}
+            >
+                <View style={styles.mainContainer}>
+                    <Text style={styles.titleText}>Manage Affiliate Links</Text>
+                    <View style={styles.contentContainer}>
+                        <View style={styles.section}>
+                            <Text style={styles.sectionTitle}>Product URL</Text>
+                            <View style={styles.inputRow}>
+                                <View style={{ flex: 1 }}>
+                                    <Input
+                                        value={productURL}
+                                        readOnly
+                                    />
+                                </View>
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={handleCopyUrl}
+                                    style={styles.rowActionButton}
+                                >
+                                    <IconSymbol name='copy-outline' size={18} color={Colors.dark.header} />
+                                </TouchableOpacity>
+                            </View>
                         </View>
 
-                        {/* Button to copy url */}
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={handleCopyUrl}
-                            style={styles.getAffiliateLink}
-                        >
-                            <IconSymbol name='copy-outline' size={20} color={Colors.dark.header} />
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* Input Container to add affiliate link */}
-                    <View style={styles.affiliateInputContainer}>
-                        {/* Input to add affiliate link */}
-                        <View style={{ flex: 0.8 }}>
-                            <Input
-                                value={affiliateUrl}
-                                placeHolder='Enter affiliate link'
-                                onChangeText={(t: string) => setAffiliateUrl(t)}
-                                onEndEditing={getAffiliateLink}
-                                ref={affiliateInputRef}
-                            />
-                        </View>
-
-                        {/* Button to get affiliate link */}
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={getAffiliateLink}
-                            style={styles.getAffiliateLink}
-                        >
-                            <IconSymbol name='link-outline' size={20} color={Colors.dark.header} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-                {/* Button Container to insert affiliate link */}
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.buttonStyle} activeOpacity={0.7} onPress={handleAffiliateLinkSubmit}>
-                        {
-                            isLoading ? (
-                                <Text style={styles.btnText}>Submitting...</Text>
+                        <View style={styles.linksSection}>
+                            <Text style={styles.sectionTitle}>Existing Links ({links.length})</Text>
+                            {isLoadingLinks ? (
+                                <ActivityIndicator color={Colors.dark.text} style={{ padding: 20 }} />
+                            ) : links.length > 0 ? (
+                                <FlatList
+                                    data={links}
+                                    renderItem={renderLinkItem}
+                                    keyExtractor={(item) => item.affiliate_id}
+                                    style={styles.linkList}
+                                    contentContainerStyle={{ gap: 8, paddingBottom: 4 }}
+                                    showsVerticalScrollIndicator={true}
+                                    nestedScrollEnabled={true}
+                                    keyboardShouldPersistTaps="handled"
+                                />
                             ) : (
-                                <Text style={styles.btnText}>Add Affiliate Link</Text>
-                            )
-                        }
-                    </TouchableOpacity>
+                                <View style={styles.emptyContainer}>
+                                    <Text style={styles.emptyText}>No affiliate links found</Text>
+                                </View>
+                            )}
+                        </View>
+
+                        <View style={styles.section}>
+                            <Text style={styles.sectionTitle}>Add New Link</Text>
+                            <View style={styles.inputRow}>
+                                <View style={{ flex: 1 }}>
+                                    <Input
+                                        value={affiliateUrl}
+                                        placeHolder='Enter affiliate link...'
+                                        onChangeText={setAffiliateUrl}
+                                        ref={affiliateInputRef}
+                                    />
+                                </View>
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={getAffiliateLink}
+                                    style={styles.rowActionButton}
+                                >
+                                    <IconSymbol name='link-outline' size={18} color={Colors.dark.header} />
+                                </TouchableOpacity>
+                            </View>
+
+                            <TouchableOpacity
+                                style={styles.submitButton}
+                                activeOpacity={0.7}
+                                onPress={handleAffiliateLinkSubmit}
+                                disabled={isLoading}
+                            >
+                                {isLoading ? (
+                                    <ActivityIndicator size="small" color={Colors.dark.header} />
+                                ) : (
+                                    <Text style={styles.btnText}>Add Link</Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                    </View>
                 </View>
-            </View>
+            </KeyboardAvoidingView>
         </ModalContainer>
     )
 }
 
 const styles = StyleSheet.create({
+    modalSize: {
+        maxHeight: '85%',
+        width: '90%',
+        padding: 20,
+    },
+    mainContainer: {
+        paddingBottom: 10,
+    },
     titleText: {
         fontSize: 20,
         color: Colors.dark.titleText,
-        fontWeight: 500,
+        fontWeight: '700',
+        marginBottom: 20,
     },
-    mainInputContainer: {
-        marginTop: 16,
+    contentContainer: {
+        gap: 20,
+    },
+    section: {
         gap: 8,
     },
-    affiliateInputContainer: {
+    linksSection: {
         gap: 8,
+        maxHeight: 180,
+    },
+    linkList: {
+        flexGrow: 0,
+    },
+    sectionTitle: {
+        fontSize: 13,
+        color: Colors.dark.titleText,
+        fontWeight: '600',
+        opacity: 0.7,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    inputRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-end',
+        alignItems: 'center',
+        gap: 10,
     },
     inputText: {
         borderWidth: 1,
-        borderRadius: 8,
+        borderRadius: 10,
         paddingHorizontal: 12,
-        paddingVertical: 12,
-        borderColor: Colors.dark.text,
+        height: 48,
+        borderColor: 'rgba(255,255,255,0.2)',
         color: Colors.dark.text,
+        fontSize: 14,
+        backgroundColor: 'rgba(255,255,255,0.05)',
     },
-    getAffiliateLink: {
-        flex: 0.2,
-        borderRadius: 6,
-        paddingVertical: 11,
+    rowActionButton: {
+        width: 48,
+        height: 48,
+        borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: Colors.dark.text,
     },
-    buttonContainer: {
-        marginTop: 12,
+    linkItem: {
+        flexDirection: 'row',
+        backgroundColor: 'rgba(255,255,255,0.08)',
+        borderRadius: 12,
+        padding: 12,
         alignItems: 'center',
+        justifyContent: 'space-between',
     },
-    buttonStyle: {
-        width: '100%',
-        borderRadius: 8,
-        paddingVertical: 10,
+    linkUrl: {
+        color: Colors.dark.text,
+        fontSize: 14,
+        fontWeight: '500',
+    },
+    linkDate: {
+        color: Colors.dark.text,
+        fontSize: 11,
+        opacity: 0.5,
+        marginTop: 4,
+    },
+    linkActions: {
+        flexDirection: 'row',
+        gap: 4,
+    },
+    actionIconButton: {
+        padding: 8,
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+        backgroundColor: 'rgba(255,255,255,0.03)',
+        borderRadius: 12,
+        borderStyle: 'dashed',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.1)',
+    },
+    emptyText: {
+        color: Colors.dark.text,
+        opacity: 0.4,
+        fontSize: 14,
+        fontStyle: 'italic',
+    },
+    submitButton: {
+        height: 50,
+        borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: Colors.dark.text,
+        marginTop: 14,
     },
     btnText: {
         color: Colors.dark.header,
-        fontSize: 14,
-        fontWeight: '600',
+        fontSize: 16,
+        fontWeight: '700',
     }
 });
 
 const inputStyle = StyleSheet.create({
     inputContainer: {
-        gap: 6
+        gap: 4
     },
     placeHolderTitle: {
-        fontSize: 16,
-        color: Colors.dark.titleText
+        fontSize: 13,
+        color: Colors.dark.titleText,
+        fontWeight: '500',
     }
 })

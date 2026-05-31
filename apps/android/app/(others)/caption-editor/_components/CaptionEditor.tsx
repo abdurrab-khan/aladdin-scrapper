@@ -1,6 +1,6 @@
-import { Colors } from '@/constants/Colors';
-import { CaptionDetailsSchema } from '@/api/schemas/caption.schema';
-import { SocialMedia } from '@/types';
+import { Colors } from '../../../../src/constants/Colors';
+import { CaptionDetailsSchema } from '../../../../src/api/schemas/caption.schema';
+import { SocialMedia } from '../../../../src/types';
 import React from 'react';
 import { Control, useController } from 'react-hook-form';
 import { ActivityIndicator, Image, ScrollView, StyleProp, StyleSheet, Text, TextInput, TextStyle, TouchableOpacity, View } from 'react-native';
@@ -14,14 +14,14 @@ const platformImages: Record<SocialMedia, any> = {
     x: require('../../../../assets/images/icons/social-media/x.png'),
 };
 
-interface CaptionDetailsControls {
+export interface CaptionDetailsControls {
     control: Control<z.infer<typeof CaptionDetailsSchema>>;
 }
-interface CaptionDetailsProps extends CaptionDetailsControls {
+export interface CaptionDetailsProps extends CaptionDetailsControls {
     imageLoading: boolean,
     mergedImage: string,
 }
-interface InputProps extends CaptionDetailsControls {
+export interface InputProps extends CaptionDetailsControls {
     name: keyof z.infer<typeof CaptionDetailsSchema>;
     label: string;
     placeholder: string;
@@ -29,7 +29,7 @@ interface InputProps extends CaptionDetailsControls {
     [key: string]: any;
 }
 
-interface PlatformViewProps {
+export interface PlatformViewProps {
     platform: SocialMedia;
     active: boolean;
     onPress: (platform: SocialMedia) => void;
@@ -141,10 +141,11 @@ const PlatformSelector = ({ control }: CaptionDetailsControls) => {
 
     const handleSelectPlatform = (platform: SocialMedia) => {
         // Toggle platform selection
-        if (field.value.includes(platform)) {
-            field.onChange(field.value.filter((p: string) => p !== platform));
+        const currentValue = field.value || [];
+        if (currentValue.includes(platform)) {
+            field.onChange(currentValue.filter((p: string) => p !== platform));
         } else {
-            field.onChange([...field.value, platform]);
+            field.onChange([...currentValue, platform]);
         }
     }
 
@@ -168,7 +169,7 @@ const PlatformSelector = ({ control }: CaptionDetailsControls) => {
                         <PlatformView
                             key={platform}
                             platform={platform}
-                            active={field.value.includes(platform)}
+                            active={(field.value || []).includes(platform)}
                             onPress={handleSelectPlatform}
                         />
                     ))
@@ -203,7 +204,7 @@ export default function CaptionEditorForm({
                         </View>
                     ) : (
                         <Image
-                            source={{ uri: mergedImage ?? 'https://via.placeholder.com/150' }}
+                            source={{ uri: (mergedImage && mergedImage.length > 0) ? mergedImage : 'https://via.placeholder.com/150' }}
                             style={styles.img}
                             resizeMode="contain"
                         />

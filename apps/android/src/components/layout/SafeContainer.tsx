@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/Colors';
+import { Colors } from '../../constants/Colors';
 import React from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -10,11 +10,9 @@ interface ContainerBackgroundProps {
 
 export default function SafeContainer({ children, style = {} }: ContainerBackgroundProps) {
   return (
-    <SafeAreaProvider style={styles.container}>
-      <SafeAreaView style={[styles.safeAreaView, style]}>
-        {children}
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <SafeAreaView style={[styles.safeAreaView, style]}>
+      {children}
+    </SafeAreaView>
   )
 }
 
@@ -27,5 +25,6 @@ const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
     paddingHorizontal: 12,
+    backgroundColor: Colors.dark.background,
   }
 })

@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/Colors'
+import { Colors } from '../../constants/Colors'
 import Icons from '@expo/vector-icons/Ionicons'
 import { useRouter } from 'expo-router'
 import React, { ComponentProps } from 'react'

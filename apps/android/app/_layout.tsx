@@ -1,3 +1,14 @@
+// Polyfill DOMException for environments like Hermes/JSC where it might be missing
+// but required by modern libraries like zod 3.24+ or supabase.
+if (typeof global.DOMException === 'undefined') {
+  (global as any).DOMException = class DOMException extends Error {
+    constructor(message?: string, name?: string) {
+      super(message);
+      this.name = name || 'DOMException';
+    }
+  };
+}
+
 import * as SplashScreen from "expo-splash-screen";
 import { AppState, StatusBar } from "react-native";
 import { QueryClientProvider } from "@tanstack/react-query";

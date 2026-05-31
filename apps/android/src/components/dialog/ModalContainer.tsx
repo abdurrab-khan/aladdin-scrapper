@@ -29,7 +29,7 @@ export default function ModalContainer({ children, visible, isLoading, modelStyl
             <TouchableWithoutFeedback onPress={handleModalClose}>
                 <View style={modalStyles.overlay}>
                     <TouchableWithoutFeedback onPress={() => { }}>
-                        <View style={[modalStyles.modal, modelStyle, { width: modalWidth }]}>
+                        <View style={[modalStyles.modal, { width: modalWidth }, modelStyle]}>
                             {children}
                         </View>
                     </TouchableWithoutFeedback>

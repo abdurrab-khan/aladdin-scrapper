@@ -1,4 +1,4 @@
-import { Colors, DARK_GRADIENT_BUTTON, LIGHT_GRADIENT_BUTTON } from "@/constants/Colors";
+import { Colors, DARK_GRADIENT_BUTTON, LIGHT_GRADIENT_BUTTON } from "../../constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -30,9 +30,13 @@ interface ActionButtonProps {
 }
 
 const ActionButton: React.FC<ActionButtonProps> = ({ title, isLoading, btnStyle, btnAction }) => {
+    const colors = btnStyle?.gradientColor && btnStyle.gradientColor.length > 0 
+        ? btnStyle.gradientColor 
+        : (LIGHT_GRADIENT_BUTTON || ['#1d4b88', '#2b6da0']);
+
     return (
         <TouchableOpacity onPress={btnAction} style={actionButtonStyles.button}>
-            <LinearGradient style={actionButtonStyles.gradientContainer} colors={btnStyle?.gradientColor ?? LIGHT_GRADIENT_BUTTON}>
+            <LinearGradient style={actionButtonStyles.gradientContainer} colors={colors}>
                 {
                     isLoading ? (
                         <ActivityIndicator />

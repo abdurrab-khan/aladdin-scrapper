@@ -1,5 +1,5 @@
-import { supabase } from "@/api/clients/supabase";
-import { CaptionDetails } from "@/types";
+import { supabase } from "../clients/supabase";
+import { CaptionDetails } from "../../types";
 import { FunctionsResponse } from "@supabase/functions-js";
 
 export const shareProduct = async (

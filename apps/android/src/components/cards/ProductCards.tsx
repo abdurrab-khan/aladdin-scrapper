@@ -1,15 +1,29 @@
-import { Colors, LIGHT_GRADIENT_BUTTON } from '@/constants/Colors';
+import { router } from 'expo-router';
+import ImageView from "react-native-image-viewing";
+import React, { useCallback, useState } from 'react';
+import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
+import {
+    Image,
+    ImageSource,
+    Linking,
+    Pressable,
+    StyleSheet,
+    Text,
+    ToastAndroid,
+    TouchableOpacity,
+    useWindowDimensions,
+    Vibration,
+    View
+} from 'react-native';
+
 import { convertNumberToString } from '@/utils/utils';
 import { Product, ProductImage, Website } from '@/types/product';
-import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { Image, ImageSource, Linking, Pressable, StyleSheet, Text, ToastAndroid, TouchableOpacity, useWindowDimensions, Vibration, View } from 'react-native';
-import ImageView from "react-native-image-viewing";
-import DeleteProduct from '../buttons/DeleteProduct';
-import AddAffiliate from '../dialog/AddAffiliate';
-import { IconSymbol } from '../ui/IconSymbol';
+import { Colors, LIGHT_GRADIENT_BUTTON } from '@/constants/Colors';
+
 import ReviewStar from '../ui/ReviewStar';
+import { IconSymbol } from '../ui/IconSymbol';
+import AddAffiliate from '../dialog/AddAffiliate';
+import DeleteProduct from '../buttons/DeleteProduct';
 
 interface ProductCardsProps {
     product: Product;
@@ -51,7 +65,7 @@ function ProductCards({ product, hasSelecting, hasSelected, onSelect }: ProductC
             product.has_affiliate ? (
                 ["#00d2ff", "#3a47d5"]
             ) :
-                LIGHT_GRADIENT_BUTTON as unknown as LinearGradientProps["colors"]
+                (LIGHT_GRADIENT_BUTTON && LIGHT_GRADIENT_BUTTON.length > 0 ? LIGHT_GRADIENT_BUTTON : ['#1d4b88', '#2b6da0']) as unknown as LinearGradientProps["colors"]
         )
     }, [product.is_posted, product.has_affiliate]);
 
@@ -79,15 +93,8 @@ function ProductCards({ product, hasSelecting, hasSelected, onSelect }: ProductC
     const handleBtnLongPress = useCallback(() => {
         // Vibration feedback
         Vibration.vibrate(50);
-
-        // Show dialog to add affiliate link
-        if (product.has_affiliate) {
-            ToastAndroid.show("Affiliate link already added", ToastAndroid.SHORT);
-        } else {
-            // Show dialog to add affiliate link
-            setShowAffiliateDialog(true);
-        }
-    }, [product.has_affiliate]);
+        setShowAffiliateDialog(true);
+    }, []);
 
     // Handle -- Press to re-direct to caption editor page
     const handlePageRedirect = useCallback(() => {
@@ -168,9 +175,12 @@ function ProductCards({ product, hasSelecting, hasSelected, onSelect }: ProductC
             {
                 showAffiliateDialog && (
                     <AddAffiliate
+                        productURL={product.url}
                         productId={product.product_id}
-                        visible={showAffiliateDialog}
+                        isGrouped={product.is_grouped}
+                        platformId={website.website_id}
                         setVisible={setShowAffiliateDialog}
+                        visible={showAffiliateDialog}
                     />
                 )
             }
@@ -271,7 +281,6 @@ function ProductCards({ product, hasSelecting, hasSelected, onSelect }: ProductC
                 </TouchableOpacity>
             </Pressable>
         </TouchableOpacity >
-
     )
 }
 

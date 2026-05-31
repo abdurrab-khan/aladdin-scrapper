@@ -1,5 +1,5 @@
-import { supabase } from "@/api/clients/supabase";
-import { Product } from "@/types/product";
+import { supabase } from "../clients/supabase";
+import { Product } from "../../types/product";
 import { PostgrestError } from "@supabase/supabase-js";
 
 // interface getProducts
@@ -12,16 +12,6 @@ interface getProductsProps {
 }
 
 // cspell: ignore supabase
-/**
- * Fetches products associated with a specific app.
- *
- * @param {getProductsProps} params - The parameters for fetching products.
- * @param {string} params.appId - The ID of the associated app.
- * @param {number} [params.start=0] - The starting index for pagination.
- * @param {number} [params.end=9] - The ending index for pagination.
- * @returns {Promise<Product[]>} - A promise that resolves to an array of products.
- * @throws {Error} - Throws an error if the fetch operation fails or if no products are found.
- */
 export const getProducts = async ({
   appId,
   start = 0,
@@ -65,16 +55,18 @@ export const getProducts = async ({
 
     // Parse JSON strings
     const parsedProducts = products.data.map((product: any) => {
+      const images = typeof product.images === "string"
+          ? JSON.parse(product.images)
+          : product.images;
+      
+      const website = typeof product.website === "string"
+          ? JSON.parse(product.website)
+          : product.website;
+
       return {
         ...product,
-        images:
-          typeof product.images === "string"
-            ? JSON.parse(product.images)
-            : product.images,
-        website:
-          typeof product.website === "string"
-            ? JSON.parse(product.website)
-            : product.website,
+        images: Array.isArray(images) ? images : [],
+        website: website || {},
       };
     });
 
@@ -99,7 +91,7 @@ export const deleteProducts = async (
 
   try {
     const { error } = await supabase
-      .from("products_info")
+      .from("products")
       .delete()
       .in("product_id", Array.isArray(ids) ? ids : [ids]);
 
@@ -128,7 +120,7 @@ export const updateProduct = async (
 
   try {
     const { error } = await supabase
-      .from("products_info")
+      .from("products")
       .update(updatedProps)
       .in("product_id", Array.isArray(id) ? id : [id]);
 
@@ -145,11 +137,6 @@ export const updateProduct = async (
   }
 };
 
-/**
- * Function to upload product image to Supabase Storage
- * @param {Uint16Array} pngBytes - The image data in PNG format as a byte array.
- * @returns {Promise<string>} - A promise that resolves to the URL of the uploaded image.
- */
 export const uploadProductImage = async (
   pngBytes: Uint8Array,
 ): Promise<{ imageUrl: string; imagePath: string }> => {
@@ -180,11 +167,6 @@ export const uploadProductImage = async (
   }
 };
 
-/**
- * Function to delete the uploaded product image from Supabase Storage
- * @param {string} imagePath - The path of the image to be deleted (not the full URL).
- * @return {Promise<boolean>} - A promise that resolves to true if the deletion was successful.
- */
 export const deleteProductImage = async (
   imagePath: string | string[],
 ): Promise<boolean> => {
@@ -230,6 +212,8 @@ export const getProductCategories = async (
       throw new Error(error.message);
     }
 
+    if (!data) return [];
+
     return data.map((item: { category: string }) => item.category) as string[];
   } catch (err: unknown) {
     const errMessage =
@@ -237,5 +221,40 @@ export const getProductCategories = async (
         ? err.message
         : "An error occurred while fetching product categories.";
     throw new Error(errMessage);
+  }
+};
+
+export const getProductsByIds = async (ids: string[]): Promise<Product[]> => {
+  if (!ids || ids.length === 0) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from("product_info")
+      .select("*")
+      .in("product_id", ids);
+
+    if (error) throw error;
+
+    if (!data) return [];
+
+    return data.map((product: any) => {
+      const images = typeof product.images === "string"
+          ? JSON.parse(product.images)
+          : product.images;
+      
+      const website = typeof product.website === "string"
+          ? JSON.parse(product.website)
+          : product.website;
+
+      return {
+        ...product,
+        images: Array.isArray(images) ? images : [],
+        website: website || {},
+      };
+    }) as Product[];
+  } catch (err) {
+    throw new Error(
+      err instanceof Error ? err.message : "Failed to fetch products by IDs",
+    );
   }
 };

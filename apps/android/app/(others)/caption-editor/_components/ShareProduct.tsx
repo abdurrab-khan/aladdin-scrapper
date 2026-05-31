@@ -1,23 +1,24 @@
+import * as z from 'zod';
 import React, { useState } from 'react'
+import { Control } from 'react-hook-form'
 
-import useAppContext from '@/context/AppContext'
-import { deleteProductImage, updateProduct, uploadProductImage } from '@/api/services/product'
-import { shareProduct } from '@/api/services/share-product'
-import { CaptionDetails } from '@/types/caption'
+import { shareProduct } from '../../../../src/api/services/share-product'
 import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient'
 import { router } from 'expo-router'
-import { Control, UseFormHandleSubmit } from 'react-hook-form'
 import { StyleProp, StyleSheet, Text, ToastAndroid, TouchableOpacity, View, ViewStyle } from 'react-native'
-import { IconSymbol } from '@/components/ui/IconSymbol'
-import ButtonWithDialog from '@/components/buttons/ButtonWithDialog'
+import { IconSymbol } from '../../../../src/components/ui/IconSymbol'
+import ButtonWithDialog from '../../../../src/components/buttons/ButtonWithDialog'
+import { deleteProductImage, updateProduct, uploadProductImage } from '../../../../src/api/services/product'
+import { CaptionDetailsSchema } from '../../../../src/api/schemas/caption.schema'
+import { CaptionDetails } from '../../../../src/types'
 
 interface ShareProductProps {
     btnTitle?: string,
     disabled: boolean,
-    control: Control<CaptionDetails>;
+    control: Control<any>;
     btnStyle: StyleProp<ViewStyle>,
     gradientColor: LinearGradientProps["colors"],
-    handleSubmit: UseFormHandleSubmit<CaptionDetails>;
+    handleSubmit: any;
 }
 const ShareProduct = ({
     control,
@@ -30,7 +31,6 @@ const ShareProduct = ({
 ) => {
     const [visible, setVisible] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const { updateProduct: updateProductState } = useAppContext();
 
     // Share product functionality
     const handleProductShare = async (data: CaptionDetails) => {
@@ -41,6 +41,8 @@ const ShareProduct = ({
             productImageUrl = await uploadProductImage(data.productImage as Uint8Array);
             data.productImage = productImageUrl.imageUrl;
 
+
+
             // Sharing the product into social media platforms
             const shareResponse = await shareProduct(data);
 
@@ -48,10 +50,7 @@ const ShareProduct = ({
                 ToastAndroid.show(shareResponse.data?.message ?? "Successfully posted", ToastAndroid.SHORT);
 
                 // Update the product as shared
-                await updateProduct(data.ids, { isPosted: true })
-
-                // Change the state as shared
-                updateProductState(data.ids, { isPosted: true });
+                await updateProduct(data.ids, { is_posted: true })
 
                 // Re-direct to home page.
                 if (router.canGoBack()) {
@@ -75,18 +74,30 @@ const ShareProduct = ({
 
     // Make visible true to show the dialog to share product
     const handleButtonPress = () => {
-        const error = control._formState.errors;
+        if (!control) {
+            ToastAndroid.show("Form controller not initialized.", ToastAndroid.SHORT);
+            return;
+        }
+        const errors = control._formState.errors;
+        if (Object.keys(errors).length > 0) {
+            const message = errors['platforms']?.message || errors['caption']?.message || errors['productUrls']?.message || errors['ids']?.message || "Please fill all required fields correctly.";
 
-        if (Object.keys(error).length > 0) {
-            const message = error['platforms']?.message || error['caption']?.message || error['productUrls']?.message || error['ids']?.message || "Please fill all required fields correctly.";
-
-            ToastAndroid.show(message, ToastAndroid.SHORT);
+            ToastAndroid.show(message as string, ToastAndroid.SHORT);
             return;
         }
 
         // Show the dialog to share product
         setVisible(true);
     }
+
+    const onDialogConfirm = () => {
+        if (typeof handleSubmit === 'function') {
+            handleSubmit(handleProductShare)();
+        } else {
+            console.error('handleSubmit is not a function:', handleSubmit);
+            ToastAndroid.show("Internal error: Share function failed.", ToastAndroid.SHORT);
+        }
+    };
 
     return (
         <React.Fragment>
@@ -96,7 +107,7 @@ const ShareProduct = ({
                 setVisible={setVisible}
                 isLoading={loading}
                 dialogTitle='Do you really want to share this product?'
-                dialogButtonAction={handleSubmit(handleProductShare)}
+                dialogButtonAction={onDialogConfirm}
             >
                 <TouchableOpacity
                     activeOpacity={0.7}
@@ -105,7 +116,7 @@ const ShareProduct = ({
                     onPress={handleButtonPress}
                 >
                     <LinearGradient
-                        colors={gradientColor}
+                        colors={gradientColor && gradientColor.length > 0 ? gradientColor : ['#1d4b88', '#2b6da0']}
                         start={{ x: 1, y: 0 }}
                         end={{ x: 0, y: 0 }}
                         style={btnStyle}
@@ -143,7 +154,5 @@ const shareProductStyle = StyleSheet.create({
         fontWeight: "600",
     }
 });
-
-
 
 export default ShareProduct

@@ -1,7 +1,7 @@
 import { Skia, SkImage } from "@shopify/react-native-skia";
 import { useCallback, useState } from "react";
 
-export default function useImageCompositor() {
+export const useImageCompositor = () => {
   const [imageLoading, setImageLoading] = useState<boolean>(false);
 
   // Load image from url
@@ -22,31 +22,37 @@ export default function useImageCompositor() {
     async (images: string[]): Promise<Uint8Array<ArrayBufferLike>> => {
       setImageLoading(true); // Set loading state to true
       try {
-        // Implementation for merging multiple images can be added here
         const loadedImages = await Promise.all(
           images.map((img) => loadImageFromUrl(img))
         );
 
+        // Filter out null images
+        const validImages = loadedImages.filter((img): img is SkImage => img !== null);
+
+        if (validImages.length === 0) {
+          throw new Error("No valid images could be loaded.");
+        }
+
         // Calculate total width and max height
-        const totalWidth = loadedImages.reduce(
-          (sum, img) => sum + (img ? img.width() : 0) + 5,
+        const totalWidth = validImages.reduce(
+          (sum, img) => sum + img.width() + 5,
           0
         );
 
         const maxHeight = Math.max(
-          ...loadedImages.map((img) => (img ? img.height() : 0))
+          ...validImages.map((img) => img.height())
         );
         const maxWidth = Math.max(
-          ...loadedImages.map((img) => (img ? img.width() : 0))
+          ...validImages.map((img) => img.width())
         );
 
         // Create an offscreen surface
-        const surface = Skia.Surface.MakeOffscreen(totalWidth, maxHeight);
+        const surface = Skia.Surface.MakeOffscreen(totalWidth || 100, maxHeight || 100);
         if (!surface) {
           throw new Error("Failed to create offscreen surface.");
         }
 
-        const canvas = surface?.getCanvas();
+        const canvas = surface.getCanvas();
         if (!canvas) {
           throw new Error("Failed to get canvas from surface.");
         }
@@ -57,20 +63,16 @@ export default function useImageCompositor() {
         if (maxHeight > maxWidth) {
           // Drawing image side by side
           let xOffset = 0;
-          loadedImages.forEach((img) => {
-            if (img) {
-              canvas.drawImage(img, xOffset, 0);
-              xOffset += img.width();
-            }
+          validImages.forEach((img) => {
+            canvas.drawImage(img, xOffset, 0);
+            xOffset += img.width() + 5;
           });
         } else {
           // Drawing image in a column
           let yOffset = 0;
-          loadedImages.forEach((img) => {
-            if (img) {
-              canvas.drawImage(img, 0, yOffset);
-              yOffset += img.height();
-            }
+          validImages.forEach((img) => {
+            canvas.drawImage(img, 0, yOffset);
+            yOffset += img.height() + 5;
           });
         }
 

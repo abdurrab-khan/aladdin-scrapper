@@ -10,10 +10,10 @@ export const CaptionDetailsSchema = zod.object({
     .array(zod.string().url())
     .min(1, "At least one product URL is required"),
   productImage: zod
-    .instanceof(Uint8Array<ArrayBufferLike>, {
-      message: "Product image is required",
-    })
-    .or(zod.string().url("Product image must be a valid URL")),
+    .any()
+    .refine((val) => val instanceof Uint8Array || typeof val === "string", {
+      message: "Product image must be a Uint8Array or a valid URL string",
+    }),
   tags: zod.string().optional(),
 });
 

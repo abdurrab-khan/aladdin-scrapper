@@ -1,5 +1,6 @@
-import { TAGS_POOL } from "@/constants/const";
-import { Product, ProductImage } from "@/types/product";
+import { TAGS_POOL } from "../constants/const";
+import { Product, ProductImage } from "../types/product";
+import { Affiliate } from "../types";
 
 interface ProductDetailsProps {
   ids: string[];
@@ -9,7 +10,8 @@ interface ProductDetailsProps {
 }
 
 export const extractProductCaptionDetails = (
-  products: Product[]
+  products: Product[],
+  affiliates: Affiliate[] = []
 ): ProductDetailsProps => {
   if (products == null || products.length === 0) {
     throw new Error("Product array is null or empty");
@@ -17,13 +19,12 @@ export const extractProductCaptionDetails = (
 
   return products.reduce(
     (acc, prod) => {
-      // For now, we don't have a direct affiliate URL in the sample data, 
-      // but the app expects one. Using the product URL as fallback if has_affiliate is true.
-      // In a real scenario, there might be another field or a process to get the affiliate link.
-      const affiliateUrl: string = prod.url; 
+      // Find the corresponding affiliate link
+      const affiliate = affiliates.find(a => a.product_id === prod.product_id);
+      const affiliateUrl: string = affiliate ? affiliate.affiliate_url : prod.url; 
       
-      const images = prod.images as ProductImage[];
-      const cardImage = images.find(img => img.image_type === 'Card')?.image_url || images[0]?.image_url;
+      const images = Array.isArray(prod.images) ? prod.images : [];
+      const cardImage = images.find(img => img.image_type === 'Card')?.image_url || images[0]?.image_url || 'https://via.placeholder.com/150';
 
       acc.ids.push(prod.product_id);
       acc.productUrls.push(prod.url);

@@ -1,7 +1,7 @@
-import HeaderBack from '@/components/buttons/HeaderBack'
-import { Colors } from '@/constants/Colors'
-import { Stack } from 'expo-router'
-import React from 'react'
+import HeaderBack from '../../../src/components/buttons/HeaderBack';
+import { Colors } from '../../../src/constants/Colors';
+import { Stack } from 'expo-router';
+import React from 'react';
 
 export default function _layout() {
     return (
