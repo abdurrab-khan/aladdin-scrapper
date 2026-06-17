@@ -55,11 +55,13 @@ export const getProducts = async ({
 
     // Parse JSON strings
     const parsedProducts = products.data.map((product: any) => {
-      const images = typeof product.images === "string"
+      const images =
+        typeof product.images === "string"
           ? JSON.parse(product.images)
           : product.images;
-      
-      const website = typeof product.website === "string"
+
+      const website =
+        typeof product.website === "string"
           ? JSON.parse(product.website)
           : product.website;
 
@@ -143,7 +145,7 @@ export const uploadProductImage = async (
   try {
     const fileName = `send-product/product_${Date.now()}.png`;
     const { data, error } = await supabase.storage
-      .from("aladdin")
+      .from("aladdin-deals")
       .upload(fileName, pngBytes, {
         cacheControl: "3600",
         upsert: false,
@@ -154,8 +156,9 @@ export const uploadProductImage = async (
       throw new Error(error.message);
     }
 
-    const fullUrl = supabase.storage.from("aladdin").getPublicUrl(data!.path)
-      .data.publicUrl;
+    const fullUrl = supabase.storage
+      .from("aladdin-deals")
+      .getPublicUrl(data!.path).data.publicUrl;
 
     return { imageUrl: fullUrl, imagePath: data.path };
   } catch (err: unknown) {
@@ -238,11 +241,13 @@ export const getProductsByIds = async (ids: string[]): Promise<Product[]> => {
     if (!data) return [];
 
     return data.map((product: any) => {
-      const images = typeof product.images === "string"
+      const images =
+        typeof product.images === "string"
           ? JSON.parse(product.images)
           : product.images;
-      
-      const website = typeof product.website === "string"
+
+      const website =
+        typeof product.website === "string"
           ? JSON.parse(product.website)
           : product.website;
 
