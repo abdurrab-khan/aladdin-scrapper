@@ -1,56 +1,63 @@
+import { Product } from "@/types/product";
 import { TAGS_POOL } from "../constants/const";
-import { Product, ProductImage } from "../types/product";
 import { Affiliate } from "../types";
 
-interface ProductDetailsProps {
-  ids: string[];
-  productUrls: string[];
-  productAffiliateUrls: string[];
-  productImages: string[];
-}
+// export const extractProductCaptionDetails = (
+//   products: Product[],
+//   affiliates: Affiliate[] = [],
+// ): ProductDetailsProps => {
+//   if (products == null || products.length === 0) {
+//     throw new Error("Product array is null or empty");
+//   }
 
-export const extractProductCaptionDetails = (
+//   return products.reduce(
+//     (acc, prod) => {
+//       // Find the corresponding affiliate link
+//       const affiliate = affiliates.find(
+//         (a) => a.product_id === prod.product_id,
+//       );
+//       const affiliateUrl: string = affiliate
+//         ? affiliate.affiliate_url
+//         : prod.url;
+
+//       const images = Array.isArray(prod.images) ? prod.images : [];
+//       const cardImage =
+//         images.find((img) => img.image_type === "Card")?.image_url ||
+//         images[0]?.image_url ||
+//         "https://via.placeholder.com/150";
+
+//       acc.ids.push(prod.product_id);
+//       acc.productUrls.push(prod.url);
+//       acc.productImages.push(cardImage);
+//       acc.productAffiliateUrls.push(affiliateUrl);
+//       return acc;
+//     },
+//     {
+//       ids: [],
+//       productUrls: [],
+//       productImages: [],
+//       productAffiliateUrls: [],
+//     } as ProductDetailsProps,
+//   );
+// };
+
+export const generateCaption = (
   products: Product[],
-  affiliates: Affiliate[] = []
-): ProductDetailsProps => {
-  if (products == null || products.length === 0) {
-    throw new Error("Product array is null or empty");
-  }
+  affiliates: Affiliate[] | null,
+): string => {
+  const productUrls = products.map((product) => {
+    const affiliateUrl = affiliates?.find(
+      (aff) => aff.product_id === product.product_id,
+    )?.affiliate_url;
+    const url = affiliateUrl ?? product.url;
 
-  return products.reduce(
-    (acc, prod) => {
-      // Find the corresponding affiliate link
-      const affiliate = affiliates.find(a => a.product_id === prod.product_id);
-      const affiliateUrl: string = affiliate ? affiliate.affiliate_url : prod.url; 
-      
-      const images = Array.isArray(prod.images) ? prod.images : [];
-      const cardImage = images.find(img => img.image_type === 'Card')?.image_url || images[0]?.image_url || 'https://via.placeholder.com/150';
+    return `🔗 ${url}`;
+  });
 
-      acc.ids.push(prod.product_id);
-      acc.productUrls.push(prod.url);
-      acc.productImages.push(cardImage);
-      acc.productAffiliateUrls.push(affiliateUrl);
-      return acc;
-    },
-    {
-      ids: [],
-      productUrls: [],
-      productImages: [],
-      productAffiliateUrls: [],
-    } as ProductDetailsProps
-  );
-};
-
-export const generateCaption = (affliateUrls: string[]): string => {
-  // Affiliate URLS string
-  const affiliateUrlsString = affliateUrls.map((url) => `🔗 ${url}`).join("\n");
-
-  // Check whether to use singular or plural form
   const checkOutText =
-    affliateUrls.length === 1 ? "Check this out" : "Check these out";
+    productUrls.length === 1 ? "Check this out" : "Check these out";
 
-  // Create caption message
-  return `\n\n${checkOutText}:\n${affiliateUrlsString}`;
+  return `\n\n${checkOutText}:\n${productUrls.join("\n")}`;
 };
 
 export const getRandomTags = (): string => {

@@ -21,9 +21,7 @@ import {
   updateProduct,
   uploadProductImage,
 } from "../../../../src/api/services/product";
-import { CaptionDetailsSchema } from "../../../../src/api/schemas/caption.schema";
 import { CaptionDetails } from "../../../../src/types";
-import toast from "@/utils/toast";
 
 interface ShareProductProps {
   btnTitle?: string;
@@ -51,32 +49,25 @@ const ShareProduct = ({
       imageUrl: "",
     };
 
-    setLoading(true); // Start loading
+    // Update loading state to true
+    setLoading(true);
+
     try {
       productImageUrl = await uploadProductImage(
         data.productImage as Uint8Array,
       );
       data.productImage = productImageUrl.imageUrl;
 
-      console.log(
-        "Product Image is: ",
-        productImageUrl,
-        " ----- Image url is: ",
-      );
+      const shareResponse = await shareProduct(data);
 
-      // Sharing the product into social media platforms
-      if (false) {
-        const shareResponse = await shareProduct(data);
+      if (shareResponse.data?.success) {
+        ToastAndroid.show(
+          shareResponse.data?.message ?? "Successfully posted",
+          ToastAndroid.SHORT,
+        );
 
-        if (shareResponse.data?.success) {
-          ToastAndroid.show(
-            shareResponse.data?.message ?? "Successfully posted",
-            ToastAndroid.SHORT,
-          );
-
-          // Update the product as shared
-          await updateProduct(data.ids, { is_posted: true });
-        }
+        // Update the product as shared
+        await updateProduct(data.ids, { is_posted: true });
       }
 
       // Re-direct to home page.

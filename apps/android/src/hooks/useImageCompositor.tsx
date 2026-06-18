@@ -79,7 +79,15 @@ export const useImageCompositor = () => {
   }, [canvas, finish]);
 
   const mergeImages = useCallback(
-    (images: string[], options: MergeOptions = {}): Promise<MergeResult> => {
+    (
+      images: string | string[] | null | undefined,
+      options: MergeOptions = {},
+    ): Promise<MergeResult> | null => {
+      if (!images) {
+        setImageLoading(false);
+        return null;
+      }
+
       return new Promise((resolve, reject) => {
         if (busyRef.current) {
           reject(

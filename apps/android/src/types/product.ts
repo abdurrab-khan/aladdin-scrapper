@@ -24,14 +24,14 @@ export interface Product {
   is_grouped: boolean;
   user_id: string;
   app_id: string;
-  images: ProductImage[] | string; // It comes as string from DB and needs parsing
+  images: ProductImage[]; // It comes as string from DB and needs parsing
   website: Website | string; // It comes as string from DB and needs parsing
   has_affiliate: boolean;
   category?: string; // Optional as not in provided sample but used in code
   rating?: number;
   reviews?: number;
   // Legacy fields preserved for compatibility if needed, but ideally replaced
-  id?: string; 
+  id?: string;
   details?: any;
   platformInfo?: PlateForm;
   affiliateInfo?: Affiliate | null;
