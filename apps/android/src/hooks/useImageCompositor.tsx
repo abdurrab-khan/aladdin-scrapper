@@ -105,12 +105,15 @@ export const useImageCompositor = () => {
 
         (async () => {
           try {
-            const sizesWithNulls = await Promise.all(images.map(getImageSize));
+            const validImages = typeof images === "string" ? [images] : images;
+            const sizesWithNulls = await Promise.all(
+              validImages.map(getImageSize),
+            );
             const validUrls: string[] = [];
             const sizes: ImageSize[] = [];
             sizesWithNulls.forEach((size, i) => {
               if (size) {
-                validUrls.push(images[i]);
+                validUrls.push(validImages[i]);
                 sizes.push(size);
               }
             });

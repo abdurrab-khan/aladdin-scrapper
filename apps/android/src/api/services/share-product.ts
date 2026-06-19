@@ -1,12 +1,25 @@
-import { supabase } from "../clients/supabase";
-import { CaptionDetails } from "../../types";
+import { supabase } from "../clients/supabase.ts";
+import { CaptionDetails } from "../../types/index.ts";
 import { FunctionsResponse } from "@supabase/functions-js";
 
 export const shareProduct = async (
   productDetails: CaptionDetails,
 ): Promise<FunctionsResponse<any>> => {
   try {
-    // Calling -- Supabase function to send post/message into the given platform.
+    if (process.env["NODE_ENV"] === "development") {
+      const shareProduct = await fetch("http://10.0.2.2:8000/", {
+        method: "POST",
+        body: JSON.stringify(productDetails),
+      });
+      const shareResponse = await shareProduct.json();
+
+      if (!shareProduct.ok) {
+        throw shareResponse;
+      }
+
+      return shareResponse;
+    }
+
     const shareProduct = await supabase.functions.invoke(
       "social-media-helper",
       {
@@ -15,8 +28,8 @@ export const shareProduct = async (
       },
     );
 
-    if (shareProduct.error) {
-      throw shareProduct.error;
+    if (shareProduct?.error) {
+      throw new Error(shareProduct?.error);
     }
 
     return shareProduct;

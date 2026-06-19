@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useImageCompositor } from "../../../src/hooks/useImageCompositor";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -35,6 +35,7 @@ const { height: WINDOW_HEIGHT } = Dimensions.get("window");
 
 export default function CaptionEditor() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [productImage, setProductImage] = useState("");
 
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams();
@@ -53,29 +54,36 @@ export default function CaptionEditor() {
     },
   });
 
-  const mergeProductImages = async (productImages: string | string[]) => {
-    const mergedImage = await mergeImages(productImages, {
-      result: "base64",
-    });
+  const mergeProductImages = useCallback(
+    async (productImages: string | string[] | null | undefined) => {
+      const mergedImage = await mergeImages(productImages, {
+        result: "base64",
+      });
 
-    // Convert base64 to Uint8Array for the form
-    let uint8Array = new Uint8Array();
-    try {
-      if (typeof Buffer !== "undefined") {
-        uint8Array = Uint8Array.from(Buffer.from(mergedImage.uri, "base64"));
-      } else if (typeof atob !== "undefined") {
-        const binaryString = atob(mergedImage.uri);
-        uint8Array = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          uint8Array[i] = binaryString.charCodeAt(i);
+      if (!mergedImage) return null;
+
+      // Convert base64 to Uint8Array for the form
+      let uint8Array = new Uint8Array();
+      try {
+        if (typeof Buffer !== "undefined") {
+          uint8Array = Uint8Array.from(Buffer.from(mergedImage.uri, "base64"));
+        } else if (typeof atob !== "undefined") {
+          const binaryString = atob(mergedImage.uri);
+          uint8Array = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            uint8Array[i] = binaryString.charCodeAt(i);
+          }
         }
-      }
-    } catch (e) {
-      console.error("Failed to convert base64 to Uint8Array:", e);
-    }
-  };
 
-  const mergedProductImage = useMemo(() => {
+        return uint8Array;
+      } catch (e) {
+        console.error("Failed to convert base64 to Uint8Array:", e);
+      }
+    },
+    [mergeImages],
+  );
+
+  const productImageBase64 = useCallback(async () => {
     const productImages =
       products?.length > 0
         ? products.length === 1
@@ -91,38 +99,37 @@ export default function CaptionEditor() {
               .filter(Boolean)
         : null;
 
-    // if (
-    //   !productImage ||
-    //   (productImage instanceof Uint8Array && productImage.length === 0)
-    // )
-    //   return "";
-    // if (typeof productImage === "string") return productImage;
-    // try {
-    //   const bytes = productImage as Uint8Array;
-    //   let binary = "";
-    //   const len = bytes.byteLength;
-    //   for (let i = 0; i < len; i++) {
-    //     binary += String.fromCharCode(bytes[i]);
-    //   }
-    //   // Using Buffer if available (Node/some RN polyfills) or btoa
-    //   const base64 =
-    //     typeof Buffer !== "undefined"
-    //       ? Buffer.from(bytes).toString("base64")
-    //       : typeof btoa !== "undefined"
-    //         ? btoa(binary)
-    //         : "";
-    //   if (!base64 && typeof btoa === "undefined") {
-    //     console.error(
-    //       "Neither Buffer nor btoa is available for base64 encoding",
-    //     );
-    //     return "";
-    //   }
-    //   return `data:image/png;base64,${base64}`;
-    // } catch (e) {
-    //   console.error("Base64 encoding failed:", e);
-    //   return "";
-    // }
-  }, [products]);
+    const mProductImage = await mergeProductImages(productImages);
+
+    if (mProductImage) {
+      setValue("productImage", mProductImage);
+      try {
+        const bytes = mProductImage as Uint8Array;
+        let binary = "";
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        // Using Buffer if available (Node/some RN polyfills) or btoa
+        const base64 =
+          typeof Buffer !== "undefined"
+            ? Buffer.from(bytes).toString("base64")
+            : typeof btoa !== "undefined"
+              ? btoa(binary)
+              : "";
+        if (!base64 && typeof btoa === "undefined") {
+          console.error(
+            "Neither Buffer nor btoa is available for base64 encoding",
+          );
+          return "";
+        }
+
+        setProductImage(`data:image/png;base64,${base64}`);
+      } catch (e) {
+        console.error("Base64 encoding failed:", e);
+      }
+    }
+  }, [mergeProductImages, products, setValue]);
 
   useEffect(() => {
     const loadCaptionDetails = async () => {
@@ -151,6 +158,11 @@ export default function CaptionEditor() {
         const affiliates = await getDefaultAffiliateLinks(queryIds);
         const captionMsg = generateCaption(productsRes, affiliates);
 
+        setValue("ids", queryIds);
+        setValue(
+          "productUrls",
+          productsRes.map((p) => p.url),
+        );
         setValue("caption", captionMsg);
         setValue("tags", getRandomTags());
       } catch (error) {
@@ -166,6 +178,10 @@ export default function CaptionEditor() {
 
     loadCaptionDetails();
   }, [id, reset, setValue]);
+
+  useEffect(() => {
+    productImageBase64();
+  }, [productImageBase64]);
 
   return (
     <View
@@ -194,7 +210,7 @@ export default function CaptionEditor() {
               control={control}
               imageLoading={imageLoading}
               CompositorCanvas={CompositorCanvas}
-              mergedImage={mergedProductImage}
+              mergedImage={productImage}
             />
 
             {!id && (

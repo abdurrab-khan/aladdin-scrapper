@@ -1,4 +1,3 @@
-import * as z from "zod";
 import React, { useState } from "react";
 import { Control } from "react-hook-form";
 
@@ -105,6 +104,7 @@ const ShareProduct = ({
         errors["caption"]?.message ||
         errors["productUrls"]?.message ||
         errors["ids"]?.message ||
+        errors["productImage"]?.message ||
         "Please fill all required fields correctly.";
 
       ToastAndroid.show(message as string, ToastAndroid.SHORT);

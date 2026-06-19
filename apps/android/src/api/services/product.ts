@@ -179,7 +179,7 @@ export const deleteProductImage = async (
     }
 
     const { data, error } = await supabase.storage
-      .from("aladdin")
+      .from("aladdin-deals")
       .remove(Array.isArray(imagePath) ? imagePath : [imagePath]);
 
     if (error) {

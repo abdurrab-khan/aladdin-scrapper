@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "std/": "https://deno.land/std@0.168.0/",
+    "dotenv": "https://deno.land/x/dotenv@v3.2.2/mod.ts",
+    "dotenv/load": "https://deno.land/x/dotenv@v3.2.2/load.ts"
+  }
+}
