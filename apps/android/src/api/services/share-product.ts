@@ -6,33 +6,18 @@ export const shareProduct = async (
   productDetails: CaptionDetails,
 ): Promise<FunctionsResponse<any>> => {
   try {
-    if (process.env["NODE_ENV"] === "development") {
-      const shareProduct = await fetch("http://192.168.0.100:8000/", {
-        method: "POST",
-        body: JSON.stringify(productDetails),
-      });
-      const shareResponse = await shareProduct.json();
+    const shareProduct = await supabase.functions.invoke("share-product", {
+      body: productDetails,
+      method: "POST",
+    });
 
-      if (!shareResponse?.success) {
-        throw new Error(shareResponse?.error);
-      }
+    console.log("Share Product Response is: ", shareProduct);
 
-      return shareResponse;
-    } else {
-      const shareProduct = await supabase.functions.invoke(
-        "social-media-helper",
-        {
-          body: productDetails,
-          method: "POST",
-        },
-      );
-
-      if (shareProduct?.error) {
-        throw new Error(shareProduct?.error);
-      }
-
-      return shareProduct;
+    if (shareProduct?.error) {
+      throw new Error(shareProduct?.error);
     }
+
+    return shareProduct;
   } catch (err) {
     const errorMessage =
       err instanceof Error ? err.message : "An unexpected error occurred.";
