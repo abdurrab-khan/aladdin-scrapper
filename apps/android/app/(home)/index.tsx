@@ -1,12 +1,12 @@
-import ProductList from '@/components/list/ProductList';
-import ScrapeFAB from './_components/ScrapeFAB';
-import SafeContainer from '@/components/layout/SafeContainer';
+import SafeContainer from "../../src/components/layout/SafeContainer.tsx";
+import ProductList from "../../src/components/list/ProductList.tsx";
+import ScrapeFAB from "./_components/ScrapeFAB.tsx";
 
 export default function TabsIndex() {
-    return (
-        <SafeContainer>
-            <ProductList />
-            <ScrapeFAB />
-        </SafeContainer>
-    )
+  return (
+    <SafeContainer>
+      <ProductList />
+      <ScrapeFAB />
+    </SafeContainer>
+  );
 }

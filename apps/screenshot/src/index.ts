@@ -6,13 +6,14 @@ import redis from "./providers/cache/redis";
 
 const PORT = (process.env["PORT"] || 4000) as number;
 
-redis.on("connect", () => {
-  console.log("[Redis] Connected to the server");
-  App.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server is running successfully on http://localhost:${PORT}`);
+redis
+  .on("connect", () => {
+    console.log("[Redis] Connected to the server");
+    App.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server is running successfully on http://localhost:${PORT}`);
+    });
+  })
+  .on("error", (err) => {
+    console.error("[Redis] Error:", err);
+    process.exit(1);
   });
-});
-
-redis.on("error", (err) => {
-  console.error("[Redis] Error:", err);
-});
