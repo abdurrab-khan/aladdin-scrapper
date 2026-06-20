@@ -1,7 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
-
-config({ path: "../../.env", export: true });
 
 const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN");
 const TELEGRAM_CHAT_ID = Deno.env.get("TELEGRAM_CHAT_ID");
@@ -16,8 +13,6 @@ interface CaptionDetails {
 }
 
 serve(async (req) => {
-  console.log("Calling.....");
-
   try {
     const productDetails: CaptionDetails = await req.json();
     const { caption, tags, platforms, productImage } = productDetails;
@@ -78,7 +73,13 @@ serve(async (req) => {
     );
   } catch (error) {
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "An unknown error occurred while posting",
+      }),
       {
         headers: {
           "Content-Type": "application/json",
