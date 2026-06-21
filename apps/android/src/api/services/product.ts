@@ -207,9 +207,11 @@ export const getProductCategories = async (
   appId: string,
 ): Promise<string[]> => {
   try {
-    const { data, error } = await supabase.rpc("fetch_categories", {
-      app_id: appId,
+    const { data, error } = await supabase.rpc("fetch_category", {
+      p_app_id: appId,
     });
+
+    console.log("Data is: ", data);
 
     if (error) {
       throw new Error(error.message);
@@ -217,7 +219,7 @@ export const getProductCategories = async (
 
     if (!data) return [];
 
-    return data.map((item: { category: string }) => item.category) as string[];
+    return data;
   } catch (err: unknown) {
     const errMessage =
       err instanceof Error

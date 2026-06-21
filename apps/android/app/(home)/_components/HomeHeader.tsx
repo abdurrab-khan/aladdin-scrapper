@@ -16,11 +16,12 @@ import {
 export default function Home() {
   const { app } = useAppContext();
   const { data: rawCategories } = useProductCategoriesQuery(app?.id);
-  const { searchQuery, currentCategory, setSearchQuery, setCategory } = useProductStore();
+  const { searchQuery, currentCategory, setSearchQuery, setCategory } =
+    useProductStore();
 
   const categories = useMemo(
     () => ["All", ...(rawCategories || [])],
-    [rawCategories]
+    [rawCategories],
   );
 
   const handleSearchChange = (text: string) => {
@@ -31,7 +32,7 @@ export default function Home() {
     (cat: string) => {
       setCategory(cat);
     },
-    [setCategory]
+    [setCategory],
   );
 
   return (

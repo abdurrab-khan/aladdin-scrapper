@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, View, StyleSheet } from "react-native";
+import { Modal as RNModel, View, StyleSheet } from "react-native";
 import { app } from "../../style/index";
 
 interface CustomModalProps {
@@ -8,9 +8,9 @@ interface CustomModalProps {
   onToggle: (isVisible: boolean) => void;
 }
 
-function CustomModal({ isVisible, children, onToggle }: CustomModalProps) {
+function Modal({ isVisible, children, onToggle }: CustomModalProps) {
   return (
-    <Modal
+    <RNModel
       role="dialog"
       transparent
       visible={isVisible}
@@ -30,7 +30,7 @@ function CustomModal({ isVisible, children, onToggle }: CustomModalProps) {
           {children}
         </View>
       </View>
-    </Modal>
+    </RNModel>
   );
 }
 
@@ -49,4 +49,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomModal;
+export default Modal;

@@ -15,7 +15,8 @@ import {
 import Slider from "@react-native-community/slider";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors, LIGHT_GRADIENT_BUTTON } from "@/constants/Colors";
-import CustomModal from "../ui/CustomModal";
+import Modal from "../ui/Modal";
+import CSlider from "../ui/Slider";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -68,7 +69,13 @@ export default function ScrapeDialog({
       websites: [],
       maxProducts: 10,
       filters: {
+        rating: 4,
         available: true,
+        minPrice: 150,
+        maxPrice: 600,
+        maxDiscount: 50,
+        maxBrandDiscount: 70,
+        maxDiscountForFullPageScreenshot: 50,
       },
     },
   });
@@ -134,13 +141,13 @@ export default function ScrapeDialog({
 
   if (isLoadingCats) {
     return (
-      <CustomModal isVisible={visible} onToggle={onToggleVisible}>
+      <Modal isVisible={visible} onToggle={onToggleVisible}>
         <View
           style={[styles.container, { height: 200, justifyContent: "center" }]}
         >
           <ActivityIndicator size="large" color={Colors.dark.tint} />
         </View>
-      </CustomModal>
+      </Modal>
     );
   }
 
@@ -150,7 +157,7 @@ export default function ScrapeDialog({
       : ["#1d4b88", "#2b6da0"];
 
   return (
-    <CustomModal isVisible={visible} onToggle={onToggleVisible}>
+    <Modal isVisible={visible} onToggle={onToggleVisible}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.headerRow}>
           <Text style={[styles.label, { fontSize: 22 }]}>Category</Text>
@@ -238,8 +245,6 @@ export default function ScrapeDialog({
           </>
         )}
 
-        <View style={styles.divider} />
-
         <View style={styles.inputRow}>
           <View style={{ flex: 1 }}>
             <Text style={styles.label}>
@@ -263,164 +268,90 @@ export default function ScrapeDialog({
               )}
             />
           </View>
-          {currentSubCat && (
-            <View style={styles.infoBox}>
-              <Text style={styles.infoTitle}>Default Config</Text>
-              <Text style={styles.infoText}>
-                ₹{currentSubCat.defaults.minPrice} - ₹
-                {currentSubCat.defaults.maxPrice}
-              </Text>
-              <Text style={styles.infoText}>
-                {currentSubCat.defaults.maxDiscount}%+ off
-              </Text>
-            </View>
-          )}
         </View>
 
-        <Text style={[styles.label, { marginTop: 24, fontSize: 18 }]}>
-          Filters (Optional Override)
-        </Text>
+        <View style={styles.divider} />
 
-        <View style={styles.filterGrid}>
-          <View style={styles.filterItem}>
-            <Text style={styles.filterLabel}>
-              Min Price: ₹{watch("filters.minPrice") || 0}
-            </Text>
-            <Controller
-              control={control}
-              name="filters.minPrice"
-              render={({ field: { onChange, value } }) => (
-                <Slider
-                  style={{ width: "100%", height: 30 }}
-                  minimumValue={0}
-                  maximumValue={50000}
-                  step={500}
-                  value={value || 0}
-                  onValueChange={onChange}
-                  minimumTrackTintColor={Colors.dark.tint}
-                  maximumTrackTintColor="#1a3a4a"
-                  thumbTintColor="white"
-                />
-              )}
-            />
-          </View>
-          <View style={styles.filterItem}>
-            <Text style={styles.filterLabel}>
-              Max Price: ₹{watch("filters.maxPrice") || "∞"}
-            </Text>
-            <Controller
-              control={control}
-              name="filters.maxPrice"
-              render={({ field: { onChange, value } }) => (
-                <Slider
-                  style={{ width: "100%", height: 30 }}
-                  minimumValue={0}
-                  maximumValue={100000}
-                  step={1000}
-                  value={value || 100000}
-                  onValueChange={onChange}
-                  minimumTrackTintColor={Colors.dark.tint}
-                  maximumTrackTintColor="#1a3a4a"
-                  thumbTintColor="white"
-                />
-              )}
-            />
-          </View>
-        </View>
+        <View style={{ rowGap: 16 }}>
+          <Controller
+            control={control}
+            name="filters.minPrice"
+            render={({ field: { value, onChange } }) => (
+              <CSlider
+                value={value}
+                step={50}
+                maximumValue={10000}
+                onValueChange={onChange}
+                label={`Min Price: ₹${value}`}
+              />
+            )}
+          />
 
-        <View style={styles.filterGrid}>
-          <View style={styles.filterItem}>
-            <Text style={styles.filterLabel}>
-              Min Rating: {watch("filters.rating") || 0}★
-            </Text>
-            <Controller
-              control={control}
-              name="filters.rating"
-              render={({ field: { onChange, value } }) => (
-                <Slider
-                  style={{ width: "100%", height: 30 }}
-                  minimumValue={0}
-                  maximumValue={5}
-                  step={0.5}
-                  value={value || 0}
-                  onValueChange={onChange}
-                  minimumTrackTintColor={Colors.dark.tint}
-                  maximumTrackTintColor="#1a3a4a"
-                  thumbTintColor="white"
-                />
-              )}
-            />
-          </View>
-          <View style={styles.filterItem}>
-            <Text style={styles.filterLabel}>
-              Min Discount: {watch("filters.maxDiscount") || 0}%
-            </Text>
-            <Controller
-              control={control}
-              name="filters.maxDiscount"
-              render={({ field: { onChange, value } }) => (
-                <Slider
-                  style={{ width: "100%", height: 30 }}
-                  minimumValue={0}
-                  maximumValue={90}
-                  step={5}
-                  value={value || 0}
-                  onValueChange={onChange}
-                  minimumTrackTintColor={Colors.dark.tint}
-                  maximumTrackTintColor="#1a3a4a"
-                  thumbTintColor="white"
-                />
-              )}
-            />
-          </View>
-        </View>
+          <Controller
+            control={control}
+            name="filters.maxPrice"
+            render={({ field: { value, onChange } }) => (
+              <CSlider
+                value={value}
+                step={50}
+                maximumValue={10000}
+                onValueChange={onChange}
+                label={`Max Price: ₹${value}`}
+              />
+            )}
+          />
 
-        <View style={styles.filterGrid}>
-          <View style={styles.filterItem}>
-            <Text style={styles.filterLabel}>
-              Min Brand Disc: {watch("filters.maxBrandDiscount") || 0}%
-            </Text>
-            <Controller
-              control={control}
-              name="filters.maxBrandDiscount"
-              render={({ field: { onChange, value } }) => (
-                <Slider
-                  style={{ width: "100%", height: 30 }}
-                  minimumValue={0}
-                  maximumValue={90}
-                  step={5}
-                  value={value || 0}
-                  onValueChange={onChange}
-                  minimumTrackTintColor={Colors.dark.tint}
-                  maximumTrackTintColor="#1a3a4a"
-                  thumbTintColor="white"
-                />
-              )}
-            />
-          </View>
-          <View style={styles.filterItem}>
-            <Text style={styles.filterLabel}>
-              Screenshot Disc:{" "}
-              {watch("filters.maxDiscountForFullPageScreenshot") || 0}%
-            </Text>
-            <Controller
-              control={control}
-              name="filters.maxDiscountForFullPageScreenshot"
-              render={({ field: { onChange, value } }) => (
-                <Slider
-                  style={{ width: "100%", height: 30 }}
-                  minimumValue={0}
-                  maximumValue={90}
-                  step={5}
-                  value={value || 0}
-                  onValueChange={onChange}
-                  minimumTrackTintColor={Colors.dark.tint}
-                  maximumTrackTintColor="#1a3a4a"
-                  thumbTintColor="white"
-                />
-              )}
-            />
-          </View>
+          <Controller
+            control={control}
+            name="filters.rating"
+            render={({ field: { value, onChange } }) => (
+              <CSlider
+                value={value}
+                step={1}
+                minimumValue={1}
+                maximumValue={5}
+                onValueChange={onChange}
+                label={`Min Rating: ${"⭐".repeat(Number(value ?? 0))}`}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="filters.maxDiscount"
+            render={({ field: { value, onChange } }) => (
+              <CSlider
+                value={value}
+                maximumValue={90}
+                onValueChange={onChange}
+                label={`Min Discount: ${value}%`}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="filters.maxBrandDiscount"
+            render={({ field: { value, onChange } }) => (
+              <CSlider
+                value={value}
+                onValueChange={onChange}
+                label={`Min Brand Disc: ${value}%`}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="filters.maxDiscountForFullPageScreenshot"
+            render={({ field: { value, onChange } }) => (
+              <CSlider
+                value={value}
+                onValueChange={onChange}
+                label={`Screenshot Disc: ${value}%`}
+              />
+            )}
+          />
         </View>
 
         <View
@@ -464,7 +395,7 @@ export default function ScrapeDialog({
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
-    </CustomModal>
+    </Modal>
   );
 }
 
@@ -544,20 +475,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   startButton: {
-    marginTop: 24,
-    marginBottom: 20,
-    borderRadius: 12,
+    borderRadius: 8,
     overflow: "hidden",
   },
   gradient: {
-    paddingVertical: 14,
+    paddingBlock: 10,
     alignItems: "center",
     justifyContent: "center",
   },
   startButtonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 16,
+    color: "#85e2ff",
+    fontWeight: 600,
   },
   divider: {
     height: 1,
