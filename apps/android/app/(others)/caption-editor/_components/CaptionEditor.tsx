@@ -1,10 +1,7 @@
-import { Colors } from "../../../../src/constants/Colors";
-import { CaptionDetailsSchema } from "../../../../src/api/schemas/caption.schema";
-import { SocialMedia } from "../../../../src/types";
-import React from "react";
-import { Control, useController } from "react-hook-form";
+import * as z from "zod";
+import React, { useRef } from "react";
+import { Control, Controller, useController } from "react-hook-form";
 import {
-  ActivityIndicator,
   Image,
   ScrollView,
   StyleProp,
@@ -15,7 +12,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import * as z from "zod";
+
+import ProductPreview from "./ProductPreview";
+
+import { SocialMedia } from "@/types";
+
+import { Colors } from "@/constants/Colors";
+import { CaptionDetailsSchema } from "@/api/schemas/caption.schema";
 
 const platformImages: Record<SocialMedia, any> = {
   telegram: require("../../../../assets/images/icons/social-media/telegram.png"),
@@ -24,19 +27,14 @@ const platformImages: Record<SocialMedia, any> = {
   x: require("../../../../assets/images/icons/social-media/x.png"),
 };
 
-export interface CaptionDetailsControls {
+interface ControlType {
   control: Control<z.infer<typeof CaptionDetailsSchema>>;
 }
-export interface CaptionDetailsProps extends CaptionDetailsControls {
-  imageLoading: boolean;
-  mergedImage: string;
-  CompositorCanvas: React.JSX.Element | null;
-}
-export interface InputProps extends CaptionDetailsControls {
-  name: keyof z.infer<typeof CaptionDetailsSchema>;
+
+interface InputProps extends ControlType {
   label: string;
-  placeholder: string;
-  textInputStyle: StyleProp<TextStyle>;
+  name: keyof z.infer<typeof CaptionDetailsSchema>;
+  style?: StyleProp<TextStyle>;
   [key: string]: any;
 }
 
@@ -46,230 +44,174 @@ export interface PlatformViewProps {
   onPress: (platform: SocialMedia) => void;
 }
 
-// ============== Input Component ===============
-const Input: React.FC<InputProps> = ({
-  name,
-  control,
-  label,
-  textInputStyle,
-  placeholder,
-  ...props
-}) => {
-  const {
-    field,
-    fieldState: { error },
-    formState: { errors },
-  } = useController({ control, name });
-
-  const handleTextChange = (text: string) => {
-    let inputText = text;
-
-    if (name === "tags") {
-      // If user is typing in tags field and adds space, append a "#" for easy tagging
-      if (
-        inputText.length > (field.value as string).length &&
-        inputText.endsWith(" ")
-      ) {
-        inputText += " #";
-      }
-
-      // If there is no text previously and user adds text, prepend a "#"
-      if (
-        (field.value as string).length === 0 &&
-        inputText.length > 0 &&
-        !inputText.startsWith("#")
-      ) {
-        inputText = "#" + inputText;
-      }
-    }
-
-    field.onChange(inputText);
-  };
-
+const Input = ({ name, label, control, style, ...props }: InputProps) => {
   return (
-    <View style={inputStyle.labelView}>
-      {/* Input Label */}
+    <View>
       <Text style={inputStyle.labelText}>{label}</Text>
-
-      {/* Actual Input */}
-      <TextInput
-        value={field.value as string}
-        onChangeText={handleTextChange}
-        onBlur={field.onBlur}
-        placeholder={placeholder}
-        style={[inputStyle.inputText, textInputStyle]}
-        blurOnSubmit={false}
-        returnKeyType={name === "tags" ? "done" : "next"}
-        {...props}
+      <Controller
+        name={name}
+        control={control}
+        render={({
+          field: { value, onChange, onBlur },
+          formState: { errors },
+        }) => (
+          <React.Fragment>
+            <TextInput
+              value={value}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              style={[
+                inputStyle.inputText,
+                style,
+                { marginBottom: errors[name] ? 0 : 12 },
+              ]}
+              {...props}
+            />
+            {errors[name]?.message && (
+              <Text
+                style={[
+                  inputStyle.errorText,
+                  { marginBottom: errors[name] ? 12 : 0 },
+                ]}
+              >
+                {errors[name]?.message.toString()}
+              </Text>
+            )}
+          </React.Fragment>
+        )}
       />
-
-      {/* Show validation error */}
-      {error && <Text style={inputStyle.errorText}>{error.message}</Text>}
-
-      {/* Fallback error display */}
-      {!error && errors[name] && (
-        <Text style={inputStyle.errorText}>
-          {errors[name]?.message as string}
-        </Text>
-      )}
     </View>
   );
 };
 
-// ============== Platform Selector Component ===============
-const PlatformView = ({ platform, active, onPress }: PlatformViewProps) => {
-  return (
-    <TouchableOpacity
-      activeOpacity={0.7}
-      style={[
-        platformStyle.platformView,
-        {
-          backgroundColor: Colors.dark.header + (active ? "ff" : "99"),
-          opacity: active ? 1 : 0.35,
-        },
-      ]}
-      onPress={() => onPress(platform)}
-    >
-      {/* Platform Image */}
-      <Image
-        source={platformImages[platform as keyof typeof platformImages]}
-        style={platformStyle.platformImage}
-        resizeMode="contain"
-      />
-
-      {/* Platform Name */}
-      <Text style={platformStyle.platformName}>{platform}</Text>
-    </TouchableOpacity>
-  );
-};
-
-// ============== Platform Selector Component ===============
-const PlatformSelector = ({ control }: CaptionDetailsControls) => {
+const PlatformSelector = ({ control }: ControlType) => {
   const {
-    field,
     fieldState: { error },
+    field: { value: selectedPlatforms, onChange },
   } = useController({
     control,
     name: "platforms",
   });
 
   const handleSelectPlatform = (platform: SocialMedia) => {
-    // Toggle platform selection
-    const currentValue = field.value || [];
-    if (currentValue.includes(platform)) {
-      field.onChange(currentValue.filter((p: string) => p !== platform));
+    if (selectedPlatforms.includes(platform)) {
+      onChange(selectedPlatforms.filter((p) => p !== platform));
     } else {
-      field.onChange([...currentValue, platform]);
+      onChange([...selectedPlatforms, platform]);
     }
   };
 
   return (
-    <View style={inputStyle.labelView}>
-      {/* Label for Select Platform */}
-      <Text style={inputStyle.labelText}>Select Platforms</Text>
-
-      {/* Showing to select them */}
+    <View>
+      <Text style={[inputStyle.labelText]}>Select Platforms</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={[platformStyle.scrollView]}
       >
         {(["telegram", "facebook", "instagram", "x"] as SocialMedia[]).map(
-          (platform) => (
-            <PlatformView
-              key={platform}
-              platform={platform}
-              active={(field.value || []).includes(platform)}
-              onPress={handleSelectPlatform}
-            />
-          ),
+          (platform) => {
+            const active = selectedPlatforms.includes(platform);
+
+            return (
+              <TouchableOpacity
+                key={platform}
+                activeOpacity={0.7}
+                style={[
+                  platformStyle.platformView,
+                  {
+                    backgroundColor:
+                      Colors.dark.header + (active ? "ff" : "99"),
+                    opacity: !active ? 1 : 0.35,
+                    marginBottom: error ? 0 : 16,
+                  },
+                ]}
+                onPress={() => handleSelectPlatform(platform)}
+              >
+                <Image
+                  source={
+                    platformImages[platform as keyof typeof platformImages]
+                  }
+                  style={platformStyle.platformImage}
+                  resizeMode="contain"
+                />
+                <Text style={platformStyle.platformName}>{platform}</Text>
+              </TouchableOpacity>
+            );
+          },
         )}
       </ScrollView>
-
-      {/* Show validation error */}
-      {error && <Text style={inputStyle.errorText}>{error.message}</Text>}
+      {error && (
+        <Text style={[inputStyle.errorText, { marginBottom: error ? 16 : 0 }]}>
+          {error.message}
+        </Text>
+      )}
     </View>
   );
 };
 
-// ============== Main Caption Editor Component ===============
 export default function CaptionEditorForm({
+  images,
   control,
-  imageLoading,
-  mergedImage,
-  CompositorCanvas,
-}: CaptionDetailsProps) {
+}: ControlType & { images: string[] }) {
+  const captureRef = useRef<() => Promise<string>>(null);
+
+  const handleSubmit = async () => {
+    if (!captureRef.current) return;
+    const base64 = await captureRef.current();
+    if (base64) {
+      console.log("base64 ready →", base64.slice(0, 100));
+    }
+  };
+
   return (
-    <View style={{ marginTop: 8 }}>
-      {/* Display Image */}
+    <View>
       <View style={styles.imgView}>
-        {imageLoading ? (
-          // Show loading indicator while image is being processed
-          <View style={{ padding: 20 }}>
-            <ActivityIndicator size="large" color="#636368ff" />
-          </View>
-        ) : (
-          <Image
-            source={{
-              uri:
-                mergedImage && mergedImage.length > 0
-                  ? mergedImage
-                  : "https://via.placeholder.com/150",
-            }}
-            style={styles.img}
-            resizeMode="contain"
-          />
-        )}
+        <ProductPreview
+          images={images}
+          onCapture={(fn: () => Promise<string>) => (captureRef.current = fn)}
+        />
       </View>
-
-      {/* Select platform to send */}
       <PlatformSelector control={control} />
-
-      {/* TextArea to add caption */}
       <Input
         name="caption"
+        multiline
         control={control}
+        numberOfLines={8}
+        autoCorrect={true}
+        textContentType="none"
+        autoCapitalize="sentences"
         label="Add Caption"
         placeholder="Write your caption here..."
-        textInputStyle={{ height: 160, textAlignVertical: "top" }}
-        multiline
-        numberOfLines={8}
         placeholderTextColor={Colors.dark.text + "99"}
-        textContentType="none"
-        autoCorrect={true}
-        autoCapitalize="sentences"
+        style={{ height: 180, textAlignVertical: "top" }}
       />
-
-      {/* TextArea to add tags */}
       <Input
         name="tags"
-        control={control}
-        label="Tags (Optional)"
-        placeholder="Add some tags..."
-        textInputStyle={{ height: 80, textAlignVertical: "top" }}
         multiline
+        control={control}
         numberOfLines={4}
-        placeholderTextColor={Colors.dark.text + "99"}
-        textContentType="none"
         autoCorrect={false}
         autoCapitalize="none"
+        textContentType="none"
+        label="Tags (Optional)"
+        placeholder="Add some tags..."
+        placeholderTextColor={Colors.dark.text + "99"}
+        style={{ height: 80, textAlignVertical: "top" }}
       />
-
-      {CompositorCanvas}
     </View>
   );
 }
 
-// ============== Styles ===============
 const styles = StyleSheet.create({
   imgView: {
     width: "100%",
-    minHeight: 200,
+    height: 160,
     borderRadius: 12,
     overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
-    marginVertical: 20,
+    marginBottom: 16,
     backgroundColor: Colors.dark.header,
   },
   img: {
@@ -293,28 +235,24 @@ const styles = StyleSheet.create({
 });
 
 const inputStyle = StyleSheet.create({
-  labelView: {
-    gap: 6,
-    marginBottom: 12,
-    flexDirection: "column",
-    alignItems: "flex-start",
-  },
   labelText: {
-    fontSize: 16,
+    marginBottom: 6,
+    fontSize: 14,
     fontWeight: "600",
     color: Colors.dark.text,
   },
   inputText: {
     width: "100%",
-    color: "#fefffc",
-    padding: 12,
+    color: "#bebebe",
+    paddingLeft: 14,
+    paddingRight: 14,
     fontSize: 14,
     borderRadius: 8,
     textAlignVertical: "top",
     backgroundColor: Colors.dark.header,
   },
   errorText: {
-    color: "#e23030ff",
+    color: "rgb(199, 40, 40)",
     fontSize: 12,
     marginTop: 4,
     fontWeight: "500",
@@ -323,8 +261,8 @@ const inputStyle = StyleSheet.create({
 
 const platformStyle = StyleSheet.create({
   scrollView: {
-    flexDirection: "row",
     gap: 12,
+    flexDirection: "row",
     alignItems: "center",
   },
   platformView: {

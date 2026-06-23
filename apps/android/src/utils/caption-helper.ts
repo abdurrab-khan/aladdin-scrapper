@@ -1,6 +1,7 @@
 import { Product } from "@/types/product";
 import { TAGS_POOL } from "../constants/const";
 import { Affiliate } from "../types";
+import { ProductData } from "@/app/(others)/caption-editor";
 
 // export const extractProductCaptionDetails = (
 //   products: Product[],
@@ -41,18 +42,10 @@ import { Affiliate } from "../types";
 //   );
 // };
 
-export const generateCaption = (
-  products: Product[],
-  affiliates: Affiliate[] | null,
-): string => {
-  const productUrls = products.map((product) => {
-    const affiliateUrl = affiliates?.find(
-      (aff) => aff.product_id === product.product_id,
-    )?.affiliate_url;
-    const url = affiliateUrl ?? product.url;
-
-    return `🔗 ${url}`;
-  });
+export const generateCaption = (products: ProductData[]): string => {
+  const productUrls = products.map(
+    (product) => `🔗 ${product?.affiliateUrl?.url ?? product.url}`,
+  );
 
   const checkOutText =
     productUrls.length === 1 ? "Check this out" : "Check these out";

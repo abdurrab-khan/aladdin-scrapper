@@ -49,7 +49,7 @@ const SelectAction: React.FC = () => {
   }, [productSelectionData]);
 
   const handlePageRedirect = () => {
-    if (productSelectionData.size === 0 || productSelectionData.size > 5) {
+    if (productSelectionData.size === 0 || productSelectionData.size > 16) {
       const warningMsg =
         productSelectionData.size === 0
           ? "Please select at least one product"
@@ -76,7 +76,7 @@ const SelectAction: React.FC = () => {
     clearSelection();
     router.push({
       pathname: "/(others)/caption-editor",
-      params: { id: Array.from(productSelectionData.keys()).join(",") },
+      params: { ids: Array.from(productSelectionData.keys()).join(",") },
     });
   };
 

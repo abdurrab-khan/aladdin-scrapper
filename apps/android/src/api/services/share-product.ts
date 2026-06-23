@@ -1,6 +1,7 @@
-import { supabase } from "../clients/supabase.ts";
-import { CaptionDetails } from "../../types/index.ts";
+import { supabase } from "@/api/clients/supabase";
+import { CaptionDetails } from "@/types/index.js";
 import { FunctionsResponse } from "@supabase/functions-js";
+import { updateProduct } from "./product";
 
 export const shareProduct = async (
   productDetails: CaptionDetails,
@@ -11,11 +12,12 @@ export const shareProduct = async (
       method: "POST",
     });
 
-    console.log("Share Product Response is: ", shareProduct);
-
     if (shareProduct?.error) {
       throw new Error(shareProduct?.error);
     }
+
+    // // Update the product as shared
+    await updateProduct(productDetails.ids, { is_posted: true });
 
     return shareProduct;
   } catch (err) {
