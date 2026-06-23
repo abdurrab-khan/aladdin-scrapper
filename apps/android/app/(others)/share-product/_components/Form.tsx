@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import {
   Dimensions,
   KeyboardAvoidingView,
@@ -23,6 +23,8 @@ import { type ProductData } from "..";
 const { height: WINDOW_HEIGHT } = Dimensions.get("window");
 
 function Form({ products }: { products: ProductData[] }) {
+  const captureRef = useRef<() => Promise<string>>(null);
+
   const productImages = useMemo(() => {
     return products
       .reduce(
@@ -57,7 +59,6 @@ function Form({ products }: { products: ProductData[] }) {
       ids: products.map((pod) => pod.id),
       tags: getRandomTags(),
       platforms: ["telegram"],
-      productImage: productImages,
       caption: generateCaption(products),
       productUrls: products.map((pod) => pod.url),
     },
@@ -75,12 +76,15 @@ function Form({ products }: { products: ProductData[] }) {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollViewContent}
           >
-            <CaptionEditorForm control={control} images={productImages} />
+            <CaptionEditorForm
+              control={control}
+              images={productImages}
+              captureRef={captureRef}
+            />
           </ScrollView>
           <SubmitBtn
             control={control}
-            isLoading={false}
-            productImage={productImages}
+            captureRef={captureRef}
             handleSubmit={handleSubmit}
           />
         </View>

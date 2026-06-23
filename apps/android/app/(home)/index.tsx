@@ -1,6 +1,6 @@
-import SafeContainer from "../../src/components/layout/SafeContainer.tsx";
-import ProductList from "../../src/components/list/ProductList.tsx";
-import ScrapeFAB from "./_components/ScrapeFAB.tsx";
+import ScrapeFAB from "./_components/ScrapeFAB";
+import ProductList from "@/components/list/ProductList";
+import SafeContainer from "@/components/layout/SafeContainer";
 
 export default function TabsIndex() {
   return (

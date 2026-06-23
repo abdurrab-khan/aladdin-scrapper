@@ -1,5 +1,5 @@
 import * as z from "zod";
-import React, { useState } from "react";
+import React, { RefObject, useState } from "react";
 import { router } from "expo-router";
 import { Control } from "react-hook-form";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,46 +11,35 @@ import toast from "@/utils/toast";
 import ButtonWithDialog from "@/components/buttons/ButtonWithDialog";
 
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import { uploadProductImage } from "@/api/services/product";
+import { deleteProductImage, uploadProductImage } from "@/api/services/product";
 import { shareProduct } from "@/api/services/share-product";
 import { CaptionDetailsSchema } from "@/api/schemas/caption.schema";
 
 interface SubmitBtnProps {
-  isLoading: boolean;
-  productImage: string[];
   handleSubmit: any;
+  captureRef: RefObject<(() => Promise<string>) | null>;
   control: Control<z.infer<typeof CaptionDetailsSchema>>;
 }
 
-function SubmitBtn({
-  isLoading,
-  control,
-  productImages,
-  handleSubmit,
-}: SubmitBtnProps) {
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+function SubmitBtn({ control, captureRef, handleSubmit }: SubmitBtnProps) {
   const [visible, setVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
   const insets = useSafeAreaInsets();
 
-  const loading = isLoading || isSubmitting;
-
   const handleProductShare = async (data: CaptionDetails) => {
-    let productImageUrl: Awaited<ReturnType<typeof uploadProductImage>> = {
-      imagePath: "",
-      imageUrl: "",
-    };
+    if (!captureRef.current) return;
 
+    const base64 = await captureRef.current();
     setIsSubmitting(true);
 
+    let uploadData;
+
     try {
-      productImageUrl = await uploadProductImage(
-        data.productImage as Uint8Array,
-      );
-      data.productImage = productImageUrl.imageUrl;
+      uploadData = await uploadProductImage(base64);
+      data.productImage = uploadData.imageUrl;
 
-      // Share the product
       const shareResponse = await shareProduct(data);
-
       toast(shareResponse.data?.message ?? "Successfully posted");
 
       // Re-direct to home page.
@@ -67,6 +56,7 @@ function SubmitBtn({
     } finally {
       setVisible(false);
       setIsSubmitting(false);
+      await deleteProductImage(uploadData?.imagePath);
     }
   };
 
@@ -84,19 +74,14 @@ function SubmitBtn({
       errors["caption"]?.message ||
       errors["productUrls"]?.message ||
       errors["ids"]?.message ||
-      errors["productImage"]?.message ||
       "Please fill all required fields correctly.";
 
     toast(message as string);
   };
 
   const onDialogConfirm = () => {
-    if (typeof handleSubmit === "function") {
-      handleSubmit(handleProductShare)();
-    } else {
-      console.error("handleSubmit is not a function:", handleSubmit);
-      toast("Internal error: Share function failed.");
-    }
+    const submitFn = handleSubmit(handleProductShare);
+    submitFn();
   };
 
   return (
@@ -113,14 +98,14 @@ function SubmitBtn({
       <ButtonWithDialog
         visible={visible}
         setVisible={setVisible}
-        isLoading={loading}
+        isLoading={isSubmitting}
         dialogTitle="Do you really want to share this product?"
         dialogButtonAction={onDialogConfirm}
       >
         <TouchableOpacity
           activeOpacity={0.7}
           delayLongPress={100}
-          disabled={loading}
+          disabled={isSubmitting}
           onPress={handleButtonPress}
         >
           <LinearGradient

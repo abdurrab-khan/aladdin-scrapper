@@ -132,7 +132,7 @@ function ProductCards({
 
     // Redirect to caption editor page
     router.push({
-      pathname: `/(others)/caption-editor`,
+      pathname: `/(others)/share-product`,
       params: { ids: product.product_id },
     });
   }, [product.has_affiliate, product.product_id]);

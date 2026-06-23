@@ -53,7 +53,7 @@ const SelectAction: React.FC = () => {
       const warningMsg =
         productSelectionData.size === 0
           ? "Please select at least one product"
-          : "You can't share more than 5 product at once";
+          : "You can't share more than 16 product at once";
       toast(warningMsg);
       return;
     }
@@ -75,7 +75,7 @@ const SelectAction: React.FC = () => {
 
     clearSelection();
     router.push({
-      pathname: "/(others)/caption-editor",
+      pathname: "/(others)/share-product",
       params: { ids: Array.from(productSelectionData.keys()).join(",") },
     });
   };

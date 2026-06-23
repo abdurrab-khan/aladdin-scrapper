@@ -7,6 +7,8 @@ import Form from "./_components/Form";
 import FormSkeleton from "./_components/FormSkeleton";
 import { supabase } from "@/api/clients/supabase";
 import toast from "@/utils/toast";
+import NotFound from "./_components/NotFound";
+import useAppContext from "@/context/AppContext";
 
 export interface ProductImage {
   id: string;
@@ -34,15 +36,9 @@ export interface ProductData {
   affiliateUrl?: AffiliateUrl;
 }
 
-const NotFound = () => {
-  return (
-    <View>
-      <Text>Not found</Text>
-    </View>
-  );
-};
-
 export default function CaptionEditor() {
+  const { app } = useAppContext();
+
   const { ids: rawIds = "" } = useLocalSearchParams();
   const ids = rawIds.toString().split(",");
 
@@ -50,12 +46,20 @@ export default function CaptionEditor() {
     queries: ids.map((id) => ({
       queryKey: ["product", id],
       queryFn: async (): Promise<ProductData> => {
-        const { data } = await supabase.rpc("fetch_product", {
+        const { data, error } = await supabase.rpc("fetch_product", {
           pid: id,
-          appid: "8495f60a-a51f-4a77-a64d-d462056b5690",
+          appid: app?.id,
         });
+
+        if (error !== null) {
+          throw new Error(
+            error?.message ??
+              `An unknown error occurred while fetching product ${id}`,
+          );
+        }
         return data;
       },
+      enable: !!app,
     })),
     combine: (results) => ({
       data: results.map((result) => result.data).filter((p) => p !== undefined),
@@ -81,7 +85,7 @@ export default function CaptionEditor() {
 
   return (
     <React.Fragment>
-      {!Array.isArray(ids) || ids.length === 0 ? (
+      {!Array.isArray(ids) || ids.length <= 0 ? (
         <NotFound />
       ) : isPending ? (
         <FormSkeleton />

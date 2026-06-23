@@ -1,46 +1,5 @@
-import { Product } from "@/types/product";
 import { TAGS_POOL } from "../constants/const";
-import { Affiliate } from "../types";
-import { ProductData } from "@/app/(others)/caption-editor";
-
-// export const extractProductCaptionDetails = (
-//   products: Product[],
-//   affiliates: Affiliate[] = [],
-// ): ProductDetailsProps => {
-//   if (products == null || products.length === 0) {
-//     throw new Error("Product array is null or empty");
-//   }
-
-//   return products.reduce(
-//     (acc, prod) => {
-//       // Find the corresponding affiliate link
-//       const affiliate = affiliates.find(
-//         (a) => a.product_id === prod.product_id,
-//       );
-//       const affiliateUrl: string = affiliate
-//         ? affiliate.affiliate_url
-//         : prod.url;
-
-//       const images = Array.isArray(prod.images) ? prod.images : [];
-//       const cardImage =
-//         images.find((img) => img.image_type === "Card")?.image_url ||
-//         images[0]?.image_url ||
-//         "https://via.placeholder.com/150";
-
-//       acc.ids.push(prod.product_id);
-//       acc.productUrls.push(prod.url);
-//       acc.productImages.push(cardImage);
-//       acc.productAffiliateUrls.push(affiliateUrl);
-//       return acc;
-//     },
-//     {
-//       ids: [],
-//       productUrls: [],
-//       productImages: [],
-//       productAffiliateUrls: [],
-//     } as ProductDetailsProps,
-//   );
-// };
+import { ProductData } from "@/app/(others)/share-product";
 
 export const generateCaption = (products: ProductData[]): string => {
   const productUrls = products.map(

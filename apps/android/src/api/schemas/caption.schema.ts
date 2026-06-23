@@ -7,13 +7,8 @@ export const CaptionDetailsSchema = zod.object({
     .array(zod.enum(["x", "facebook", "instagram", "telegram"]))
     .min(1, "At least one platform must be selected"),
   productUrls: zod
-    .array(zod.string().url())
+    .array(zod.url())
     .min(1, "At least one product URL is required"),
-  productImage: zod
-    .any()
-    .refine((val) => val instanceof Uint8Array || typeof val === "string", {
-      message: "Product image must be a Uint8Array or a valid URL string",
-    }),
   tags: zod.string().optional(),
 });
 

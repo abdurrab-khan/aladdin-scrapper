@@ -1,3 +1,4 @@
+import { decode } from "base64-arraybuffer";
 import { supabase } from "../clients/supabase";
 import { Product } from "../../types/product";
 import { PostgrestError } from "@supabase/supabase-js";
@@ -140,15 +141,21 @@ export const updateProduct = async (
 };
 
 export const uploadProductImage = async (
-  pngBytes: Uint8Array,
+  imageBase64: string,
 ): Promise<{ imageUrl: string; imagePath: string }> => {
   try {
     const fileName = `send-product/product_${Date.now()}.png`;
+
+    // Removing existing URI Prefix
+    const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+
+    const imageBuffer = decode(cleanBase64);
+
     const { data, error } = await supabase.storage
       .from("aladdin-deals")
-      .upload(fileName, pngBytes, {
-        cacheControl: "3600",
+      .upload(fileName, imageBuffer, {
         upsert: false,
+        cacheControl: "3600",
         contentType: "image/png",
       });
 
@@ -171,28 +178,19 @@ export const uploadProductImage = async (
 };
 
 export const deleteProductImage = async (
-  imagePath: string | string[],
-): Promise<boolean> => {
+  imagePath?: string | string[],
+): Promise<void> => {
   try {
     if (!imagePath) {
-      throw new Error("Image path is required.");
+      return;
     }
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from("aladdin-deals")
       .remove(Array.isArray(imagePath) ? imagePath : [imagePath]);
 
     if (error) {
-      console.error("Supabase storage deletion error:", error);
       throw new Error(`Failed to delete image: ${error.message}`);
-    }
-
-    if (data && data.length > 0) {
-      console.log("Image deleted successfully:");
-      return true;
-    } else {
-      console.warn("No files were deleted or file might not exist");
-      return false;
     }
   } catch (err: unknown) {
     const errMessage =
@@ -210,8 +208,6 @@ export const getProductCategories = async (
     const { data, error } = await supabase.rpc("fetch_category", {
       p_app_id: appId,
     });
-
-    console.log("Data is: ", data);
 
     if (error) {
       throw new Error(error.message);

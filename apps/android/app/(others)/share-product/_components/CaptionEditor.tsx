@@ -1,5 +1,5 @@
 import * as z from "zod";
-import React, { useRef } from "react";
+import React, { RefObject, useRef } from "react";
 import { Control, Controller, useController } from "react-hook-form";
 import {
   Image,
@@ -153,17 +153,11 @@ const PlatformSelector = ({ control }: ControlType) => {
 export default function CaptionEditorForm({
   images,
   control,
-}: ControlType & { images: string[] }) {
-  const captureRef = useRef<() => Promise<string>>(null);
-
-  const handleSubmit = async () => {
-    if (!captureRef.current) return;
-    const base64 = await captureRef.current();
-    if (base64) {
-      console.log("base64 ready →", base64.slice(0, 100));
-    }
-  };
-
+  captureRef,
+}: ControlType & {
+  images: string[];
+  captureRef: RefObject<(() => Promise<string>) | null>;
+}) {
   return (
     <View>
       <View style={styles.imgView}>

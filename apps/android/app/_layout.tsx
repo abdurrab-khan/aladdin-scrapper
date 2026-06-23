@@ -9,8 +9,6 @@ import queryClient from "@/api/clients/queryClient";
 import AppContextProvider from "@/context/AppContextProvider";
 import SplashScreenController from "@/components/SplashScreenController";
 
-// Polyfill DOMException for environments like Hermes/JSC where it might be missing
-// but required by modern libraries like zod 3.24+ or supabase.
 if (typeof global.DOMException === "undefined") {
   (global as any).DOMException = class DOMException extends Error {
     constructor(message?: string, name?: string) {
