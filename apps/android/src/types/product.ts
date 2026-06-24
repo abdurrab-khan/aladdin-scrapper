@@ -1,16 +1,16 @@
 import { Affiliate, PlateForm } from ".";
 
 export type ProductImage = {
-  image_id: string;
-  image_url: string;
-  image_type: "Card" | "Group" | string;
-  image_status: "Completed" | string;
+  id: string;
+  imageUrl: string;
+  imageType: "Card" | "Group" | string;
+  imageStatus: "Completed";
 };
 
 export type Website = {
-  website_id: string;
-  website_icon: string | null;
-  website_name: string;
+  id: string;
+  name: string;
+  icon: string | null;
 };
 
 export interface Product {
@@ -24,7 +24,7 @@ export interface Product {
   is_grouped: boolean;
   user_id: string;
   app_id: string;
-  images: ProductImage[]; // It comes as string from DB and needs parsing
+  product_images: ProductImage[]; // It comes as string from DB and needs parsing
   website: Website | string; // It comes as string from DB and needs parsing
   has_affiliate: boolean;
   category?: string; // Optional as not in provided sample but used in code

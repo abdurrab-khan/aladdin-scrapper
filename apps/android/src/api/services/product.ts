@@ -22,18 +22,15 @@ export const getProducts = async ({
 }: getProductsProps): Promise<Product[]> => {
   try {
     let queryBuilder = supabase
-      .from("product_info")
+      .from("products_v2")
       .select("*")
       .eq("app_id", appId);
 
-    // Apply category filter if provided
-    if (categoryValue) {
-      queryBuilder = queryBuilder.eq("category", categoryValue);
-    }
-
-    // Apply search query filter if provided
-    if (query) {
-      queryBuilder = queryBuilder.ilike("name", `%${query}%`);
+    // Applying filter on query and category
+    if (categoryValue || query) {
+      if (query) queryBuilder = queryBuilder.ilike("name", `%${query}%`);
+      if (categoryValue)
+        queryBuilder = queryBuilder.eq("category", categoryValue);
     }
 
     const products = await queryBuilder
@@ -41,39 +38,7 @@ export const getProducts = async ({
       .order("category", { ascending: true })
       .order("discount_price", { ascending: true });
 
-    if (products.status !== 200 && products.status !== 206) {
-      throw new PostgrestError({
-        message: products.error?.message || "Failed to fetch products",
-        details: products.error?.details || "",
-        hint: products.error?.hint || "",
-        code: products.error?.code || "",
-      });
-    }
-
-    if (!products.data || products.data.length === 0) {
-      return [];
-    }
-
-    // Parse JSON strings
-    const parsedProducts = products.data.map((product: any) => {
-      const images =
-        typeof product.images === "string"
-          ? JSON.parse(product.images)
-          : product.images;
-
-      const website =
-        typeof product.website === "string"
-          ? JSON.parse(product.website)
-          : product.website;
-
-      return {
-        ...product,
-        images: Array.isArray(images) ? images : [],
-        website: website || {},
-      };
-    });
-
-    return parsedProducts as Product[];
+    return (products?.data ?? []) as Product[];
   } catch (err: unknown) {
     const errMessage =
       err instanceof PostgrestError
@@ -84,10 +49,7 @@ export const getProducts = async ({
   }
 };
 
-export const deleteProducts = async (
-  ids: string[] | string,
-  imageId: string[] | string,
-) => {
+export const deleteProducts = async (ids: string[] | string) => {
   if (!ids || ids.length === 0) {
     throw new Error("Product IDs are required.");
   }
@@ -101,9 +63,6 @@ export const deleteProducts = async (
     if (error) {
       throw new Error(error.message);
     }
-
-    // Delete the image associated with the products
-    await deleteProductImage(imageId);
 
     return true;
   } catch (err: unknown) {
@@ -177,29 +136,29 @@ export const uploadProductImage = async (
   }
 };
 
-export const deleteProductImage = async (
-  imagePath?: string | string[],
-): Promise<void> => {
-  try {
-    if (!imagePath) {
-      return;
-    }
+// export const deleteProductImage = async (
+//   imagePath?: string | string[],
+// ): Promise<void> => {
+//   try {
+//     if (!imagePath) {
+//       return;
+//     }
 
-    const { error } = await supabase.storage
-      .from("aladdin-deals")
-      .remove(Array.isArray(imagePath) ? imagePath : [imagePath]);
+//     const { error } = await supabase.storage
+//       .from("aladdin-deals")
+//       .remove(Array.isArray(imagePath) ? imagePath : [imagePath]);
 
-    if (error) {
-      throw new Error(`Failed to delete image: ${error.message}`);
-    }
-  } catch (err: unknown) {
-    const errMessage =
-      err instanceof Error
-        ? err.message
-        : "An error occurred during image deletion.";
-    throw new Error(errMessage);
-  }
-};
+//     if (error) {
+//       throw new Error(`Failed to delete image: ${error.message}`);
+//     }
+//   } catch (err: unknown) {
+//     const errMessage =
+//       err instanceof Error
+//         ? err.message
+//         : "An error occurred during image deletion.";
+//     throw new Error(errMessage);
+//   }
+// };
 
 export const getProductCategories = async (
   appId: string,
@@ -222,42 +181,5 @@ export const getProductCategories = async (
         ? err.message
         : "An error occurred while fetching product categories.";
     throw new Error(errMessage);
-  }
-};
-
-export const getProductsByIds = async (ids: string[]): Promise<Product[]> => {
-  if (!ids || ids.length === 0) return [];
-
-  try {
-    const { data, error } = await supabase
-      .from("product_info")
-      .select("*")
-      .in("product_id", ids);
-
-    if (error) throw error;
-
-    if (!data) return [];
-
-    return data.map((product: any) => {
-      const images =
-        typeof product.images === "string"
-          ? JSON.parse(product.images)
-          : product.images;
-
-      const website =
-        typeof product.website === "string"
-          ? JSON.parse(product.website)
-          : product.website;
-
-      return {
-        ...product,
-        images: Array.isArray(images) ? images : [],
-        website: website || {},
-      };
-    }) as Product[];
-  } catch (err) {
-    throw new Error(
-      err instanceof Error ? err.message : "Failed to fetch products by IDs",
-    );
   }
 };
