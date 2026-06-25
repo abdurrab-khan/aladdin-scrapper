@@ -6,14 +6,17 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-import { CaptionDetails } from "@/types";
 import toast from "@/utils/toast";
 import ButtonWithDialog from "@/components/buttons/ButtonWithDialog";
 
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import { deleteProductImage, uploadProductImage } from "@/api/services/product";
+import { uploadProductImage } from "@/api/services/product";
 import { shareProduct } from "@/api/services/share-product";
 import { CaptionDetailsSchema } from "@/api/schemas/caption.schema";
+
+type CaptionDetails = z.infer<typeof CaptionDetailsSchema> & {
+  productImage?: string;
+};
 
 interface SubmitBtnProps {
   handleSubmit: any;
@@ -56,7 +59,6 @@ function SubmitBtn({ control, captureRef, handleSubmit }: SubmitBtnProps) {
     } finally {
       setVisible(false);
       setIsSubmitting(false);
-      await deleteProductImage(uploadData?.imagePath);
     }
   };
 

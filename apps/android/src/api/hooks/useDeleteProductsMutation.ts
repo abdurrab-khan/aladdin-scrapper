@@ -5,8 +5,7 @@ export const useDeleteProductsMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ ids, imageIds }: { ids: string[]; imageIds: string[] }) =>
-      deleteProductsService(ids, imageIds),
+    mutationFn: ({ ids }: { ids: string[] }) => deleteProductsService(ids),
     onSuccess: () => {
       // Invalidate products query to refresh the list
       queryClient.invalidateQueries({ queryKey: ["products"] });

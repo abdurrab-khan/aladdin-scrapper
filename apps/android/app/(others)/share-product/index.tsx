@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { Text, View } from "react-native";
 import { useQueries } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 

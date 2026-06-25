@@ -15,21 +15,19 @@ import { IconSymbol } from "../ui/IconSymbol";
 import ButtonWithDialog from "./ButtonWithDialog";
 
 interface DeleteProductProps {
-  id: string[] | string;
-  imageId: string[] | string;
+  ids: string[];
   btnTitle?: string;
-  btnStyle: StyleProp<ViewStyle>;
   iconSize?: number;
+  btnStyle: StyleProp<ViewStyle>;
   gradientColor: LinearGradientProps["colors"];
 }
 
 const DeleteProduct = ({
-  id,
-  imageId,
+  ids,
   btnTitle,
-  gradientColor,
-  iconSize = 18,
   btnStyle,
+  iconSize = 18,
+  gradientColor,
 }: DeleteProductProps) => {
   const { clearSelection } = useProductStore();
   const [visible, setVisible] = useState<boolean>(false);
@@ -37,10 +35,7 @@ const DeleteProduct = ({
 
   const handleProductDelete = async () => {
     try {
-      const ids = Array.isArray(id) ? id : [id];
-      const imageIds = Array.isArray(imageId) ? imageId : [imageId];
-
-      await deleteMutation.mutateAsync({ ids, imageIds });
+      await deleteMutation.mutateAsync({ ids });
 
       ToastAndroid.show("Product deleted successfully", ToastAndroid.SHORT);
     } catch (error) {
@@ -70,7 +65,11 @@ const DeleteProduct = ({
         onPress={() => setVisible(true)}
       >
         <LinearGradient
-          colors={gradientColor && gradientColor.length > 0 ? gradientColor : ["#ff5f6d", "#d7263d"]}
+          colors={
+            gradientColor && gradientColor.length > 0
+              ? gradientColor
+              : ["#ff5f6d", "#d7263d"]
+          }
           start={{ x: 1, y: 0 }}
           end={{ x: 0, y: 0 }}
           style={btnStyle}
@@ -89,14 +88,14 @@ const DeleteProduct = ({
 
 const deleteProductStyle = StyleSheet.create({
   btnContent: {
-    gap: 8,
-    justifyContent: "center",
-    alignItems: "center",
+    gap: 6,
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   btnTitle: {
+    fontSize: 14,
     color: "white",
-    fontSize: 16,
     fontWeight: "600",
   },
 });

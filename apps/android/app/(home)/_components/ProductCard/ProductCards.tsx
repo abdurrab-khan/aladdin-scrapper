@@ -1,22 +1,80 @@
-import React from "react";
-import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Image,
+  Vibration,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 
 import { useProductStore } from "@/store/useProductStore";
 
-import { type Product } from "@/types/product";
+import ShareBtn from "./ShareBtn";
+import ProductDetails from "./ProductDetails";
+
 import { Colors } from "@/constants/Colors";
+import { type Product } from "@/types/product";
+import AddAffiliate from "../AddAffiliate/AddAffiliate";
 
-interface ProductCardsProps {
-  product: Product;
-  onSelect: (productId: string) => void;
-}
+function ProductCards({ product }: { product: Product }) {
+  const [isAffiliateVisible, setIsAffiliateVisible] = useState<boolean>(false);
 
-function ProductCards({ product, onSelect }: ProductCardsProps) {
-  const { productSelectionData } = useProductStore();
+  const { selectedProducts, toggleSelectedProducts } = useProductStore();
+
+  const cardImage =
+    product.product_images.find((img) => img.imageType === "Card")?.imageUrl ??
+    "";
+
+  const handleSelectProduct = () => {
+    if (selectedProducts.size === 0) {
+      Vibration.vibrate(50);
+      toggleSelectedProducts(product.product_id);
+    }
+  };
 
   return (
-    <TouchableOpacity style={[cardStyles.cardContainer]} activeOpacity={0.8}>
-      {productSelectionData.size > 0 && (
+    <TouchableOpacity style={styles.container} activeOpacity={0.8}>
+      {isAffiliateVisible && (
+        <AddAffiliate
+          product={product}
+          visible={isAffiliateVisible}
+          setVisible={setIsAffiliateVisible}
+        />
+      )}
+
+      {/* CARD CONTENT */}
+      <View style={styles.contentContainer}>
+        <Pressable
+          style={styles.imageContainer}
+          onLongPress={handleSelectProduct}
+        >
+          <Image
+            source={{
+              uri: cardImage,
+              cache: "force-cache",
+            }}
+            resizeMode="contain"
+            style={styles.productImage}
+            progressiveRenderingEnabled
+          />
+        </Pressable>
+        <View style={styles.detailsContainer}>
+          <ProductDetails product={product} onSelect={handleSelectProduct} />
+          <ShareBtn
+            isPosted={product.is_posted}
+            productId={product.product_id}
+            hasAffiliate={
+              Array.isArray(product?.affiliate_urls) &&
+              product.affiliate_urls.length > 0
+            }
+            onToggleDialog={() => setIsAffiliateVisible(true)}
+          />
+        </View>
+      </View>
+
+      {/* SELECTED PRODUCT INDICATOR */}
+      {selectedProducts.size > 0 && (
         <Pressable
           style={{
             position: "absolute",
@@ -24,13 +82,12 @@ function ProductCards({ product, onSelect }: ProductCardsProps) {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: productSelectionData.has(product.id!)
+            zIndex: 1,
+            backgroundColor: selectedProducts.has(product.product_id)
               ? "rgba(0, 128, 0, 0.3)"
               : "rgba(0, 0, 0, 0.6)",
-            zIndex: 1,
-            borderRadius: 8,
           }}
-          onPress={() => onSelect(product.product_id)}
+          onPress={() => toggleSelectedProducts(product.product_id)}
         />
       )}
     </TouchableOpacity>
@@ -49,72 +106,47 @@ export default React.memo(ProductCards, (prevProps, nextProps) => {
 
   return (
     prevProduct.is_posted === nextProduct.is_posted &&
-    prevProduct.has_affiliate === nextProduct.has_affiliate &&
     prevProduct.is_grouped === nextProduct.is_grouped
   );
 });
 
-const cardStyles = StyleSheet.create({
-  cardContainer: {
-    height: "auto",
-    position: "relative",
-    flexDirection: "row",
+const styles = StyleSheet.create({
+  container: {
     padding: 8,
     borderWidth: 1,
-    borderRadius: 8,
-    borderColor: Colors.dark.borderColor,
-    shadowColor: "white",
-    shadowOffset: { width: 0, height: 10 },
+    borderRadius: 12,
     shadowOpacity: 1,
     shadowRadius: 4,
+    overflow: "hidden",
+    shadowColor: "white",
     backgroundColor: Colors.dark.header,
+    borderColor: Colors.dark.borderColor,
+    shadowOffset: { width: 0, height: 10 },
+  },
+  contentContainer: {
+    columnGap: 8,
+    flex: 1,
+    height: "100%",
+    width: "100%",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  detailsContainer: {
+    flex: 1,
+    rowGap: 12,
+    alignItems: "center",
+    flexDirection: "column",
   },
   imageContainer: {
-    height: 200,
-    width: 140,
+    flex: 0.7,
     borderWidth: 1,
     borderRadius: 8,
-    borderColor: Colors.dark.borderColor,
     overflow: "hidden",
+    borderColor: Colors.dark.borderColor,
   },
   productImage: {
     width: "100%",
     height: "100%",
-  },
-  descriptionContainerMain: {
-    flex: 1,
-    gap: 6,
-    paddingLeft: 12,
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
-  productTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginTop: 4,
-    color: Colors.dark.titleText,
-  },
-  upperInfo: {
-    justifyContent: "flex-end",
-    alignItems: "center",
-    flexDirection: "row",
-    columnGap: 6,
-    rowGap: 4,
-    flexWrap: "wrap",
-  },
-});
-
-const commonStyles = StyleSheet.create({
-  spaceBetween: {
-    flexWrap: "wrap",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  text: {
-    color: Colors.dark.text,
-  },
-  price: {
-    textDecorationLine: "line-through",
+    backgroundColor: "white",
   },
 });

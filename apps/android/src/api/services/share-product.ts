@@ -1,7 +1,12 @@
-import { supabase } from "@/api/clients/supabase";
-import { CaptionDetails } from "@/types/index.js";
-import { FunctionsResponse } from "@supabase/functions-js";
+import { z } from "zod";
 import { updateProduct } from "./product";
+import { supabase } from "@/api/clients/supabase";
+import { FunctionsResponse } from "@supabase/functions-js";
+import { CaptionDetailsSchema } from "@/api/schemas/caption.schema";
+
+type CaptionDetails = z.infer<typeof CaptionDetailsSchema> & {
+  productImage?: string;
+};
 
 export const shareProduct = async (
   productDetails: CaptionDetails,

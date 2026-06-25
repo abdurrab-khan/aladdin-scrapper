@@ -9,10 +9,10 @@ import {
   StyleSheet,
 } from "react-native";
 
-import ProductCards from "../../../app/(home)/_components/ProductCard/ProductCards";
-import SelectAction from "../dialog/SelectAction";
-import NotProductFound from "../ui/NotProductFound";
+import ProductCards from "./ProductCard/ProductCards";
 import HomeHeader from "@/app/(home)/_components/HomeHeader";
+import NotProductFound from "@/components/ui/NotProductFound";
+import SelectAction from "@/app/(home)/_components/SelectAction";
 
 import { Product } from "@/types/product";
 
@@ -20,13 +20,8 @@ import { useProductStore } from "@/store/useProductStore";
 import { useProductsQuery } from "@/api/hooks/useProductsQuery";
 
 export default function ProductList() {
-  const {
-    searchQuery,
-    currentCategory,
-    productSelectionData,
-    toggleProductSelection,
-    clearSelection,
-  } = useProductStore();
+  const { searchQuery, clearSelection, currentCategory, selectedProducts } =
+    useProductStore();
 
   const {
     data,
@@ -37,8 +32,8 @@ export default function ProductList() {
     refetch,
     isRefetching,
   } = useProductsQuery({
-    category: currentCategory,
     query: searchQuery,
+    category: currentCategory,
   });
 
   const products = data?.pages.flat() || [];
@@ -58,19 +53,14 @@ export default function ProductList() {
   }, []);
 
   const renderItem = useCallback(
-    ({ item }: { item: Product }) => (
-      <ProductCards
-        product={item}
-        onSelect={() => toggleProductSelection(item)}
-      />
-    ),
-    [toggleProductSelection],
+    ({ item }: { item: Product }) => <ProductCards product={item} />,
+    [],
   );
 
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        if (productSelectionData.size > 0) {
+        if (selectedProducts.size > 0) {
           clearSelection();
           return true;
         }
@@ -85,7 +75,7 @@ export default function ProductList() {
       return () => {
         subscription.remove();
       };
-    }, [productSelectionData.size, clearSelection]),
+    }, [selectedProducts.size, clearSelection]),
   );
 
   return (
@@ -126,8 +116,7 @@ export default function ProductList() {
         }
         onScrollBeginDrag={handleScrollBegin}
       />
-
-      {productSelectionData.size > 0 && <SelectAction />}
+      {selectedProducts.size > 0 && <SelectAction />}
     </React.Fragment>
   );
 }

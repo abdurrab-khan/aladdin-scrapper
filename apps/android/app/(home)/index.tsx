@@ -1,6 +1,6 @@
 import ScrapeFAB from "./_components/ScrapeFAB";
-import ProductList from "@/components/list/ProductList";
-import SafeContainer from "@/components/layout/SafeContainer";
+import SafeContainer from "@/components/SafeContainer";
+import ProductList from "@/app/(home)/_components/ProductList";
 
 export default function TabsIndex() {
   return (

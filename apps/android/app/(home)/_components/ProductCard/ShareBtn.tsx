@@ -37,16 +37,17 @@ function ShareBtn({
 
   const btnGradient: LinearGradientProps["colors"] = isPosted
     ? ["#b20000a9", "#f74141ff"]
-    : hasAffiliate
-      ? ["#00d2ff", "#3a47d5"]
-      : ["#1d4b88", "#2b6da0"];
+    : ["#1d4b88", "#2b6da0"];
 
   return (
     <TouchableOpacity
       activeOpacity={0.7}
       delayLongPress={100}
-      onLongPress={handleBtnLongPress}
       onPress={handlePageRedirect}
+      onLongPress={handleBtnLongPress}
+      style={{
+        width: "100%",
+      }}
     >
       <LinearGradient
         colors={btnGradient}

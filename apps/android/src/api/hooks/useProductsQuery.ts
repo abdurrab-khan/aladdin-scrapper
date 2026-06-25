@@ -8,8 +8,8 @@ interface UseProductsQueryParams {
 }
 
 export const useProductsQuery = ({
-  category: category = "All",
   query: query = "",
+  category: category = "All",
 }: UseProductsQueryParams) => {
   const { app } = useAppContext();
 

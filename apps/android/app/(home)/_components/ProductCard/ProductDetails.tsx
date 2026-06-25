@@ -1,156 +1,114 @@
-import React, { useState } from 'react'
-import { View } from 'react-native'
+import React from "react";
+import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 
-function ProductDetails() {
-  const [visible, setVisible] = useState<boolean>(false);
-  const [isImageViewOpen, setIsImageViewOpen] = useState<boolean>(false);
+import Badge from "@/components/ui/Badge";
 
-  const productImages = React.useMemo(() => {
-    return images.map(
-      (img) =>
-        ({
-          uri: img.imageUrl,
-          cache: "force-cache",
-        }) as ImageSource,
-    );
-  }, [images]);
+import { Colors } from "@/constants/Colors";
 
-  console.log("Images are: ", images);
+import toast from "@/utils/toast";
 
-  const cardImage = React.useMemo(() => {
-    const cardImg = images.find((img) => img.imageType === "Card") || images[0];
-    return cardImg?.imageUrl;
-  }, [images]);
+import { type Product } from "@/types/product";
 
+function ProductDetails({
+  product,
+  onSelect,
+}: {
+  product: Product;
+  onSelect: () => void;
+}) {
+  const { website } = product;
 
-
-  // Handle -- Product Selection
-  const handleSelectProduct = useCallback(() => {
-    if (hasSelecting) return;
-
-    Vibration.vibrate(50);
-    onSelect(product.product_id);
-  }, [product.product_id, hasSelecting, onSelect]);
-
-  // Handle -- Visit to follow up product app
-  const handleVisitToProduct = useCallback(() => {
+  const handleVisitToProduct = () => {
     try {
       Linking.openURL(product.url);
     } catch (err) {
-      const msg =
+      toast(
         err instanceof Error
           ? err.message
-          : "An error occurred while opening the link.";
-      ToastAndroid.show(msg, 0.4);
+          : "An error occurred while opening the link.",
+        0.4,
+      );
     }
-  }, [product.url]);
+  };
 
-
-
-    return (
-    <View>
-            {showAffiliateDialog && (
-        <AddAffiliate
-          productURL={product.url}
-          productId={product.product_id}
-          isGrouped={product.is_grouped}
-          platformId={website.id}
-          setVisible={setShowAffiliateDialog}
-          visible={showAffiliateDialog}
-        />
-      )}
-      
-      
-      <ImageView
-        imageIndex={0}
-        images={productImages}
-        animationType="slide"
-        visible={isImageViewOpen}
-        presentationStyle="formSheet"
-        keyExtractor={(_, index) =>
-          `product-image-${product.product_id}-${index}`
-        }
-        onRequestClose={() => setIsImageViewOpen(false)}
-      />
-
-      {/* Product Image  */}
-      <Pressable
-        style={cardStyles.imageContainer}
-        onPress={() => setIsImageViewOpen(true)}
-        onLongPress={handleSelectProduct}
-      >
-        <Image
-          source={{
-            uri: cardImage,
-            cache: "force-cache",
-          }}
-          style={cardStyles.productImage}
-          resizeMode="cover"
-          progressiveRenderingEnabled
-        />
-      </Pressable>
-
-      {/* Product Info */}
-      <Pressable
-        style={cardStyles.descriptionContainerMain}
-        onPress={handleVisitToProduct}
-        onLongPress={handleSelectProduct}
-      >
-        {/* Product description */}
-        <View>
-          {/* Upper Info */}
-          <View style={cardStyles.upperInfo}>
-            {/* Platform Badge */}
-            <Badge text={website.name} color={["#ffb347", "#ff6b00"]} />
-
-            {/* Grouped Badge */}
-            <Badge
-              text={product.is_grouped ? "Grouped" : null}
-              color={["#a8d8ff", "#3da3ff"]}
-            />
-          </View>
-
-          {/* Brand Name */}
-          <View style={{ marginTop: 4 }}>
-            <Text
-              style={[commonStyles.text, { fontSize: 12, fontWeight: "500" }]}
-            >
-              {product.brand}
-            </Text>
-          </View>
-
-          {/* Product name */}
-          <Text style={cardStyles.productTitle}>
-            {product.name.length > 54
-              ? `${product.name.slice(0, 54)}...`
-              : product.name}
-          </Text>
-
-          {/* Product rating */}
-          <View style={[commonStyles.spaceBetween]}>
-            <ReviewStar rating={product.rating ?? 0} size={16} />
-
-            <Text style={[commonStyles.text]}>
-              {convertNumberToString(product.reviews ?? 0)} reviews
-            </Text>
-          </View>
-
-          {/* Product prices */}
-          <View style={[commonStyles.spaceBetween]}>
-            <Text style={[commonStyles.text, { fontSize: 18 }]}>
-              ₹ {product.discount_price}
-            </Text>
-
-            <Text
-              style={[commonStyles.text, commonStyles.price, { fontSize: 18 }]}
-            >
-              ₹ {product.price}
-            </Text>
-          </View>
-        </View>
-
-    </View>
-  )
+  return (
+    <Pressable
+      onPress={handleVisitToProduct}
+      onLongPress={onSelect}
+      style={styles.descriptionContainerMain}
+    >
+      {/* Badges to display product details */}
+      <View style={styles.upperInfo}>
+        {product.product_images.some((p) => p.imageType === "Full") && (
+          <Badge text="Full" color={["#ffb347", "#ff6b00"]} />
+        )}
+        {product.is_grouped && (
+          <Badge text="Grouped" color={["#a8d8ff", "#3da3ff"]} />
+        )}
+        {product.affiliate_urls && product.affiliate_urls.length > 0 && (
+          <Badge text="Has Affiliate" color={["#a8d8ff", "#3da3ff"]} />
+        )}
+        <Badge text={website.name} color={["#ffb347", "#ff6b00"]} />
+      </View>
+      <View style={{ marginTop: 4 }}>
+        <Text style={[commonStyles.text, { fontSize: 12, fontWeight: "500" }]}>
+          {product.brand}
+        </Text>
+      </View>
+      <Text style={styles.productTitle}>
+        {product.name.length > 54
+          ? `${product.name.slice(0, 54)}...`
+          : product.name}
+      </Text>
+      <View style={[commonStyles.spaceBetween]}>
+        <Text style={[commonStyles.text, { fontSize: 18 }]}>
+          ₹ {product.discount_price}
+        </Text>
+        <Text style={[commonStyles.text, commonStyles.price, { fontSize: 18 }]}>
+          ₹ {product.price}
+        </Text>
+      </View>
+    </Pressable>
+  );
 }
 
-export default ProductDetails
+const styles = StyleSheet.create({
+  descriptionContainerMain: {
+    gap: 6,
+    flex: 1,
+    paddingLeft: 12,
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
+  productTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: 4,
+    color: Colors.dark.titleText,
+  },
+  upperInfo: {
+    justifyContent: "flex-end",
+    alignItems: "center",
+    flexDirection: "row",
+    columnGap: 6,
+    rowGap: 4,
+    flexWrap: "wrap",
+  },
+});
+
+const commonStyles = StyleSheet.create({
+  spaceBetween: {
+    flexWrap: "wrap",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  text: {
+    color: Colors.dark.text,
+  },
+  price: {
+    textDecorationLine: "line-through",
+  },
+});
+
+export default ProductDetails;
