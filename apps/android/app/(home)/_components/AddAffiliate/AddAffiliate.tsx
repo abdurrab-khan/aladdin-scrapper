@@ -1,5 +1,6 @@
 import * as Clipboard from "expo-clipboard";
 import React, { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   Linking,
   StyleSheet,
@@ -16,19 +17,18 @@ import {
 import Input from "./Input";
 import Affiliates from "./Affiliates";
 import ModalContainer from "@/components/dialog/ModalContainer";
+import { IconSymbol } from "@/components/ui/IconSymbol";
 
 import toast from "@/utils/toast";
 
 import useAppContext from "@/context/AppContext";
 
+import queryClient from "@/api/clients/queryClient";
 import type { Affiliate, Product } from "@/types/product";
 import { addAffiliateLink } from "@/api/services/affiliate";
-import { affiliateProvider } from "@/constants/const";
+
 import { Colors } from "@/constants/Colors";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import queryClient from "@/api/clients/queryClient";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { isDate } from "lodash";
+import { affiliateProvider } from "@/constants/const";
 
 interface AddAffiliateProps {
   visible: boolean;
@@ -68,16 +68,24 @@ export default function AddAffiliate({
           ...groupedAffiliateUrls,
           {
             productId: product_id,
-            id: (groupedAffiliateUrls.length + 1).toString(),
+            id: `grouped_${Date.now()}`,
             url: affiliateUrl,
             isDefault: false,
             createdAt: new Date().toISOString(),
           },
         ];
         setGroupedAffiliateUrls(updatedAffiliateUrls);
+
+        const existingGroupedAffiliateUrls = JSON.parse(
+          (await AsyncStorage.getItem("grouped_affiliate_urls")) ?? "{}",
+        );
+
         await AsyncStorage.setItem(
           "grouped_affiliate_urls",
-          JSON.stringify(updatedAffiliateUrls),
+          JSON.stringify({
+            ...existingGroupedAffiliateUrls,
+            [product_id]: updatedAffiliateUrls,
+          }),
         );
       } else {
         await addAffiliateLink(app?.id!, product_id, website.id, affiliateUrl); // Add affiliate link
@@ -123,6 +131,23 @@ export default function AddAffiliate({
       toast("Failed to copy");
     }
   };
+
+  useEffect(() => {
+    const loadAffiliateUrls = async () => {
+      const rawGroupedAffiliates = await AsyncStorage.getItem(
+        "grouped_affiliate_urls",
+      );
+
+      const affiliateUrls = rawGroupedAffiliates
+        ? JSON.parse(rawGroupedAffiliates)
+        : {};
+
+      if (affiliateUrls[product_id]) {
+        setGroupedAffiliateUrls(affiliateUrls[product_id]);
+      }
+    };
+    loadAffiliateUrls();
+  }, [product_id, is_grouped, setGroupedAffiliateUrls]);
 
   useEffect(() => {
     if (!visible) return;

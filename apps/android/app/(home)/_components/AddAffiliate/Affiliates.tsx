@@ -1,3 +1,6 @@
+import { useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   Alert,
   Animated,
@@ -8,19 +11,19 @@ import {
   View,
 } from "react-native";
 
+import { IconSymbol } from "@/components/ui/IconSymbol";
+
 import toast from "@/utils/toast";
+
+import { supabase } from "@/api/clients/supabase";
+import queryClient from "@/api/clients/queryClient";
 import {
   deleteAffiliateLink,
   setDefaultAffiliateLink,
 } from "@/api/services/affiliate";
+
 import { Affiliate } from "@/types/product";
-import { supabase } from "@/api/clients/supabase";
-import { useQuery } from "@tanstack/react-query";
-import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
-import { useEffect, useRef, useState } from "react";
-import queryClient from "@/api/clients/queryClient";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface AffiliatesProps {
   productId: string;
@@ -121,6 +124,8 @@ function Affiliates({
     enabled: !!productId && !isGrouped,
   });
 
+  const validAffiliateUrls = affiliateUrls || groupedAffiliateUrls;
+
   const handleDeleteLink = async (affiliateId: string) => {
     Alert.alert(
       "Delete Link",
@@ -137,9 +142,19 @@ function Affiliates({
                   (au) => au.id !== affiliateId,
                 );
                 setGroupedAffiliateUrls(updatedGroupedAffiliateUrls);
+
+                // All existing affiliate links.
+                const existingAffiliateUrls = JSON.parse(
+                  (await AsyncStorage.getItem("grouped_affiliate_urls")) ??
+                    "{}",
+                );
+
                 await AsyncStorage.setItem(
                   "grouped_affiliate_urls",
-                  JSON.stringify(updatedGroupedAffiliateUrls),
+                  JSON.stringify({
+                    ...existingAffiliateUrls,
+                    [productId]: updatedGroupedAffiliateUrls,
+                  }),
                 );
               } else {
                 await deleteAffiliateLink(affiliateId);
@@ -165,16 +180,25 @@ function Affiliates({
         // Updating the grouped affiliate URLs in state and AsyncStorage
         const updatedGroupedAffiliateUrls = groupedAffiliateUrls.map((au) =>
           au.id === affiliateId
-            ? { ...au, is_default: true }
+            ? { ...au, isDefault: true }
             : {
                 ...au,
-                is_default: false,
+                isDefault: false,
               },
         );
         setGroupedAffiliateUrls(updatedGroupedAffiliateUrls);
+
+        // All existing affiliate links
+        const existingAffiliateUrls = JSON.parse(
+          (await AsyncStorage.getItem("grouped_affiliate_urls")) ?? "{}",
+        );
+
         await AsyncStorage.setItem(
           "grouped_affiliate_urls",
-          JSON.stringify(updatedGroupedAffiliateUrls),
+          JSON.stringify({
+            ...existingAffiliateUrls,
+            [productId]: updatedGroupedAffiliateUrls,
+          }),
         );
       } else {
         await setDefaultAffiliateLink(affiliateId, productId);
@@ -225,27 +249,10 @@ function Affiliates({
     </View>
   );
 
-  useEffect(() => {
-    const loadAffiliateUrls = async () => {
-      const rawGroupedAffiliates = await AsyncStorage.getItem(
-        "grouped_affiliate_urls",
-      );
-
-      const affiliateUrls = rawGroupedAffiliates
-        ? JSON.parse(rawGroupedAffiliates)
-        : {};
-
-      if (affiliateUrls[productId]) {
-        setGroupedAffiliateUrls(affiliateUrls[productId]);
-      }
-    };
-    loadAffiliateUrls();
-  }, [productId, isGrouped, setGroupedAffiliateUrls]);
-
   return (
     <View style={styles.linksSection}>
       <Text style={styles.sectionTitle}>
-        Existing Links ({affiliateUrls?.length ?? 0})
+        Existing Links ({validAffiliateUrls?.length ?? 0})
       </Text>
       {isLoading ? (
         <View style={{ gap: 8 }}>
@@ -253,7 +260,7 @@ function Affiliates({
           <SkeletonItem />
           <SkeletonItem />
         </View>
-      ) : affiliateUrls && affiliateUrls?.length > 0 ? (
+      ) : validAffiliateUrls && validAffiliateUrls?.length > 0 ? (
         <FlatList
           data={affiliateUrls || groupedAffiliateUrls}
           renderItem={renderLinkItem}

@@ -18,6 +18,7 @@ import { Product } from "@/types/product";
 
 import { useProductStore } from "@/store/useProductStore";
 import { useProductsQuery } from "@/api/hooks/useProductsQuery";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ProductList() {
   const { searchQuery, clearSelection, currentCategory, selectedProducts } =

@@ -112,6 +112,7 @@ export default React.memo(ProductCards, (prevProps, nextProps) => {
 
 const styles = StyleSheet.create({
   container: {
+    minHeight: 192,
     padding: 8,
     borderWidth: 1,
     borderRadius: 12,

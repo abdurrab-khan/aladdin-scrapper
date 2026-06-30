@@ -1,10 +1,24 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TAGS_POOL } from "../constants/const";
 import { ProductData } from "@/app/(others)/share-product";
+import { Affiliate } from "@/types/product";
 
-export const generateCaption = (products: ProductData[]): string => {
-  const productUrls = products.map(
-    (product) => `🔗 ${product?.affiliateUrl?.url ?? product.url}`,
+export const generateCaption = async (
+  products: ProductData[],
+): Promise<string> => {
+  const existingGroupedAffiliateUrls: Record<string, Affiliate[]> = JSON.parse(
+    (await AsyncStorage.getItem("grouped_affiliate_urls")) ?? "{}",
   );
+
+  const productUrls = products.map((product) => {
+    const affiliateUrls =
+      product?.affiliateUrl?.url ??
+      existingGroupedAffiliateUrls[product.productId]?.filter(
+        (affiliate) => affiliate.isDefault,
+      )[0]?.url;
+
+    return `🔗 ${affiliateUrls ?? product.url}`;
+  });
 
   const checkOutText =
     productUrls.length === 1 ? "Check this out" : "Check these out";

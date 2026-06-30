@@ -1,61 +1,138 @@
-// MergedImageGrid.jsx
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   Image,
   StyleSheet,
-  useWindowDimensions,
   ActivityIndicator,
+  useWindowDimensions,
 } from "react-native";
 import ViewShot, { captureRef } from "react-native-view-shot";
+
+interface ImageType {
+  url: string;
+  imageType: "full" | "group" | "card";
+}
 
 const MAX_COLS = 4;
 const MAX_IMAGES = 16;
 
-type TImageSize = { uri: string; width: number; height: number };
+type TRow = {
+  images: TImageSize[];
+  colsCount: number;
+};
 
-const fetchImageSize = (uri: string): Promise<TImageSize> =>
+type TImageSize = {
+  uri: string;
+  width: number;
+  height: number;
+  imageType: "group" | "full" | "card";
+};
+
+const fetchImageSize = (image: ImageType): Promise<TImageSize> =>
   new Promise((resolve) => {
     Image.getSize(
-      uri,
-      (width, height) => resolve({ uri, width, height }),
-      () => resolve({ uri, width: 1, height: 1 }),
+      image.url,
+      (width, height) => {
+        resolve({
+          uri: image.url,
+          width,
+          height,
+          imageType: image.imageType,
+        });
+      },
+      () =>
+        resolve({
+          uri: image.url,
+          width: 1,
+          height: 1,
+          imageType: image.imageType,
+        }),
     );
   });
+
+const buildSmartRows = (sizes: TImageSize[]): TRow[] => {
+  const grouped = sizes.filter((s) => s.imageType === "group");
+  const cards = sizes.filter((s) => s.imageType === "card");
+
+  const sorted = [...grouped, ...cards];
+
+  let i = 0;
+  const rows: TRow[] = [];
+
+  for (const image of sorted) {
+    if (image.imageType === "group") {
+      rows.push({
+        images: [image],
+        colsCount: 1,
+      });
+      i++;
+    } else {
+      const cardRow: TImageSize[] = [];
+      let cardsInRow = 0;
+
+      while (
+        i < sorted.length &&
+        cardsInRow < MAX_COLS &&
+        sorted[i].imageType !== "group"
+      ) {
+        cardRow.push(sorted[i]);
+        cardsInRow++;
+        i++;
+      }
+
+      rows.push({
+        images: cardRow,
+        colsCount: cardsInRow,
+      });
+    }
+  }
+
+  return rows;
+};
 
 const MergedImageGrid = ({
   images = [],
   onCapture,
 }: {
-  images: string[];
+  images: ImageType[];
   onCapture: any;
 }) => {
   const gridRef = useRef(null);
-  const imageSizes = useRef<TImageSize[]>([]);
 
   const { width: screenWidth } = useWindowDimensions();
 
   const [loading, setLoading] = useState(true);
+  const [rows, setRows] = useState<TRow[]>([]);
 
-  const visibleImages = images.slice(0, MAX_IMAGES);
-  const cols = Math.min(visibleImages.length, MAX_COLS);
-  const cellWidth = screenWidth / cols;
+  const visibleImages = useMemo(() => images.slice(0, MAX_IMAGES), [images]);
 
-  const getRowHeights = useCallback(() => {
-    const sizes = imageSizes.current;
-    const rowHeights = [];
-    for (let i = 0; i < sizes.length; i += cols) {
-      const rowImages = sizes.slice(i, i + cols);
-      const maxHeight = Math.max(
-        ...rowImages.map(({ width, height }) => {
-          const aspectRatio = height / width;
-          return cellWidth * aspectRatio;
-        }),
-      );
-      rowHeights.push(maxHeight);
-    }
-    return rowHeights;
-  }, [cellWidth, cols]);
+  const getImageDimensions = useCallback(
+    (size: TImageSize, colsInRow: number) => {
+      const cellWidth = screenWidth / colsInRow;
+      const aspectRatio = size.height / size.width;
+      let cellHeight = cellWidth * aspectRatio;
+
+      // For card images, cap the width to max 150px if single card
+      // so it doesn't stretch to fill the remaining space
+      let finalWidth = cellWidth;
+      if (size.imageType === "card" && colsInRow === 1) {
+        const maxCardWidth = cellWidth;
+        if (cellWidth > maxCardWidth) {
+          finalWidth = maxCardWidth;
+          cellHeight = maxCardWidth * aspectRatio;
+        }
+      }
+
+      return { cellWidth: finalWidth, cellHeight };
+    },
+    [screenWidth],
+  );
 
   const capture = useCallback(async () => {
     try {
@@ -65,18 +142,19 @@ const MergedImageGrid = ({
         quality: 1,
       });
       return base64;
-    } catch (err) {
-      console.error("Capture failed:", err);
+    } catch {
       return null;
     }
   }, []);
 
   useEffect(() => {
     if (visibleImages.length === 0) return;
+
     const fetchSize = async () => {
       try {
-        const size = await Promise.all(visibleImages.map(fetchImageSize));
-        imageSizes.current = size;
+        const sizes = await Promise.all(visibleImages.map(fetchImageSize));
+        const smartRows = buildSmartRows(sizes);
+        setRows(smartRows);
       } finally {
         setLoading(false);
       }
@@ -95,28 +173,28 @@ const MergedImageGrid = ({
     return <ActivityIndicator size="large" />;
   }
 
-  const rowHeights = getRowHeights();
-  const rows = [];
-  for (let i = 0; i < visibleImages.length; i += cols) {
-    rows.push(visibleImages.slice(i, i + cols));
-  }
-
   return (
     <ViewShot ref={gridRef} style={{ backgroundColor: "#ffffff" }}>
-      {rows.map((rowImages, rowIndex) => (
+      {rows.map((row, rowIndex) => (
         <View key={rowIndex} style={styles.row}>
-          {rowImages.map((uri, colIndex) => (
-            <Image
-              key={colIndex}
-              source={{ uri }}
-              style={{
-                width: cellWidth,
-                height: rowHeights[rowIndex],
-                backgroundColor: "#ffffff",
-              }}
-              resizeMode="contain"
-            />
-          ))}
+          {row.images.map((item, colIndex) => {
+            const { cellWidth, cellHeight } = getImageDimensions(
+              item,
+              row.colsCount,
+            );
+            return (
+              <Image
+                key={colIndex}
+                source={{ uri: item.uri }}
+                style={{
+                  width: cellWidth,
+                  height: cellHeight,
+                  backgroundColor: "#ffffff",
+                }}
+                resizeMode="contain"
+              />
+            );
+          })}
         </View>
       ))}
     </ViewShot>
@@ -126,6 +204,8 @@ const MergedImageGrid = ({
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
   },
 });
 

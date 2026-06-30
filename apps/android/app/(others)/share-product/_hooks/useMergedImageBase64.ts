@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { captureRef } from "react-native-view-shot";
 
-export const useMergedImage = () => {
+const useMergedImage = () => {
   const gridRef = useRef(null);
 
   const capture = async () => {
@@ -12,11 +12,12 @@ export const useMergedImage = () => {
         quality: 1,
       });
       return base64;
-    } catch (err) {
-      console.error("Capture failed:", err);
+    } catch {
       return null;
     }
   };
 
   return { gridRef, capture };
 };
+
+export default useMergedImage;

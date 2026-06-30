@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import {
   Dimensions,
   KeyboardAvoidingView,
@@ -25,31 +25,7 @@ const { height: WINDOW_HEIGHT } = Dimensions.get("window");
 function Form({ products }: { products: ProductData[] }) {
   const captureRef = useRef<() => Promise<string>>(null);
 
-  const productImages = useMemo(() => {
-    return products
-      .reduce(
-        (acc, curr) => {
-          const cardImage = curr.productImages.find(
-            (c) => c.imageType === "Card" && c.imageStatus === "Completed",
-          )?.imageUrl;
-
-          if (products.length === 1) {
-            const fullImage = curr.productImages.find(
-              (c) => c.imageType === "Full" && c.imageStatus === "Completed",
-            )?.imageUrl;
-            acc.push(fullImage ?? cardImage ?? null);
-          } else {
-            acc.push(cardImage ?? null);
-          }
-
-          return acc;
-        },
-        [] as (string | null)[],
-      )
-      .filter(Boolean) as string[];
-  }, [products]);
-
-  const { control, handleSubmit } = useForm<
+  const { control, setValue, handleSubmit } = useForm<
     z.infer<typeof CaptionDetailsSchema>
   >({
     resolver: zodResolver(CaptionDetailsSchema),
@@ -59,10 +35,59 @@ function Form({ products }: { products: ProductData[] }) {
       ids: products.map((pod) => pod.id),
       tags: getRandomTags(),
       platforms: ["telegram"],
-      caption: generateCaption(products),
       productUrls: products.map((pod) => pod.url),
     },
   });
+
+  const productImages = useMemo(() => {
+    return products
+      .reduce(
+        (acc, curr) => {
+          // Get the card image if available, otherwise null
+          const cardImage = curr.productImages.find(
+            (c) => c.imageType === "Card" && c.imageStatus === "Completed",
+          )?.imageUrl;
+
+          // Get the grouped image if the product is grouped, otherwise null
+          const groupedImage =
+            (curr.isGrouped
+              ? curr.productImages.find(
+                  (c) =>
+                    c.imageType === "Group" && c.imageStatus === "Completed",
+                )?.imageUrl
+              : null) ?? null;
+
+          if (products.length === 1) {
+            const fullImage = curr.productImages.find(
+              (c) => c.imageType === "Full" && c.imageStatus === "Completed",
+            )?.imageUrl;
+            acc.push({
+              url: fullImage ?? groupedImage ?? cardImage ?? null,
+              imageType: fullImage ? "full" : groupedImage ? "group" : "card",
+            });
+          } else {
+            acc.push({
+              url: groupedImage ?? cardImage ?? null,
+              imageType: groupedImage ? "group" : "card",
+            });
+          }
+
+          return acc;
+        },
+        [] as { url: string | null; imageType: "full" | "group" | "card" }[],
+      )
+      .filter((item) => item.url !== null) as {
+      url: string;
+      imageType: "full" | "group" | "card";
+    }[];
+  }, [products]);
+
+  useEffect(() => {
+    (async () => {
+      const caption = await generateCaption(products);
+      setValue("caption", caption);
+    })();
+  }, [products, setValue]);
 
   return (
     <View style={styles.formView}>

@@ -155,7 +155,7 @@ export default function CaptionEditorForm({
   control,
   captureRef,
 }: ControlType & {
-  images: string[];
+  images: { url: string; imageType: "full" | "group" | "card" }[];
   captureRef: RefObject<(() => Promise<string>) | null>;
 }) {
   return (

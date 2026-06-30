@@ -11,9 +11,9 @@ import useAppContext from "@/context/AppContext";
 
 export interface ProductImage {
   id: string;
-  imageType: "Card" | "Full";
-  imageStatus: "Completed" | "Pending";
   imageUrl: string;
+  imageType: "Card" | "Full" | "Group";
+  imageStatus: "Completed" | "Pending";
 }
 
 export interface AffiliateUrl {
@@ -31,6 +31,7 @@ export interface ProductData {
   discountPrice: number;
   productBrand: string;
   isPosted: boolean;
+  isGrouped: boolean;
   productImages: ProductImage[];
   affiliateUrl?: AffiliateUrl;
 }
