@@ -16,7 +16,7 @@ import CaptionEditorForm from "./CaptionEditor";
 import { Colors } from "@/constants/Colors";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CaptionDetailsSchema } from "@/api/schemas/caption.schema";
-import { generateCaption, getRandomTags } from "@/utils/caption-helper";
+import { generateCaption, getRandomTags } from "@/utils";
 
 import { type ProductData } from "..";
 

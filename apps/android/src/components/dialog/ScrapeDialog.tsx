@@ -158,7 +158,10 @@ export default function ScrapeDialog({
 
   return (
     <Modal isVisible={visible} onToggle={onToggleVisible}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ paddingHorizontal: 6 }}
+      >
         <View style={styles.headerRow}>
           <Text style={[styles.label, { fontSize: 22 }]}>Category</Text>
         </View>

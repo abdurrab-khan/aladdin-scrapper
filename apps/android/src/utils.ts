@@ -1,7 +1,10 @@
+import { ToastAndroid } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TAGS_POOL } from "../constants/const";
-import { ProductData } from "@/app/(others)/share-product";
+
+import { TAGS_POOL } from "./constants/const";
+
 import { Affiliate } from "@/types/product";
+import { ProductData } from "@/app/(others)/share-product";
 
 export const generateCaption = async (
   products: ProductData[],
@@ -38,3 +41,9 @@ export const getRandomTags = (): string => {
 
   return Array.from(selectedTags).join(" ");
 };
+
+const toast = (message: string, duration: number = ToastAndroid.SHORT) => {
+  ToastAndroid.show(message, duration);
+};
+
+export default toast;

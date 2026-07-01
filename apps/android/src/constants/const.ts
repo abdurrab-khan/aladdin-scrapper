@@ -1,5 +1,7 @@
 import { SocialMedia } from "../types";
 
+export const APP_NAME = "Aladdin Loot Deals";
+
 export const affiliateProvider: Record<string, string> = {
   myntra: "https://earnkaro.com/create-earn-link",
   flipkart: "https://earnkaro.com/create-earn-link",

@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import toast from "@/utils/toast";
+import toast from "@/utils";
 
 import { Colors } from "@/constants/Colors";
 
@@ -29,6 +29,7 @@ const SelectAction: React.FC = () => {
     }
 
     clearSelection();
+
     router.push({
       pathname: "/(others)/share-product",
       params: { ids: Array.from(selectedProducts).join(",") },

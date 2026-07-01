@@ -200,7 +200,7 @@ export default function CaptionEditorForm({
 const styles = StyleSheet.create({
   imgView: {
     width: "100%",
-    height: 160,
+    height: 178,
     borderRadius: 12,
     overflow: "hidden",
     alignItems: "center",

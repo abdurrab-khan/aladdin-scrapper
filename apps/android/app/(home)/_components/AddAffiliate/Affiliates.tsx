@@ -13,7 +13,7 @@ import {
 
 import { IconSymbol } from "@/components/ui/IconSymbol";
 
-import toast from "@/utils/toast";
+import toast from "@/utils";
 
 import { supabase } from "@/api/clients/supabase";
 import queryClient from "@/api/clients/queryClient";

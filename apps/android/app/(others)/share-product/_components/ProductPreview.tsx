@@ -1,3 +1,4 @@
+import { APP_NAME } from "@/constants/const";
 import React, {
   useCallback,
   useEffect,
@@ -8,9 +9,10 @@ import React, {
 import {
   View,
   Image,
+  Dimensions,
   StyleSheet,
   ActivityIndicator,
-  useWindowDimensions,
+  Text,
 } from "react-native";
 import ViewShot, { captureRef } from "react-native-view-shot";
 
@@ -22,16 +24,28 @@ interface ImageType {
 const MAX_COLS = 4;
 const MAX_IMAGES = 16;
 
-type TRow = {
-  images: TImageSize[];
-  colsCount: number;
-};
-
 type TImageSize = {
   uri: string;
   width: number;
   height: number;
   imageType: "group" | "full" | "card";
+};
+
+const SCREEN_WIDTH = Dimensions.get("window").width;
+
+const getImageDimensions = (
+  size: TImageSize,
+  colsInRow: number,
+  totalCards?: number,
+  hasGroup: boolean = false,
+) => {
+  const cols =
+    hasGroup || (totalCards && totalCards >= MAX_COLS) ? MAX_COLS : colsInRow;
+  const cellWidth = SCREEN_WIDTH / cols;
+  const aspectRatio = size.height / size.width;
+  let cellHeight = cellWidth * aspectRatio;
+
+  return { cellWidth, cellHeight };
 };
 
 const fetchImageSize = (image: ImageType): Promise<TImageSize> =>
@@ -56,40 +70,45 @@ const fetchImageSize = (image: ImageType): Promise<TImageSize> =>
     );
   });
 
-const buildSmartRows = (sizes: TImageSize[]): TRow[] => {
-  const grouped = sizes.filter((s) => s.imageType === "group");
+const buildSmartRows = (sizes: TImageSize[]): TImageSize[][] => {
   const cards = sizes.filter((s) => s.imageType === "card");
+  const groupedAndFull = sizes.filter((s) => s.imageType !== "card");
 
-  const sorted = [...grouped, ...cards];
+  const rows: TImageSize[][] = [];
+
+  // Let's push all the grouped and full images first
+  for (const image of groupedAndFull) {
+    const { cellHeight, cellWidth } = getImageDimensions(image, 1);
+
+    image["width"] = cellWidth;
+    image["height"] = cellHeight;
+
+    rows.push([image]);
+  }
 
   let i = 0;
-  const rows: TRow[] = [];
+  // Now let's push the card images
+  while (i < cards.length) {
+    const cardRow: TImageSize[] = [];
+    const numberOfCols = Math.min(cards.length - i, MAX_COLS);
 
-  for (const image of sorted) {
-    if (image.imageType === "group") {
-      rows.push({
-        images: [image],
-        colsCount: 1,
-      });
+    while (cardRow.length < numberOfCols && i < cards.length) {
+      const { cellHeight, cellWidth } = getImageDimensions(
+        cards[i],
+        numberOfCols,
+        cards.length - 1,
+        groupedAndFull.length > 0,
+      );
+
+      cards[i]["width"] = cellWidth;
+      cards[i]["height"] = cellHeight;
+
+      cardRow.push(cards[i]);
       i++;
-    } else {
-      const cardRow: TImageSize[] = [];
-      let cardsInRow = 0;
+    }
 
-      while (
-        i < sorted.length &&
-        cardsInRow < MAX_COLS &&
-        sorted[i].imageType !== "group"
-      ) {
-        cardRow.push(sorted[i]);
-        cardsInRow++;
-        i++;
-      }
-
-      rows.push({
-        images: cardRow,
-        colsCount: cardsInRow,
-      });
+    if (cardRow.length > 0) {
+      rows.push(cardRow);
     }
   }
 
@@ -105,34 +124,10 @@ const MergedImageGrid = ({
 }) => {
   const gridRef = useRef(null);
 
-  const { width: screenWidth } = useWindowDimensions();
-
   const [loading, setLoading] = useState(true);
-  const [rows, setRows] = useState<TRow[]>([]);
+  const [rows, setRows] = useState<TImageSize[][]>([]);
 
   const visibleImages = useMemo(() => images.slice(0, MAX_IMAGES), [images]);
-
-  const getImageDimensions = useCallback(
-    (size: TImageSize, colsInRow: number) => {
-      const cellWidth = screenWidth / colsInRow;
-      const aspectRatio = size.height / size.width;
-      let cellHeight = cellWidth * aspectRatio;
-
-      // For card images, cap the width to max 150px if single card
-      // so it doesn't stretch to fill the remaining space
-      let finalWidth = cellWidth;
-      if (size.imageType === "card" && colsInRow === 1) {
-        const maxCardWidth = cellWidth;
-        if (cellWidth > maxCardWidth) {
-          finalWidth = maxCardWidth;
-          cellHeight = maxCardWidth * aspectRatio;
-        }
-      }
-
-      return { cellWidth: finalWidth, cellHeight };
-    },
-    [screenWidth],
-  );
 
   const capture = useCallback(async () => {
     try {
@@ -174,27 +169,25 @@ const MergedImageGrid = ({
   }
 
   return (
-    <ViewShot ref={gridRef} style={{ backgroundColor: "#ffffff" }}>
+    <ViewShot
+      ref={gridRef}
+      style={{ position: "relative", backgroundColor: "#ffffff" }}
+    >
+      <Text style={styles.overlayText}>{APP_NAME}</Text>
       {rows.map((row, rowIndex) => (
         <View key={rowIndex} style={styles.row}>
-          {row.images.map((item, colIndex) => {
-            const { cellWidth, cellHeight } = getImageDimensions(
-              item,
-              row.colsCount,
-            );
-            return (
-              <Image
-                key={colIndex}
-                source={{ uri: item.uri }}
-                style={{
-                  width: cellWidth,
-                  height: cellHeight,
-                  backgroundColor: "#ffffff",
-                }}
-                resizeMode="contain"
-              />
-            );
-          })}
+          {row.map((item, colIndex) => (
+            <Image
+              key={colIndex}
+              source={{ uri: item.uri }}
+              style={{
+                width: item.width,
+                height: item.height,
+                backgroundColor: "#ffffff",
+              }}
+              resizeMode="contain"
+            />
+          ))}
         </View>
       ))}
     </ViewShot>
@@ -206,6 +199,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "flex-start",
+  },
+  overlayText: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    fontSize: 24,
+    zIndex: 1,
+    opacity: 0.1,
+    color: "black",
+    fontWeight: "900",
+    transform: [
+      { translateX: "-50%" },
+      { translateY: "-50%" },
+      {
+        rotate: "-40deg",
+      },
+    ],
   },
 });
 

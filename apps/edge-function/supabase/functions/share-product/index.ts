@@ -15,7 +15,7 @@ interface CaptionDetails {
 serve(async (req) => {
   try {
     const productDetails: CaptionDetails = await req.json();
-    const { caption, tags, platforms, productImage } = productDetails;
+    const { ids, caption, tags, platforms, productImage } = productDetails;
 
     if (!platforms.includes("telegram")) {
       return new Response(

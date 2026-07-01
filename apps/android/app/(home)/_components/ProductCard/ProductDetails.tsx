@@ -5,7 +5,7 @@ import Badge from "@/components/ui/Badge";
 
 import { Colors } from "@/constants/Colors";
 
-import toast from "@/utils/toast";
+import toast from "@/utils";
 
 import { type Product } from "@/types/product";
 

@@ -1,5 +1,5 @@
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import toast from "@/utils/toast";
+import toast from "@/utils";
 import { LinearGradient, LinearGradientProps } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React from "react";

@@ -6,7 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-import toast from "@/utils/toast";
+import toast from "@/utils";
 import ButtonWithDialog from "@/components/buttons/ButtonWithDialog";
 
 import { IconSymbol } from "@/components/ui/IconSymbol";

@@ -5,7 +5,7 @@ import { useLocalSearchParams } from "expo-router/build/hooks";
 import Form from "./_components/Form";
 import FormSkeleton from "./_components/FormSkeleton";
 import { supabase } from "@/api/clients/supabase";
-import toast from "@/utils/toast";
+import toast from "@/utils";
 import NotFound from "./_components/NotFound";
 import useAppContext from "@/context/AppContext";
 

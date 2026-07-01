@@ -14,11 +14,10 @@ import HomeHeader from "@/app/(home)/_components/HomeHeader";
 import NotProductFound from "@/components/ui/NotProductFound";
 import SelectAction from "@/app/(home)/_components/SelectAction";
 
-import { Product } from "@/types/product";
+import { Product } from "@/types/index";
 
 import { useProductStore } from "@/store/useProductStore";
 import { useProductsQuery } from "@/api/hooks/useProductsQuery";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ProductList() {
   const { searchQuery, clearSelection, currentCategory, selectedProducts } =
@@ -93,7 +92,7 @@ export default function ProductList() {
           productListStyle.productContainer,
           products.length === 0 &&
             !isLoading && {
-              flex: 1,
+              height: "100%",
               justifyContent: "center",
             },
         ]}

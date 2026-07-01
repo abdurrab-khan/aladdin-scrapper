@@ -19,7 +19,7 @@ import Affiliates from "./Affiliates";
 import ModalContainer from "@/components/dialog/ModalContainer";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 
-import toast from "@/utils/toast";
+import toast from "@/utils";
 
 import useAppContext from "@/context/AppContext";
 
