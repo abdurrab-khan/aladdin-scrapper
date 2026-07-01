@@ -1,6 +1,8 @@
 import "dotenv/config";
 import { configDotenv } from "dotenv";
-configDotenv();
+configDotenv({
+  path: "../../.env",
+});
 
 import { exit } from "process";
 import App from "./api/app.js";
