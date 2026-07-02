@@ -12,10 +12,11 @@ import { useProductStore } from "@/store/useProductStore";
 
 import ShareBtn from "./ShareBtn";
 import ProductDetails from "./ProductDetails";
+import AddAffiliate from "../AddAffiliate/AddAffiliate";
+
+import type { Product } from "@/types";
 
 import { Colors } from "@/constants/Colors";
-import { type Product } from "@/types/product";
-import AddAffiliate from "../AddAffiliate/AddAffiliate";
 
 function ProductCards({ product }: { product: Product }) {
   const [isAffiliateVisible, setIsAffiliateVisible] = useState<boolean>(false);

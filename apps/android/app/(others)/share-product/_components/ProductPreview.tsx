@@ -93,7 +93,7 @@ const buildSmartRows = (sizes: TImageSize[]): TImageSize[][] => {
   // Now let's push the card images
   while (i < cards.length) {
     const cardRow: TImageSize[] = [];
-    const numberOfCols = Math.min(cards.length - i, MAX_COLS);
+    const numberOfCols = Math.min(cards.length, MAX_COLS);
 
     while (cardRow.length < numberOfCols && i < cards.length) {
       const takeAsMaxCols =
@@ -206,12 +206,12 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   overlayText: {
+    zIndex: 1,
     position: "absolute",
     top: "50%",
     left: "50%",
     fontSize: 24,
-    zIndex: 1,
-    opacity: 0.1,
+    opacity: 0.05,
     color: "black",
     fontWeight: "900",
     transform: [

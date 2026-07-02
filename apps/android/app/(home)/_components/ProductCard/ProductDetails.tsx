@@ -7,7 +7,7 @@ import { Colors } from "@/constants/Colors";
 
 import toast from "@/utils";
 
-import { type Product } from "@/types/product";
+import type { Product } from "@/types";
 
 function ProductDetails({
   product,

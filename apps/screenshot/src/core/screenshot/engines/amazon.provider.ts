@@ -1,13 +1,15 @@
 import { ElementHandle } from "puppeteer";
 import { BaseProvider } from "./base.provider";
-import { Website, IGroupedScreenShotRequest } from "@/types";
 import AmazonSelector from "../selectors/amazon";
+import { Website, IGroupedScreenShotRequest } from "@/types";
 
 export class AmazonProvider extends BaseProvider {
   readonly website: Website = "AMAZON";
 
   getMainSelector(variant: "FULL" | "GROUPED"): string {
-    return variant === "FULL" ? AmazonSelector.FULL.main : AmazonSelector.GROUPED.card;
+    return variant === "FULL"
+      ? AmazonSelector.FULL.main
+      : AmazonSelector.GROUPED.card;
   }
 
   getSponsorSelector(): string {
@@ -49,7 +51,7 @@ export class AmazonProvider extends BaseProvider {
   async isValidProduct(
     price: ElementHandle<Element> | null,
     discountPrice: ElementHandle<Element> | null,
-    priceDetails: IGroupedScreenShotRequest["priceDetails"]
+    priceDetails: IGroupedScreenShotRequest["priceDetails"],
   ): Promise<boolean> {
     // Current logic returns true, following existing implementation in utils.ts
     return true;

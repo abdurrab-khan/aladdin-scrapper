@@ -24,7 +24,7 @@ import toast from "@/utils";
 import useAppContext from "@/context/AppContext";
 
 import queryClient from "@/api/clients/queryClient";
-import type { Affiliate, Product } from "@/types/product";
+import type { Affiliate, Product } from "@/types";
 import { addAffiliateLink } from "@/api/services/affiliate";
 
 import { Colors } from "@/constants/Colors";
