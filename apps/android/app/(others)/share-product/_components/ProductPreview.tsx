@@ -33,21 +33,6 @@ type TImageSize = {
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-const getImageDimensions = (
-  size: TImageSize,
-  colsInRow: number,
-  totalCards?: number,
-  hasGroup: boolean = false,
-) => {
-  const cols =
-    hasGroup || (totalCards && totalCards >= MAX_COLS) ? MAX_COLS : colsInRow;
-  const cellWidth = SCREEN_WIDTH / cols;
-  const aspectRatio = size.height / size.width;
-  let cellHeight = cellWidth * aspectRatio;
-
-  return { cellWidth, cellHeight };
-};
-
 const fetchImageSize = (image: ImageType): Promise<TImageSize> =>
   new Promise((resolve) => {
     Image.getSize(
@@ -70,14 +55,32 @@ const fetchImageSize = (image: ImageType): Promise<TImageSize> =>
     );
   });
 
+const getImageDimensions = (
+  size: TImageSize,
+  colsInRow: number,
+  takeAsMaxCols: boolean = false,
+) => {
+  const cols = takeAsMaxCols ? MAX_COLS : colsInRow;
+  const cellWidth = SCREEN_WIDTH / cols;
+  const aspectRatio = size.height / size.width;
+  let cellHeight = cellWidth * aspectRatio;
+
+  return { cellWidth, cellHeight };
+};
+
 const buildSmartRows = (sizes: TImageSize[]): TImageSize[][] => {
-  const cards = sizes.filter((s) => s.imageType === "card");
-  const groupedAndFull = sizes.filter((s) => s.imageType !== "card");
+  const cards = sizes.filter(
+    (s) => s.imageType === "card" && s.width <= s.height,
+  );
+  const columnCards = sizes.filter(
+    (s) =>
+      (s.imageType === "card" && s.width > s.height) || s.imageType !== "card",
+  );
 
   const rows: TImageSize[][] = [];
 
-  // Let's push all the grouped and full images first
-  for (const image of groupedAndFull) {
+  // First, push all the column cards
+  for (const image of columnCards) {
     const { cellHeight, cellWidth } = getImageDimensions(image, 1);
 
     image["width"] = cellWidth;
@@ -93,11 +96,13 @@ const buildSmartRows = (sizes: TImageSize[]): TImageSize[][] => {
     const numberOfCols = Math.min(cards.length - i, MAX_COLS);
 
     while (cardRow.length < numberOfCols && i < cards.length) {
+      const takeAsMaxCols =
+        columnCards.length > 0 || cards.length - i >= MAX_COLS;
+
       const { cellHeight, cellWidth } = getImageDimensions(
         cards[i],
         numberOfCols,
-        cards.length - 1,
-        groupedAndFull.length > 0,
+        takeAsMaxCols,
       );
 
       cards[i]["width"] = cellWidth;

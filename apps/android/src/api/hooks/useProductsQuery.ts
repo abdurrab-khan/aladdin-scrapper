@@ -15,7 +15,7 @@ export const useProductsQuery = ({
 
   return useInfiniteQuery({
     queryKey: ["products", category, query],
-    queryFn: ({ pageParam = 0 }) => {
+    queryFn: ({ pageParam = 0, ...props }) => {
       const start = pageParam * 10;
       const end = start + 9;
 
@@ -28,8 +28,7 @@ export const useProductsQuery = ({
       });
     },
     getNextPageParam: (lastPage, allPages) => {
-      // If the last page has fewer than 10 items, we've reached the end
-      return lastPage.length < 10 ? undefined : allPages.length;
+      return lastPage.length < 10 ? null : allPages.length; // null indicates that there are no more pages to fetch
     },
     initialPageParam: 0,
     enabled: !!app?.id,

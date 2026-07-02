@@ -1,3 +1,5 @@
+export type SocialMedia = "telegram" | "instagram" | "facebook" | "x";
+
 export interface Affiliate {
   id: string;
   url: string;

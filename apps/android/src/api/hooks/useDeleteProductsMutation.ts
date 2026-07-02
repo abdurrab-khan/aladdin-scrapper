@@ -11,6 +11,9 @@ export const useDeleteProductsMutation = () => {
       // Invalidate products query to refresh the list
       queryClient.invalidateQueries({ queryKey: ["products"] });
 
+      // Invalidate product categories as well
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+
       // Delete existing grouped affiliate, if it belongs to the deleted products
       const existingGroupedAffiliateUrls = JSON.parse(
         (await AsyncStorage.getItem("grouped_affiliate_urls")) ?? "{}",

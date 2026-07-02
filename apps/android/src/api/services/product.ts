@@ -36,7 +36,8 @@ export const getProducts = async ({
     const products = await queryBuilder
       .range(start, end)
       .order("category", { ascending: true })
-      .order("discount_price", { ascending: true });
+      .order("discount_price", { ascending: true })
+      .order("product_id", { ascending: true });
 
     return (products?.data ?? []) as Product[];
   } catch (err: unknown) {
