@@ -3,15 +3,58 @@ import useAppContext from "@/context/AppContext";
 import { useProductCategoriesQuery } from "@/api/hooks/useProductCategoriesQuery";
 import { useProductStore } from "@/store/useProductStore";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import ButtonWithDialog from "@/components/buttons/ButtonWithDialog";
+import { supabase } from "@/api/clients/supabase";
+import toast from "@/utils";
+
+const SignoutBtn = () => {
+  const [visible, setVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSignout = async () => {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    } catch (err) {
+      const errMsg =
+        err instanceof Error
+          ? err.message
+          : "An error occurred while signing out.";
+      toast(errMsg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <ButtonWithDialog
+      visible={visible}
+      isLoading={isLoading}
+      setVisible={setVisible}
+      dialogTitle="Do you really want to sign out?"
+      dialogButtonAction={handleSignout}
+    >
+      <TouchableOpacity activeOpacity={0.5} onPress={() => setVisible(true)}>
+        <IconSymbol name="log-out-outline" color={"white"} />
+      </TouchableOpacity>
+    </ButtonWithDialog>
+  );
+};
 
 export default function Home() {
   const { app } = useAppContext();
@@ -37,6 +80,9 @@ export default function Home() {
 
   return (
     <View style={homeStyle.main}>
+      <View style={homeStyle.signOutContainer}>
+        <SignoutBtn />
+      </View>
       {/* Input field to search the product */}
       <TextInput
         value={searchQuery}
@@ -84,6 +130,10 @@ const homeStyle = StyleSheet.create({
     alignItems: "flex-start",
     flexDirection: "column",
     backgroundColor: Colors.dark.background,
+  },
+  signOutContainer: {
+    width: "100%",
+    alignItems: "flex-end",
   },
   input: {
     height: 44,

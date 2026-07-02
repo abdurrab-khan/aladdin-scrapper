@@ -1,7 +1,9 @@
 import { decode } from "base64-arraybuffer";
-import { supabase } from "../clients/supabase";
-import { Product } from "../../types/product";
 import { PostgrestError } from "@supabase/supabase-js";
+
+import type { Product } from "@/types";
+
+import { supabase } from "../clients/supabase";
 
 // interface getProducts
 interface getProductsProps {
@@ -56,6 +58,17 @@ export const deleteProducts = async (ids: string[] | string) => {
   }
 
   try {
+    // Delete product images
+    const { data: images, error: imagesError } = await supabase
+      .from("product_images")
+      .select("*")
+      .in("product_id", Array.isArray(ids) ? ids : [ids]);
+
+    if (imagesError) {
+      throw new Error(imagesError.message);
+    }
+
+    // Delete products
     const { error } = await supabase
       .from("products")
       .delete()
@@ -64,6 +77,13 @@ export const deleteProducts = async (ids: string[] | string) => {
     if (error) {
       throw new Error(error.message);
     }
+
+    // Delete product images
+    await deleteProductImage(
+      images?.map((img) =>
+        img?.image_url?.replace(/^.*\/public\/aladdin-deals\//, ""),
+      ),
+    );
 
     return true;
   } catch (err: unknown) {
@@ -137,29 +157,29 @@ export const uploadProductImage = async (
   }
 };
 
-// export const deleteProductImage = async (
-//   imagePath?: string | string[],
-// ): Promise<void> => {
-//   try {
-//     if (!imagePath) {
-//       return;
-//     }
+export const deleteProductImage = async (
+  imagePath?: string | string[],
+): Promise<void> => {
+  try {
+    if (!imagePath) {
+      return;
+    }
 
-//     const { error } = await supabase.storage
-//       .from("aladdin-deals")
-//       .remove(Array.isArray(imagePath) ? imagePath : [imagePath]);
+    const { error } = await supabase.storage
+      .from("aladdin-deals")
+      .remove(Array.isArray(imagePath) ? imagePath : [imagePath]);
 
-//     if (error) {
-//       throw new Error(`Failed to delete image: ${error.message}`);
-//     }
-//   } catch (err: unknown) {
-//     const errMessage =
-//       err instanceof Error
-//         ? err.message
-//         : "An error occurred during image deletion.";
-//     throw new Error(errMessage);
-//   }
-// };
+    if (error) {
+      throw new Error(`Failed to delete image: ${error.message}`);
+    }
+  } catch (err: unknown) {
+    const errMessage =
+      err instanceof Error
+        ? err.message
+        : "An error occurred during image deletion.";
+    throw new Error(errMessage);
+  }
+};
 
 export const getProductCategories = async (
   appId: string,

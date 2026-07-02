@@ -93,7 +93,7 @@ const buildSmartRows = (sizes: TImageSize[]): TImageSize[][] => {
   // Now let's push the card images
   while (i < cards.length) {
     const cardRow: TImageSize[] = [];
-    const numberOfCols = Math.min(cards.length - i, MAX_COLS);
+    const numberOfCols = Math.min(cards.length, MAX_COLS);
 
     while (cardRow.length < numberOfCols && i < cards.length) {
       const takeAsMaxCols =

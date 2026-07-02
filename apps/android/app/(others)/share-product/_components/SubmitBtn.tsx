@@ -10,7 +10,7 @@ import toast from "@/utils";
 import ButtonWithDialog from "@/components/buttons/ButtonWithDialog";
 
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import { uploadProductImage } from "@/api/services/product";
+import { deleteProductImage, uploadProductImage } from "@/api/services/product";
 import { shareProduct } from "@/api/services/share-product";
 import { CaptionDetailsSchema } from "@/api/schemas/caption.schema";
 
@@ -59,6 +59,7 @@ function SubmitBtn({ control, captureRef, handleSubmit }: SubmitBtnProps) {
     } finally {
       setVisible(false);
       setIsSubmitting(false);
+      await deleteProductImage(uploadData?.imagePath);
     }
   };
 

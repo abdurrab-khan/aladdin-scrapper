@@ -1,7 +1,7 @@
-import { Application } from "@/types";
-import { User } from "@supabase/supabase-js";
 import { useCallback, useMemo, useState } from "react";
+import { User } from "@supabase/supabase-js";
 import { AppContext } from "./AppContext";
+import { Application } from "@/types";
 
 export default function AppContextProvider({
   children,
@@ -11,12 +11,10 @@ export default function AppContextProvider({
   const [session, setSession] = useState<User | null>(null);
   const [app, setApp] = useState<Application | null>(null);
 
-  // =============== Add Session ===============
   const addSession = useCallback((session: User | null) => {
     setSession(session);
   }, []);
 
-  // =============== Add App Data ===============
   const addAppData = useCallback((appData: Application) => {
     setApp(appData);
   }, []);
@@ -28,7 +26,7 @@ export default function AppContextProvider({
       addSession,
       addAppData,
     }),
-    [app, session, addSession, addAppData]
+    [app, session, addSession, addAppData],
   );
 
   return (

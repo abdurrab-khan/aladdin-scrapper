@@ -1,4 +1,4 @@
-import { Affiliate } from "@/types/product";
+import type { Affiliate } from "@/types";
 import { supabase } from "../clients/supabase";
 
 export const addAffiliateLink = async (
