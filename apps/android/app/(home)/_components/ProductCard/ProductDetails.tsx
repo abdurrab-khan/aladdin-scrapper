@@ -7,7 +7,7 @@ import { Colors } from "@/constants/Colors";
 
 import toast from "@/utils";
 
-import { type Product } from "@/types/product";
+import type { Product } from "@/types";
 
 function ProductDetails({
   product,
@@ -39,7 +39,7 @@ function ProductDetails({
     >
       {/* Badges to display product details */}
       <View style={styles.upperInfo}>
-        {product.product_images.some((p) => p.imageType === "Full") && (
+        {product?.product_images?.some((p) => p.imageType === "Full") && (
           <Badge text="Full" color={["#ffb347", "#ff6b00"]} />
         )}
         {product.is_grouped && (

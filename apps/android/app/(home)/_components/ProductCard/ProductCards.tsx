@@ -12,10 +12,11 @@ import { useProductStore } from "@/store/useProductStore";
 
 import ShareBtn from "./ShareBtn";
 import ProductDetails from "./ProductDetails";
+import AddAffiliate from "../AddAffiliate/AddAffiliate";
+
+import type { Product } from "@/types";
 
 import { Colors } from "@/constants/Colors";
-import { type Product } from "@/types/product";
-import AddAffiliate from "../AddAffiliate/AddAffiliate";
 
 function ProductCards({ product }: { product: Product }) {
   const [isAffiliateVisible, setIsAffiliateVisible] = useState<boolean>(false);
@@ -23,8 +24,8 @@ function ProductCards({ product }: { product: Product }) {
   const { selectedProducts, toggleSelectedProducts } = useProductStore();
 
   const cardImage =
-    product.product_images.find((img) => img.imageType === "Card")?.imageUrl ??
-    "";
+    product?.product_images?.find((img) => img.imageType === "Card")
+      ?.imageUrl ?? "";
 
   const handleSelectProduct = () => {
     if (selectedProducts.size === 0) {

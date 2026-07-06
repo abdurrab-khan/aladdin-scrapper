@@ -22,7 +22,7 @@ import {
   setDefaultAffiliateLink,
 } from "@/api/services/affiliate";
 
-import { Affiliate } from "@/types/product";
+import type { Affiliate } from "@/types";
 import { Colors } from "@/constants/Colors";
 
 interface AffiliatesProps {

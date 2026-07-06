@@ -3,7 +3,7 @@ import { getProductCategories } from "@/api/services/product";
 
 export const useProductCategoriesQuery = (appId?: string) => {
   return useQuery({
-    queryKey: ["categories", appId],
+    queryKey: ["categories"],
     queryFn: () => {
       if (!appId) return [];
       return getProductCategories(appId);

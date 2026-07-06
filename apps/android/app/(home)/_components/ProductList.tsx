@@ -18,6 +18,7 @@ import { Product } from "@/types/index";
 
 import { useProductStore } from "@/store/useProductStore";
 import { useProductsQuery } from "@/api/hooks/useProductsQuery";
+import queryClient from "@/api/clients/queryClient";
 
 export default function ProductList() {
   const { searchQuery, clearSelection, currentCategory, selectedProducts } =
@@ -39,6 +40,16 @@ export default function ProductList() {
   const products = data?.pages.flat() || [];
 
   const keyExtractor = useCallback((item: Product) => item.product_id, []);
+
+  const handleRefetch = useCallback(async () => {
+    await refetch();
+
+    // Invalidate product categories as well
+    queryClient.invalidateQueries({ queryKey: ["categories"] });
+
+    // clear the selected products
+    clearSelection();
+  }, [refetch, clearSelection]);
 
   const handlePagination = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -97,7 +108,7 @@ export default function ProductList() {
             },
         ]}
         refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+          <RefreshControl refreshing={isRefetching} onRefresh={handleRefetch} />
         }
         ListEmptyComponent={
           isLoading ? (

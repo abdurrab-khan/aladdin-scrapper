@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { TAGS_POOL } from "./constants/const";
 
-import { Affiliate } from "@/types/product";
+import type { Affiliate } from "@/types";
 import { ProductData } from "@/app/(others)/share-product";
 
 export const generateCaption = async (
