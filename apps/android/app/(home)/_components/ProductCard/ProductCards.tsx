@@ -24,8 +24,8 @@ function ProductCards({ product }: { product: Product }) {
   const { selectedProducts, toggleSelectedProducts } = useProductStore();
 
   const cardImage =
-    product.product_images.find((img) => img.imageType === "Card")?.imageUrl ??
-    "";
+    product?.product_images?.find((img) => img.imageType === "Card")
+      ?.imageUrl ?? "";
 
   const handleSelectProduct = () => {
     if (selectedProducts.size === 0) {

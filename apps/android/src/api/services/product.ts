@@ -160,6 +160,8 @@ export const uploadProductImage = async (
 export const deleteProductImage = async (
   imagePath?: string | string[],
 ): Promise<void> => {
+  console.log("Paths for delete images: ", imagePath);
+
   try {
     if (!imagePath) {
       return;

@@ -44,21 +44,21 @@ function Form({ products }: { products: ProductData[] }) {
       .reduce(
         (acc, curr) => {
           // Get the card image if available, otherwise null
-          const cardImage = curr.productImages.find(
+          const cardImage = curr?.productImages?.find(
             (c) => c.imageType === "Card" && c.imageStatus === "Completed",
           )?.imageUrl;
 
           // Get the grouped image if the product is grouped, otherwise null
           const groupedImage =
             (curr.isGrouped
-              ? curr.productImages.find(
+              ? curr?.productImages?.find(
                   (c) =>
                     c.imageType === "Group" && c.imageStatus === "Completed",
                 )?.imageUrl
               : null) ?? null;
 
           if (products.length === 1) {
-            const fullImage = curr.productImages.find(
+            const fullImage = curr?.productImages?.find(
               (c) => c.imageType === "Full" && c.imageStatus === "Completed",
             )?.imageUrl;
             acc.push({
