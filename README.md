@@ -190,7 +190,7 @@ supabase functions deploy share-product
 | `SUPABASE_URL` | Scrapper, Screenshot | Supabase project URL |
 | `SUPABASE_KEY` | Scrapper, Screenshot, Mobile | API/anon key |
 | `REDIS_HOST` / `PORT` / `PASSWORD` | Scrapper, Screenshot | Redis cache & queue config |
-| `USER_ID` / `APP_ID` | Root `.env` | Default owner identifiers |
+| `USER_ID` | Root `.env` | Default owner identifiers |
 | `AMAZON_PLATFORM_ID` / `FLIPKART_PLATFORM_ID` | Root `.env` | Platform DB references |
 | `TELEGRAM_BOT_TOKEN` / `CHAT_ID` | Edge Function | Telegram integration |
 | `EXPO_PUBLIC_SUPABASE_*` | Mobile app | Supabase client config |
