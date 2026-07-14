@@ -1,14 +1,15 @@
 
 <p align="center">
-  <img src="assets/aladdin-demo.gif" alt="Aladdin Loot Deals Demo GIF" width="100%">
-  <br>
+  <video autoplay muted control playsinline width="200">
+    <source src="assets/video.mp4" type="video/mp4" />
+  </video>
 </p>
 
 <br>
 
 <div align="center">
 
-# 🧞 Aladdin Loot Deals
+# Aladdin Loot Deals
 
 ### Your ultimate deal-curation & social-sharing command center
 
